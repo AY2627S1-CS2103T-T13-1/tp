@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.person.Remark;
 
 public class RemarkCommand extends Command {
 
@@ -26,9 +27,9 @@ public class RemarkCommand extends Command {
 
 
     private final Index index;
-    private final String remark;
+    private final Remark remark;
 
-    public RemarkCommand(Index index, String remark) {
+    public RemarkCommand(Index index, Remark remark) {
         requireAllNonNull(index, remark);
         this.index = index;
         this.remark = remark;
@@ -36,7 +37,8 @@ public class RemarkCommand extends Command {
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        throw new CommandException(MESSAGE_NOT_IMPLEMENTED_YET);
+        throw new CommandException(
+                String.format(MESSAGE_ARGUMENTS, index.getOneBased(), remark));
     }
 
     @Override
