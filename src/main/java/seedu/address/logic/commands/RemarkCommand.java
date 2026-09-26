@@ -88,6 +88,6 @@ public class RemarkCommand extends Command {
      */
     private String generateSuccessMessage(Person personToEdit) {
         String message = !remark.value.isEmpty() ? MESSAGE_ADD_REMARK_SUCCESS : MESSAGE_DELETE_REMARK_SUCCESS;
-        return String.format(message, Messages.format(personToEdit));
+        return String.format(message, personToEdit);
     }
 }
