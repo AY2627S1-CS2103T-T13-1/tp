@@ -40,7 +40,7 @@ public class RemarkCommandParser implements Parser<RemarkCommand> {
         Remark remark = argMultimap.getValue(PREFIX_REMARK)
                 .map(remarkString -> new Remark(remarkString))
                 .orElse(new Remark(""));
-        
+
         return new RemarkCommand(index, remark);
     }
 }
