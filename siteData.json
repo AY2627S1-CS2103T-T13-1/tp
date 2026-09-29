@@ -7,6 +7,7 @@
       "headings": {
         "about-us": "About Us",
         "project-team": "Project team",
+        "aloysius": "Aloysius",
         "teo-shi-jie": "Teo Shi Jie",
         "ryan-ng": "Ryan Ng",
         "johnny-doe": "Johnny Doe",
@@ -140,6 +141,11 @@
       "headings": {
         "ryan-s-portfolio": "Ryan's Portfolio"
       },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/alloyshoes.md",
+      "headings": {},
       "headingKeywords": {}
     },
     {
