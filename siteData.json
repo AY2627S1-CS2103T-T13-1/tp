@@ -10,7 +10,7 @@
         "aloysius": "Aloysius",
         "teo-shi-jie": "Teo Shi Jie",
         "ryan-ng": "Ryan Ng",
-        "johnny-doe": "Johnny Doe",
+        "chong-kai-le": "Chong Kai Le",
         "jean-doe": "Jean Doe",
         "james-doe": "James Doe"
       },
@@ -146,6 +146,13 @@
     {
       "src": "team/alloyshoes.md",
       "headings": {},
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/draxche.md",
+      "headings": {
+        "draxche-s-project-portfolio": "Draxche's Project Portfolio"
+      },
       "headingKeywords": {}
     },
     {
