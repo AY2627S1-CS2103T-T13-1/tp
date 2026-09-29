@@ -21,6 +21,17 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Team Contributor
 * Responsibilities: Feature Implementation
 
+
+### Teo Shi Jie
+
+<img src="images/shijieteo.png" width="200px">
+
+[[github](https://github.com/shijieteo)]
+[[portfolio](team/shijieteo.md)]
+
+* Role: Team Member
+* Responsibilities: Implementing features
+
 ### Jane Doe
 
 <img src="images/johndoe.png" width="200px">
