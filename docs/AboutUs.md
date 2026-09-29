@@ -11,6 +11,16 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Aidil
+
+<img src="images/idealfarhand.png" width="200px">
+
+[[github](https://github.com/idealfarhand)]
+[[portfolio](team/idealfarhand.md)]
+
+* Role: Team Contributor
+* Responsibilities: Feature Implementation
+
 ### Aloysius
 
 <img src="images/alloyshoes.png" width="200px">
@@ -50,23 +60,3 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 * Role: Team Member
 * Responsibilities: Feature Implementation
-
-### Jean Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
-
-### James Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: UI
