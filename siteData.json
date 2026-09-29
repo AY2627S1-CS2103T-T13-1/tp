@@ -7,12 +7,11 @@
       "headings": {
         "about-us": "About Us",
         "project-team": "Project team",
+        "aidil": "Aidil",
         "aloysius": "Aloysius",
         "teo-shi-jie": "Teo Shi Jie",
         "ryan-ng": "Ryan Ng",
-        "chong-kai-le": "Chong Kai Le",
-        "jean-doe": "Jean Doe",
-        "james-doe": "James Doe"
+        "chong-kai-le": "Chong Kai Le"
       },
       "headingKeywords": {}
     },
@@ -156,11 +155,8 @@
       "headingKeywords": {}
     },
     {
-      "src": "team/johndoe.md",
-      "title": "John Doe's Project Portfolio Page",
-      "headings": {
-        "project-addressbook-level-3": "Project: AddressBook Level 3"
-      },
+      "src": "team/idealfarhand.md",
+      "headings": {},
       "headingKeywords": {}
     },
     {
