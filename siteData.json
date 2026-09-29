@@ -7,7 +7,7 @@
       "headings": {
         "about-us": "About Us",
         "project-team": "Project team",
-        "john-doe": "John Doe",
+        "teo-shi-jie": "Teo Shi Jie",
         "jane-doe": "Jane Doe",
         "johnny-doe": "Johnny Doe",
         "jean-doe": "Jean Doe",
@@ -141,6 +141,11 @@
       "headings": {
         "project-addressbook-level-3": "Project: AddressBook Level 3"
       },
+      "headingKeywords": {}
+    },
+    {
+      "src": "team/shijieteo.md",
+      "headings": {},
       "headingKeywords": {}
     }
   ]
