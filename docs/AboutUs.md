@@ -17,6 +17,43 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 [[github](https://github.com/idealfarhand)]
 [[portfolio](team/idealfarhand.md)]
+### Aloysius
 
-* Role: Developer
-* Responsibilities: UI
+<img src="images/alloyshoes.png" width="200px">
+
+[[github](https://github.com/Alloyshoes)]
+[[portfolio](team/alloyshoes.md)]
+
+* Role: Team Contributor
+* Responsibilities: Feature Implementation
+
+
+### Teo Shi Jie
+
+<img src="images/shijieteo.png" width="200px">
+
+[[github](https://github.com/shijieteo)]
+[[portfolio](team/shijieteo.md)]
+
+* Role: Team Member
+* Responsibilities: Implementing features
+
+### Ryan Ng
+
+<img src="images/ryanngct.png" width="200px">
+
+[[github](http://github.com/RyanNgCT)]
+[[portfolio](team/RyanNgCT.md)]
+
+* Role: Team Member
+* Responsibilities: Testing
+
+### Chong Kai Le
+
+<img src="images/draxche.png" width="200px">
+
+[[github](http://github.com/draxche)] [[portfolio](team/draxche.md)]
+
+* Role: Team Member
+* Responsibilities: Feature Implementation
+
