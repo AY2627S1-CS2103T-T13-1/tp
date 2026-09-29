@@ -11,6 +11,17 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Aloysius
+
+<img src="images/alloyshoes.png" width="200px">
+
+[[github](https://github.com/Alloyshoes)]
+[[portfolio](team/alloyshoes.md)]
+
+* Role: Team Contributor
+* Responsibilities: Feature Implementation
+
+
 ### Teo Shi Jie
 
 <img src="images/shijieteo.png" width="200px">
