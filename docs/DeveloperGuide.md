@@ -298,28 +298,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 (For all use cases below, the **System** is `coNnectUS` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+#### Use Case: UC01 - List Contacts
 
-**MSS**
+**Actor: User**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+**MSS:**
+1. User issues list command.
+2. coNnectUS displays the list of saved contacts.
+Use case ends.
 
-    Use case ends.
+**Extensions:**
 
-**Extensions**
-
-* 2a. The list is empty.
+* 1a. coNnectUS detects that the contact list is empty. 
+  * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
 
   Use case ends.
-
-* 3a. The given index is invalid.
-
-    * 3a1. AddressBook shows an error message.
-
-      Use case resumes at step 2.
 
 #### Use Case UC05 - Edit Contacts
 
@@ -327,7 +320,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User <u>views their list of current contacts (UC01)</u>.
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
 2. User requests to edit a specific contact in the list, providing new values for one or more fields.
 3. coNnectUS updates the contact with the new values and shows the updated details.
 
@@ -376,8 +369,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 2g1. coNnectUS removes all of the contact's tags.
 
       Use case resumes at step 3.
-
-*{More to be added}*
 
 ### Non-Functional Requirements
 
