@@ -296,7 +296,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-**Use Case: UC01 - List Contacts**
+#### Use Case: UC01 - List Contacts
 
 Actor: User
 
