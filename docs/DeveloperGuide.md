@@ -315,6 +315,9 @@ Use case ends.
   Use case ends.
 
 #### Use Case: UC02 - Add Contacts
+
+**Actor: User**
+
 **MSS:**
 1. User adds contact with required contact information.
 2. coNnectUS creates the new contact.
