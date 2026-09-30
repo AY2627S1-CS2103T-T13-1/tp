@@ -321,7 +321,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-**Use Case UC05 - Edit Contacts**
+#### Use Case UC05 - Edit Contacts
 
 **Actor: User**
 
@@ -359,7 +359,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 2e. The new name is the same as that of another contact already in the list.
+* 2e. The new phone number or email is the same as that of another contact already in the list.
 
     * 2e1. coNnectUS shows an error message stating that the contact already exists.
 
