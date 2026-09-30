@@ -298,38 +298,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 (For all use cases below, the **System** is `coNnectUS` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use Case UC03 - Delete Contacts**
-
-**Actor: User**
+**Use case: Delete a person**
 
 **MSS**
 
-1. User <u>views their list of current contacts (UC01)</u>.
-2. User specifies delete command with a list index corresponding to a contact.
-3. coNnectUS deletes the contact.
-4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
+1.  User requests to list persons
+2.  AddressBook shows a list of persons
+3.  User requests to delete a specific person in the list
+4.  AddressBook deletes the person
 
-   Use case ends.
+    Use case ends.
 
 **Extensions**
 
-* 2a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
+* 2a. The list is empty.
 
-    * 2a1. coNnectUS displays an error message with the expected usage instructions.
+  Use case ends.
 
-      Use case resumes at step 2.
+* 3a. The given index is invalid.
 
-* 2b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
-
-    * 2b1. coNnectUS displays an error message warning the user of the invalid index.
+    * 3a1. AddressBook shows an error message.
 
       Use case resumes at step 2.
-
-* 2c. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
-
-    * 2c1. coNnectUS displays an error message informing the user about the empty contact list.
-
-      Use case ends.
 
 **Use Case UC05 - Edit Contacts**
 
