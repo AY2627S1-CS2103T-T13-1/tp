@@ -314,6 +314,30 @@ Use case ends.
 
   Use case ends.
 
+#### Use Case: UC02 - Add Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User adds contact with required contact information.
+2. coNnectUS creates the new contact.
+3. coNnectUS displays information of new contact and updated contact list.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects invalid contact information.
+    * 1a1. coNnectUS displays an error message, detailing the issue with the user's command.
+
+      Use case resumes from Step 1.
+  
+* 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
+    * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+
+      Use case ends.
+
+
 #### Use Case UC05 - Edit Contacts
 
 **Actor: User**
