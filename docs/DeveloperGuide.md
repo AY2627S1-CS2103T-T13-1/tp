@@ -304,7 +304,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User views their list of current contacts (UC01).
+1. User <u>views their list of current contacts (UC01)</u>.
 2. User specifies delete command with a list index corresponding to a contact.
 3. coNnectUS deletes the contact.
 4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
@@ -337,60 +337,55 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to list contacts
-2.  coNnectUS shows a list of contacts
-3.  User requests to edit a specific contact in the list, providing new values for one or more fields
-4.  coNnectUS updates the contact with the new values and shows the updated details
+1. User <u>views their list of current contacts (UC01)</u>.
+2. User requests to edit a specific contact in the list, providing new values for one or more fields.
+3. coNnectUS updates the contact with the new values and shows the updated details.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 2a. The given index is invalid (e.g. the list is empty or the index is outside the displayed list).
 
-  Use case ends.
-
-* 3a. The given index is invalid.
-
-    * 3a1. coNnectUS shows an error message.
+    * 2a1. coNnectUS shows an error message.
 
       Use case resumes at step 2.
 
-* 3b. No fields to edit are provided.
+* 2b. No fields to edit are provided.
 
-    * 3b1. coNnectUS shows an error message stating that at least one field must be provided.
-
-      Use case resumes at step 2.
-
-* 3c. One or more of the new values are invalid (e.g. a wrongly formatted phone number or email).
-
-    * 3c1. coNnectUS shows an error message stating the valid format for that field.
+    * 2b1. coNnectUS shows an error message stating that at least one field must be provided.
 
       Use case resumes at step 2.
 
-* 3d. The same field is provided more than once (e.g. two names).
+* 2c. One or more of the new values are invalid (e.g. a wrongly formatted phone number or email).
 
-    * 3d1. coNnectUS shows an error message listing the repeated fields.
-
-      Use case resumes at step 2.
-
-* 3e. The new name is the same as that of another contact already in the list.
-
-    * 3e1. coNnectUS shows an error message stating that the contact already exists.
+    * 2c1. coNnectUS shows an error message stating the valid format for that field.
 
       Use case resumes at step 2.
 
-* 3f. User provides new tags.
+* 2d. The same field is provided more than once (e.g. two names).
 
-    * 3f1. coNnectUS replaces all of the contact's existing tags with the new tags.
+    * 2d1. coNnectUS shows an error message listing the repeated fields.
 
-      Use case resumes at step 4.
+      Use case resumes at step 2.
 
-* 3g. User provides an empty tag field.
+* 2e. The new name is the same as that of another contact already in the list.
 
-    * 3g1. coNnectUS removes all of the contact's tags.
+    * 2e1. coNnectUS shows an error message stating that the contact already exists.
 
-      Use case resumes at step 4.
+      Use case resumes at step 2.
+
+* 2f. User provides new tags.
+
+    * 2f1. coNnectUS replaces all of the contact's existing tags with the new tags.
+
+      Use case resumes at step 3.
+
+* 2g. User provides an empty tag field.
+
+    * 2g1. coNnectUS removes all of the contact's tags.
+
+      Use case resumes at step 3.
 
 *{More to be added}*
 
