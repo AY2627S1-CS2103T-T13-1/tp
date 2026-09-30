@@ -326,9 +326,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1.  User requests to list persons
-2.  AddressBook shows a list of persons
+2.  coNnectUS shows a list of persons
 3.  User requests to edit a specific person in the list, providing new values for one or more fields
-4.  AddressBook updates the person with the new values and shows the updated details
+4.  coNnectUS updates the person with the new values and shows the updated details
 
     Use case ends.
 
@@ -340,43 +340,43 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3a. The given index is invalid.
 
-    * 3a1. AddressBook shows an error message.
+    * 3a1. coNnectUS shows an error message.
 
       Use case resumes at step 2.
 
 * 3b. No fields to edit are provided.
 
-    * 3b1. AddressBook shows an error message stating that at least one field must be provided.
+    * 3b1. coNnectUS shows an error message stating that at least one field must be provided.
 
       Use case resumes at step 2.
 
 * 3c. One or more of the new values are invalid (e.g. a wrongly formatted phone number or email).
 
-    * 3c1. AddressBook shows an error message stating the valid format for that field.
+    * 3c1. coNnectUS shows an error message stating the valid format for that field.
 
       Use case resumes at step 2.
 
 * 3d. The same field is provided more than once (e.g. two names).
 
-    * 3d1. AddressBook shows an error message listing the repeated fields.
+    * 3d1. coNnectUS shows an error message listing the repeated fields.
 
       Use case resumes at step 2.
 
 * 3e. The new name is the same as that of another person already in the list.
 
-    * 3e1. AddressBook shows an error message stating that the person already exists.
+    * 3e1. coNnectUS shows an error message stating that the person already exists.
 
       Use case resumes at step 2.
 
 * 3f. User provides new tags.
 
-    * 3f1. AddressBook replaces all of the person's existing tags with the new tags.
+    * 3f1. coNnectUS replaces all of the person's existing tags with the new tags.
 
       Use case resumes at step 4.
 
 * 3g. User provides an empty tag field.
 
-    * 3g1. AddressBook removes all of the person's tags.
+    * 3g1. coNnectUS removes all of the person's tags.
 
       Use case resumes at step 4.
 
