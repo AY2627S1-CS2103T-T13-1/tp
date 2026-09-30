@@ -296,32 +296,103 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `coNnectUS` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+#### Use Case: UC01 - List Contacts
 
-**MSS**
+**Actor: User**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+**MSS:**
+1. User issues list command.
+2. coNnectUS displays the list of saved contacts.
+Use case ends.
 
-    Use case ends.
+**Extensions:**
 
-**Extensions**
-
-* 2a. The list is empty.
+* 1a. coNnectUS detects that the contact list is empty. 
+  * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
 
   Use case ends.
 
-* 3a. The given index is invalid.
+#### Use Case: UC02 - Add Contacts
 
-    * 3a1. AddressBook shows an error message.
+**Actor: User**
+
+**MSS:**
+1. User adds contact with required contact information.
+2. coNnectUS creates the new contact.
+3. coNnectUS displays information of new contact and updated contact list.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects invalid contact information.
+    * 1a1. coNnectUS displays an error message, detailing the issue with the user's command.
+
+      Use case resumes from Step 1.
+  
+* 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
+    * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+
+      Use case ends.
+
+
+#### Use Case UC05 - Edit Contacts
+
+**Actor: User**
+
+**MSS**
+
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+2. User requests to edit a specific contact in the list, providing new values for one or more fields.
+3. coNnectUS updates the contact with the new values and shows the updated details.
+
+   Use case ends.
+
+**Extensions**
+
+* 2a. The given index is invalid (e.g. the list is empty or the index is outside the displayed list).
+
+    * 2a1. coNnectUS shows an error message.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+* 2b. No fields to edit are provided.
+
+    * 2b1. coNnectUS shows an error message stating that at least one field must be provided.
+
+      Use case resumes at step 2.
+
+* 2c. One or more of the new values are invalid (e.g. a wrongly formatted phone number or email).
+
+    * 2c1. coNnectUS shows an error message stating the valid format for that field.
+
+      Use case resumes at step 2.
+
+* 2d. The same field is provided more than once (e.g. two names).
+
+    * 2d1. coNnectUS shows an error message listing the repeated fields.
+
+      Use case resumes at step 2.
+
+* 2e. The new phone number or email is the same as that of another contact already in the list.
+
+    * 2e1. coNnectUS shows an error message stating that the contact already exists.
+
+      Use case resumes at step 2.
+
+* 2f. User provides new tags.
+
+    * 2f1. coNnectUS replaces all of the contact's existing tags with the new tags.
+
+      Use case resumes at step 3.
+
+* 2g. User provides an empty tag field.
+
+    * 2g1. coNnectUS removes all of the contact's tags.
+
+      Use case resumes at step 3.
 
 ### Non-Functional Requirements
 
