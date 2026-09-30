@@ -321,6 +321,26 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
+
+#### Use Case: UC02 - Add Contacts
+MSS:
+1. User adds contact with required contact information.
+2. coNnectUS creates the new contact.
+3. coNnectUS displays information of new contact and updated contact list.
+
+    Use case ends.
+
+Extensions:
+
+* 1a. coNnectUS detects invalid contact information.
+  * 1a1. coNnectUS displays an error message, detailing the issue with the user's command.
+
+    Use case resumes from Step 1.
+* 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
+  * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+
+    Use case ends.
+
 *{More to be added}*
 
 ### Non-Functional Requirements
