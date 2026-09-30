@@ -300,14 +300,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 #### Use Case: UC01 - List Contacts
 
-Actor: User
+**Actor: User**
 
-MSS:
+**MSS:**
 1. User issues list command.
 2. coNnectUS displays the list of saved contacts.
 Use case ends.
 
-Extensions:
+**Extensions:**
 
 * 1a. coNnectUS detects that the contact list is empty. 
   * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
