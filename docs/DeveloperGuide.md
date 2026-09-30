@@ -296,39 +296,51 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `coNnectUS` and the **Actor** is the `user`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use Case UC03 - Delete Contacts**
+
+**Actor: User**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1. User views their list of current contacts (UC01).
+2. User specifies delete command with a list index corresponding to a contact.
+3. coNnectUS deletes the contact.
+4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
 
-    Use case ends.
+   Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 2a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
 
-  Use case ends.
-
-* 3a. The given index is invalid.
-
-    * 3a1. AddressBook shows an error message.
+    * 2a1. coNnectUS displays an error message with the expected usage instructions.
 
       Use case resumes at step 2.
 
-**Use case: Edit a person**
+* 2b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
+
+    * 2b1. coNnectUS displays an error message warning the user of the invalid index.
+
+      Use case resumes at step 2.
+
+* 2c. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
+
+    * 2c1. coNnectUS displays an error message informing the user about the empty contact list.
+
+      Use case ends.
+
+**Use Case UC05 - Edit Contacts**
+
+**Actor: User**
 
 **MSS**
 
-1.  User requests to list persons
-2.  coNnectUS shows a list of persons
-3.  User requests to edit a specific person in the list, providing new values for one or more fields
-4.  coNnectUS updates the person with the new values and shows the updated details
+1.  User requests to list contacts
+2.  coNnectUS shows a list of contacts
+3.  User requests to edit a specific contact in the list, providing new values for one or more fields
+4.  coNnectUS updates the contact with the new values and shows the updated details
 
     Use case ends.
 
@@ -362,21 +374,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 3e. The new name is the same as that of another person already in the list.
+* 3e. The new name is the same as that of another contact already in the list.
 
-    * 3e1. coNnectUS shows an error message stating that the person already exists.
+    * 3e1. coNnectUS shows an error message stating that the contact already exists.
 
       Use case resumes at step 2.
 
 * 3f. User provides new tags.
 
-    * 3f1. coNnectUS replaces all of the person's existing tags with the new tags.
+    * 3f1. coNnectUS replaces all of the contact's existing tags with the new tags.
 
       Use case resumes at step 4.
 
 * 3g. User provides an empty tag field.
 
-    * 3g1. coNnectUS removes all of the person's tags.
+    * 3g1. coNnectUS removes all of the contact's tags.
 
       Use case resumes at step 4.
 
