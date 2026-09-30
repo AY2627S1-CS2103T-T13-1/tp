@@ -320,7 +320,7 @@ Use case ends.
 
 **MSS**
 
-1. User <u>views their list of current contacts (UC01)</u>.
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
 2. User requests to edit a specific contact in the list, providing new values for one or more fields.
 3. coNnectUS updates the contact with the new values and shows the updated details.
 
