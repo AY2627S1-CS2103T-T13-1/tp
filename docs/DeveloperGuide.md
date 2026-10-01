@@ -307,7 +307,6 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `*` | Expert user | Set aliases for the commands | I can customise the command syntax to my liking |
 | `*` | Expert user | Delete all contacts with a certain tag | I can remove multiple contacts that are not needed easily. |
 | `*` | Expert user | Change the storage location for data files | I can store it at a location I can easily access |
-*{More to be added}*
 
 ### Use cases
 
