@@ -367,6 +367,28 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   
         Use case ends.
 
+#### Use Case: UC04 - Find Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User searches for a contact using its name.
+2. coNnectUS returns a list containing the contacts matching the keyword provided. 
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects that no contacts match the keyword.
+    * 1a1. coNnectUS displays an error message informing the user that no matching contacts were found.
+    
+      Use case ends.
+
+* 1b. coNnectUS detects that no keyword was provided. 
+    * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
+
+      Use case resumes at step 1.
+    
 #### Use Case UC05 - Edit Contacts
 
 **Actor: User**
