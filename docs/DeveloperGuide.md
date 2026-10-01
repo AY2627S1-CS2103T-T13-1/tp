@@ -285,13 +285,29 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | As a …                                    | I want to …                 | So that I can…                                                        |
 |----------|--------------------------------------------|------------------------------|------------------------------------------------------------------------|
-| `* * *`  | new user                                   | see usage instructions       | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person             |                                                                        |
-| `* * *`  | user                                       | delete a person              | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name        | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name         | locate a person easily                                                 |
-
+| `* * *` | Regular user | Create a contact | I can remember my friend's contact information |
+| `* * *` | Regular user | Delete a contact | I can remove unused contacts |
+| `* * *` | Regular user | Tag a contact | I can quickly figure out how this person is associated with me. |
+| `* * *` | Regular user | See all details of my contact | I can differentiate between friends with the same name |
+| `* *` | Beginner user | View a user guide/tutorial | I can get started using coNnectUS quickly |
+| `* *` | Beginner user | See friendly error messages | I can understand what I did wrong and correct them. |
+| `* *` | Forgetful user | Search for my contacts using any of their contexts | I can find my friend without remembering their name |
+| `* *` | Regular User | Update certain fields in contacts | I can reflect changes in contact information or correct mistakes |
+| `* *` | Regular user | Group my contacts | I can find easily find friends with the same context |
+| `* *` | Regular user | Have added contacts automatically be saved | I don't have to worry about contacts not being saved |
+| `*` | Beginner user | Have sample contact information | I can explore features without having to add contacts |
+| `*` | Forgetful user | Have a guided command process | I need not remember all the syntax for the commands |
+| `*` | Lazy user | Search for my contacts with just parts of their name | I can lazily search for my friend's contact information |
+| `*` | Regular user | Toggle between dark/light mode | I can choose the UI style I like best |
+| `*` | Regular user | Export only selected contacts | I can share mutual contacts with others. |
+| `*` | Regular user | Import a contact | I don't have to enter all their details manually. |
+| `*` | Regular User | Contextualize my contacts (free text field) | I can recall where/how I met my friends |
+| `*` | Regular User | Sort my contacts | I can find my contacts more easily |
+| `*` | Regular User | Have favourite / most-frequented contacts | I can easily navigate to frequently-contacted contacts |
+| `*` | Regular User | Store and be reminded of regular meeting times with contacts | I don't forget to show up for them |
+| `*` | Expert user | Set aliases for the commands | I can customise the command syntax to my liking |
+| `*` | Expert user | Delete all contacts with a certain tag | I can remove multiple contacts that are not needed easily. |
+| `*` | Expert user | Change the storage location for data files | I can store it at a location I can easily access |
 *{More to be added}*
 
 ### Use cases
