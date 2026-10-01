@@ -270,12 +270,12 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* student from National University of Singapore (NUS)
-* prefers desktop apps over other types of applications
-* can type at an average typing speed (45 WPM)
-* have difficulty keeping track of friends met in NUS
+* student from National University of Singapore (NUS).
+* prefers desktop apps over other types of applications.
+* can type at an average typing speed (45 WPM).
+* have difficulty keeping track of friends met in NUS.
 
-**Value proposition**: Our application enables one to maintain a list of their friends/acquaintances met from different parts of school -- friends from common CCAs, classes, different years, TAs, etc.
+**Value proposition**: Our application enables one to maintain a list of their friends/acquaintances met from different parts of school -- friends from common CCAs, classes, different years, TAs.
 
 
 ### User stories
