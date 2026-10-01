@@ -21,6 +21,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Team Contributor
 * Responsibilities: Feature Implementation
 
+
 ### Aloysius
 
 <img src="images/alloyshoes.png" width="200px">
