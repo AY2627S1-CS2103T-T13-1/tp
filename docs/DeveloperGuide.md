@@ -270,11 +270,10 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
+* student from National University of Singapore (NUS)
 * prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* can type at an average typing speed (45 WPM)
+* have difficulty keeping track of friends met in NUS
 
 **Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
 
