@@ -425,14 +425,14 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Non-Functional Requirements
 
-1. Should work without an internet connection 
-2. Should store data locally in a human-editable text file 
-3. Able to operate with 1000 contacts saved without sluggish performance 
-4. Should work on any mainstream OS with Java 25 installed 
-5. A user who is capable of an average typing speed of 45 WPM should be able to accomplish goals faster than using a mouse and keyboard 
-6. Besides Java 25, users should not require additional installations 
-7. Error messages should be descriptive such that a well-intentioned user does not make the same mistake more than twice in a row 
-8. GUI should be functional and not cause interruptions to the user at most standard screen resolutions (e.g. 1920 x 1080)
+1. Should work without an internet connection.
+2. Should store data locally in a human-editable text file.
+3. Able to operate with 1000 contacts saved without sluggish performance.
+4. Should work on any mainstream OS with Java 25 installed.
+5. A user who is capable of an average typing speed of 45 WPM should be able to accomplish goals faster than using a mouse and keyboard.
+6. Besides Java 25, users should not require additional installations.
+7. Error messages should be descriptive such that a well-intentioned user does not make the same mistake more than twice in a row.
+8. GUI should be functional and not cause interruptions to the user at most standard screen resolutions (e.g. 1920 x 1080).
 
 ### Glossary
 
