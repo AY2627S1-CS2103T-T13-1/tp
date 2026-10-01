@@ -305,14 +305,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS:**
 1. User issues list command.
 2. coNnectUS displays the list of saved contacts.
-Use case ends.
+
+    Use case ends.
 
 **Extensions:**
 
 * 1a. coNnectUS detects that the contact list is empty. 
   * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
-
-  Use case ends.
+    
+    Use case ends.
 
 #### Use Case: UC02 - Add Contacts
 
@@ -337,6 +338,34 @@ Use case ends.
 
       Use case ends.
 
+#### Use Case: UC03 - Delete Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+2. User specifies delete command with a list index corresponding to a contact.
+3. coNnectUS deletes the contact.
+4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
+
+    Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
+    * 1a1. coNnectUS displays an error message with the expected usage instructions
+
+        Use case resumes from Step 1.
+
+* 1b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
+    * 1b1. coNnectUS displays an error message warning the user of the invalid index. 
+  
+        Use case resumes from Step 1.
+
+* 1c. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
+    * 1c1. coNnectUS displays an error message informing the user about the empty contact list. 
+  
+        Use case ends.
 
 #### Use Case UC05 - Edit Contacts
 
