@@ -5,7 +5,11 @@ package seedu.address.model.tag;
  */
 public class FacultyTag extends Tag {
 
-    FacultyTag(String tagName) {
+    /**
+     * Constructs a {@code FacultyTag}.
+     * @param tagName a valid tag name.
+     */
+    public FacultyTag(String tagName) {
         super(tagName);
     }
 
