@@ -15,6 +15,21 @@ public class TagSubclassTest {
     }
 
     @Test
+    public void equals_notTag_returnsFalse() {
+        assertNotEquals(new ModuleTag("CS2103"), "CS2103");
+        assertNotEquals(new OthersTag("friend"), "friend");
+        assertNotEquals(new FacultyTag("FASS"), "FASS");
+    }
+
+    @Test
+    public void getTagTypeMethod() {
+        assertEquals(new ModuleTag("CS2103").getTagType(), "module");
+        assertEquals(new FacultyTag("FOS").getTagType(), "faculty");
+        assertEquals(new OthersTag("friend").getTagType(), "others");
+
+    }
+
+    @Test
     public void equals_sameTagTypeDifferentTagName_returnsFalse() {
         assertNotEquals(new ModuleTag("CS2103"), new ModuleTag("CS2109"));
         assertNotEquals(new ModuleTag("IS2218"), new ModuleTag("IS2238"));
