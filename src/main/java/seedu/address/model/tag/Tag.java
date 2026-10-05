@@ -7,7 +7,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Represents a Tag in the address book.
  * Guarantees: immutable; name is valid as declared in {@link #isValidTagName(String)}
  */
-public class Tag {
+public abstract class Tag {
 
     public static final String MESSAGE_CONSTRAINTS = "Tag names should be alphanumeric";
     public static final String VALIDATION_REGEX = "^[A-Za-z0-9 '-]{1,30}$";
@@ -24,6 +24,11 @@ public class Tag {
         checkArgument(isValidTagName(tagName), MESSAGE_CONSTRAINTS);
         this.tagName = tagName;
     }
+
+    /**
+     * Returns a string describing a tag's type
+     */
+    public abstract String getTagType();
 
     /**
      * Returns true if a given string is a valid tag name.
