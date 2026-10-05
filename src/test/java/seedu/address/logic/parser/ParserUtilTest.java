@@ -189,8 +189,10 @@ public class ParserUtilTest {
 
     @Test
     public void parseTags_collectionWithValidTags_returnsTagSet() throws Exception {
-        Set<Tag> actualTagSet = ParserUtil.parseTags(List.of(VALID_OTHERS_TAG_INPUT_1, VALID_OTHERS_TAG_INPUT_2));
-        Set<Tag> expectedTagSet = Set.of(new OthersTag(VALID_OTHERS_TAG_NAME_1), new OthersTag(VALID_OTHERS_TAG_NAME_2));
+        Set<Tag> actualTagSet = ParserUtil.parseTags(List.of(VALID_OTHERS_TAG_INPUT_1,
+                VALID_OTHERS_TAG_INPUT_2));
+        Set<Tag> expectedTagSet = Set.of(new OthersTag(VALID_OTHERS_TAG_NAME_1),
+                new OthersTag(VALID_OTHERS_TAG_NAME_2));
 
         assertEquals(expectedTagSet, actualTagSet);
     }
