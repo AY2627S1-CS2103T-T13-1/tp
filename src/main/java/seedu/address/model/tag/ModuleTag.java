@@ -7,10 +7,19 @@ public class ModuleTag extends Tag {
 
     /**
      * Constructs a {@code ModuleTag}.
+     *
      * @param tagName a valid tag name.
      */
     public ModuleTag(String tagName) {
         super(tagName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTagType() {
+        return "module";
     }
 
     /**

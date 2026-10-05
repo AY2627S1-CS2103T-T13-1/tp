@@ -7,10 +7,19 @@ public class FacultyTag extends Tag {
 
     /**
      * Constructs a {@code FacultyTag}.
+     *
      * @param tagName a valid tag name.
      */
     public FacultyTag(String tagName) {
         super(tagName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTagType() {
+        return "faculty";
     }
 
     /**

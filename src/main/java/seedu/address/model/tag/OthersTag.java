@@ -7,10 +7,19 @@ public class OthersTag extends Tag {
 
     /**
      * Constructs an {@code OthersTag}.
+     *
      * @param tagName a valid tag name.
      */
     public OthersTag(String tagName) {
         super(tagName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTagType() {
+        return "others";
     }
 
     /**
