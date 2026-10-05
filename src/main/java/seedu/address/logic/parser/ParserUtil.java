@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
@@ -13,6 +14,9 @@ import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.tag.FacultyTag;
+import seedu.address.model.tag.ModuleTag;
+import seedu.address.model.tag.OthersTag;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -103,11 +107,19 @@ public class ParserUtil {
      */
     public static Tag parseTag(String tag) throws ParseException {
         requireNonNull(tag);
-        String trimmedTag = tag.trim();
-        if (!Tag.isValidTagName(trimmedTag)) {
+        String[] tagParts = tag.trim().split("\\s+", 2);
+        String tagCategory = tagParts[0].toLowerCase(Locale.ROOT);
+        String tagName = tagParts[1].trim().replaceAll("\\s+", " ");
+        if (!Tag.isValidTagName(tagName)) {
             throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
         }
-        return new Tag(trimmedTag);
+
+        return switch(tagCategory) {
+            case "module" -> new ModuleTag(tagName);
+            case "faculty" -> new FacultyTag(tagName);
+            case "others" -> new OthersTag(tagName);
+            default -> throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
+        };
     }
 
     /**
