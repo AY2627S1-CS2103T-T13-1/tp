@@ -15,10 +15,8 @@ import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
-import seedu.address.model.tag.FacultyTag;
-import seedu.address.model.tag.ModuleTag;
-import seedu.address.model.tag.OthersTag;
 import seedu.address.model.tag.Tag;
+import seedu.address.model.tag.TagFactory;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -117,13 +115,7 @@ public class ParserUtil {
         if (!Tag.isValidTagName(tagName)) {
             throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
         }
-
-        return switch(tagCategory) {
-            case "module" -> new ModuleTag(tagName);
-            case "faculty" -> new FacultyTag(tagName);
-            case "others" -> new OthersTag(tagName);
-            default -> throw new ParseException(Messages.MESSAGE_UNKNOWN_TAG_CATEGORY);
-        };
+        return TagFactory.create(tagCategory, tagName);
     }
 
     /**
