@@ -60,19 +60,29 @@ public class ArgumentTokenizer {
     /**
      * Returns the index of the first occurrence of {@code prefix} in
      * {@code argsString} starting from index {@code fromIndex}. An occurrence
-     * is valid if there is a whitespace before {@code prefix}. Returns -1 if no
+     * is valid if there is a whitespace before {@code prefix}, and either a
+     * whitespace or the end of {@code argsString} after it. Returns -1 if no
      * such occurrence can be found.
      *
-     * E.g if {@code argsString} = "e/hip/900", {@code prefix} = "p/" and
-     * {@code fromIndex} = 0, this method returns -1 as there are no valid
-     * occurrences of "p/" with whitespace before it. However, if
-     * {@code argsString} = "e/hi p/900", {@code prefix} = "p/" and
-     * {@code fromIndex} = 0, this method returns 5.
+     * E.g if {@code argsString} = "-e hi-p 900", {@code prefix} = "-p" and
+     * {@code fromIndex} = 0, this method returns -1 as there is no whitespace
+     * before "-p". Similarly, if {@code argsString} = "-a Blk 5 -north",
+     * {@code prefix} = "-n" and {@code fromIndex} = 0, this method returns -1
+     * as there is no whitespace after "-n". However, if
+     * {@code argsString} = "-e hi -p 900", {@code prefix} = "-p" and
+     * {@code fromIndex} = 0, this method returns 6.
      */
     private static int findPrefixPosition(String argsString, String prefix, int fromIndex) {
         int prefixIndex = argsString.indexOf(" " + prefix, fromIndex);
-        return prefixIndex == -1 ? -1
-                : prefixIndex + 1; // +1 as offset for whitespace
+        while (prefixIndex != -1) {
+            int endIndex = prefixIndex + 1 + prefix.length();
+            if (endIndex == argsString.length()
+                    || Character.isWhitespace(argsString.charAt(endIndex))) {
+                return prefixIndex + 1; // +1 as offset for whitespace
+            }
+            prefixIndex = argsString.indexOf(" " + prefix, prefixIndex + 1);
+        }
+        return -1;
     }
 
     /**
