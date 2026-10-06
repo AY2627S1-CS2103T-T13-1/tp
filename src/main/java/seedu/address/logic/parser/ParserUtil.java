@@ -4,16 +4,19 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
+import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
+import seedu.address.model.tag.TagFactory;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -103,11 +106,16 @@ public class ParserUtil {
      */
     public static Tag parseTag(String tag) throws ParseException {
         requireNonNull(tag);
-        String trimmedTag = tag.trim();
-        if (!Tag.isValidTagName(trimmedTag)) {
+        String[] tagParts = tag.trim().split("\\s+", 2);
+        if (tagParts.length < 2) {
+            throw new ParseException(Messages.MESSAGE_MISSING_TAG_FIELD);
+        }
+        String tagCategory = tagParts[0].toLowerCase(Locale.ROOT);
+        String tagName = tagParts[1].trim().replaceAll("\\s+", " ");
+        if (!Tag.isValidTagName(tagName)) {
             throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
         }
-        return new Tag(trimmedTag);
+        return TagFactory.create(tagCategory, tagName);
     }
 
     /**
