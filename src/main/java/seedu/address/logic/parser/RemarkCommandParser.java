@@ -8,6 +8,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.logic.commands.RemarkCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.person.Remark;
 
 /**
  *  Parses input arguments and creates a new {@code RemarkCommand} object.
@@ -32,15 +33,18 @@ public class RemarkCommandParser implements Parser<RemarkCommand> {
 
         Index index;
         try {
+            // preamble of the prefix is the person's index.
             index = ParserUtil.parseIndex(argMultimap.getPreamble());
         } catch (IllegalValueException ive) {
+            // fails to parse preamble representing index.
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                             RemarkCommand.MESSAGE_USAGE), ive);
         }
 
+        // unbox the optional remark value supplied to Remark.
         String remark = argMultimap.getValue(PREFIX_REMARK).orElse("");
 
-        return new RemarkCommand(index, remark);
+        return new RemarkCommand(index, new Remark(remark));
     }
 }

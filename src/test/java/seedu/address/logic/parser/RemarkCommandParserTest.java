@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.RemarkCommand;
+import seedu.address.model.person.Remark;
 
 public class RemarkCommandParserTest {
 
@@ -19,12 +20,15 @@ public class RemarkCommandParserTest {
     @Test
     public void parse_indexSpecified_success() {
         Index targetIndex = INDEX_FIRST_PERSON;
-        String userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK
-                + nonEmptyRemark;
 
-        RemarkCommand expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON,
-                nonEmptyRemark);
+        // input format correct
+        String userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK + nonEmptyRemark;
+        RemarkCommand expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, new Remark(nonEmptyRemark));
+        assertParseSuccess(parser, userInput, expectedCommand);
 
+        // incomplete input format
+        userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK;
+        expectedCommand = new RemarkCommand(INDEX_FIRST_PERSON, new Remark(""));
         assertParseSuccess(parser, userInput, expectedCommand);
     }
 
@@ -33,10 +37,11 @@ public class RemarkCommandParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT,
                 RemarkCommand.MESSAGE_USAGE);
 
-        // no parameters
+        // no params
         assertParseFailure(parser, RemarkCommand.COMMAND_WORD, expectedMessage);
 
         // no index
-        assertParseFailure(parser, RemarkCommand.COMMAND_WORD + " " + nonEmptyRemark, expectedMessage);
+        assertParseFailure(parser, RemarkCommand.COMMAND_WORD + " "
+                + nonEmptyRemark, expectedMessage);
     }
 }
