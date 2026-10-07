@@ -2,28 +2,31 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Predicate;
+
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.logic.Messages;
 import seedu.address.model.Model;
-import seedu.address.model.person.NameContainsKeywordsPredicate;
+import seedu.address.model.person.Person;
 
 /**
- * Finds and lists all persons in the address book whose name contains any of the argument keywords.
- * Keyword matching is case insensitive.
+ * Finds and lists all persons whose names contain the supplied search phrase.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all persons whose names contain any of "
-            + "the specified keywords (case-insensitive) and displays them as a list with index numbers.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
-            + "Example: " + COMMAND_WORD + " alice bob charlie";
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds contacts using name.\n"
+            + "Parameters: -n NAME\n"
+            + "Example: " + COMMAND_WORD + " -n Johnny Doe";
 
-    private final NameContainsKeywordsPredicate predicate;
+    public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
+    public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found";
 
-    public FindCommand(NameContainsKeywordsPredicate predicate) {
-        this.predicate = predicate;
+    private final Predicate<Person> predicate;
+
+    public FindCommand(Predicate<Person> predicate) {
+        this.predicate = requireNonNull(predicate);
     }
 
     @Override
@@ -31,7 +34,7 @@ public class FindCommand extends Command {
         requireNonNull(model);
         model.updateFilteredPersonList(predicate);
         return new CommandResult(
-                String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, model.getFilteredPersonList().size()));
+                String.format(MESSAGE_CONTACTS_FOUND, model.getFilteredPersonList().size()));
     }
 
     @Override
