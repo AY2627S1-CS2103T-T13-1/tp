@@ -20,20 +20,24 @@ public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. "
+    public static final String COMMAND_DESCRIPTION = "Adds a contact to the address book.";
+
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " -n NAME -p PHONE_NUMBER -e EMAIL "
+            + "[-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]";
+
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " -n John Doe -p "
+            + "98765432 -e johnd@example.com -a 311, Clementi Ave 2, #02-25 "
+            + "-t others friends -t others owesMoney";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
+            + COMMAND_DESCRIPTION + "\n"
             + "Parameters: "
             + PREFIX_NAME + " NAME "
             + PREFIX_PHONE + " PHONE "
             + PREFIX_EMAIL + " EMAIL "
             + PREFIX_ADDRESS + " ADDRESS "
             + "[" + PREFIX_TAG + " CATEGORY TAG]...\n"
-            + "Example: " + COMMAND_WORD + " "
-            + PREFIX_NAME + " John Doe "
-            + PREFIX_PHONE + " 98765432 "
-            + PREFIX_EMAIL + " johnd@example.com "
-            + PREFIX_ADDRESS + " 311, Clementi Ave 2, #02-25 "
-            + PREFIX_TAG + " others friends "
-            + PREFIX_TAG + " others owesMoney";
+            + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
