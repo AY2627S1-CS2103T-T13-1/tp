@@ -4,7 +4,7 @@
   pageNav: 3
 ---
 
-# AB-3 Developer Guide
+# coNnectUS Developer Guide
 
 <!-- * Table of Contents -->
 <page-nav-print />
@@ -181,7 +181,7 @@ Step 2. The user executes `delete 5` command to delete the 5th person in the add
 
 <puml src="diagrams/UndoRedoState1.puml" alt="UndoRedoState1" />
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add -n David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 <puml src="diagrams/UndoRedoState2.puml" alt="UndoRedoState2" />
 
@@ -225,7 +225,7 @@ Step 5. The user then decides to execute the command `list`. Commands that do no
 
 <puml src="diagrams/UndoRedoState4.puml" alt="UndoRedoState4" />
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …` command. This is the behavior that most modern desktop applications follow.
+Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add -n David …` command. This is the behavior that most modern desktop applications follow.
 
 <puml src="diagrams/UndoRedoState5.puml" alt="UndoRedoState5" />
 
@@ -270,13 +270,12 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
+* student from National University of Singapore (NUS).
+* prefers desktop apps over other types of applications.
+* can type at an average typing speed (45 WPM).
+* have difficulty keeping track of friends met in NUS.
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Our application enables one to maintain a list of their friends/acquaintances met from different parts of school -- friends from common CCAs, classes, different years, TAs.
 
 
 ### User stories
@@ -285,14 +284,29 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | As a …                                    | I want to …                 | So that I can…                                                        |
 |----------|--------------------------------------------|------------------------------|------------------------------------------------------------------------|
-| `* * *`  | new user                                   | see usage instructions       | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person             |                                                                        |
-| `* * *`  | user                                       | delete a person              | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name        | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name         | locate a person easily                                                 |
-
-*{More to be added}*
+| `* * *` | Regular user | Create a contact | I can remember my friend's contact information |
+| `* * *` | Regular user | Delete a contact | I can remove unused contacts |
+| `* * *` | Regular user | Tag a contact | I can quickly figure out how this person is associated with me. |
+| `* * *` | Regular user | See all details of my contact | I can differentiate between friends with the same name |
+| `* *` | Beginner user | View a user guide/tutorial | I can get started using coNnectUS quickly |
+| `* *` | Beginner user | See friendly error messages | I can understand what I did wrong and correct them. |
+| `* *` | Forgetful user | Search for my contacts using any of their contexts | I can find my friend without remembering their name |
+| `* *` | Regular User | Update certain fields in contacts | I can reflect changes in contact information or correct mistakes |
+| `* *` | Regular user | Group my contacts | I can find easily find friends with the same context |
+| `* *` | Regular user | Have added contacts automatically be saved | I don't have to worry about contacts not being saved |
+| `*` | Beginner user | Have sample contact information | I can explore features without having to add contacts |
+| `*` | Forgetful user | Have a guided command process | I need not remember all the syntax for the commands |
+| `*` | Lazy user | Search for my contacts with just parts of their name | I can lazily search for my friend's contact information |
+| `*` | Regular user | Toggle between dark/light mode | I can choose the UI style I like best |
+| `*` | Regular user | Export only selected contacts | I can share mutual contacts with others. |
+| `*` | Regular user | Import a contact | I don't have to enter all their details manually. |
+| `*` | Regular User | Contextualize my contacts (free text field) | I can recall where/how I met my friends |
+| `*` | Regular User | Sort my contacts | I can find my contacts more easily |
+| `*` | Regular User | Have favourite / most-frequented contacts | I can easily navigate to frequently-contacted contacts |
+| `*` | Regular User | Store and be reminded of regular meeting times with contacts | I don't forget to show up for them |
+| `*` | Expert user | Set aliases for the commands | I can customise the command syntax to my liking |
+| `*` | Expert user | Delete all contacts with a certain tag | I can remove multiple contacts that are not needed easily. |
+| `*` | Expert user | Change the storage location for data files | I can store it at a location I can easily access |
 
 ### Use cases
 
@@ -305,14 +319,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS:**
 1. User issues list command.
 2. coNnectUS displays the list of saved contacts.
-Use case ends.
+
+    Use case ends.
 
 **Extensions:**
 
 * 1a. coNnectUS detects that the contact list is empty. 
   * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
-
-  Use case ends.
+    
+    Use case ends.
 
 #### Use Case: UC02 - Add Contacts
 
@@ -337,7 +352,57 @@ Use case ends.
 
       Use case ends.
 
+#### Use Case: UC03 - Delete Contacts
 
+**Actor: User**
+
+**MSS:**
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+2. User specifies delete command with a list index corresponding to a contact.
+3. coNnectUS deletes the contact.
+4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
+
+    Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
+    * 1a1. coNnectUS displays an error message with the expected usage instructions
+
+        Use case resumes from Step 1.
+
+* 1b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
+    * 1b1. coNnectUS displays an error message warning the user of the invalid index. 
+  
+        Use case resumes from Step 1.
+
+* 1c. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
+    * 1c1. coNnectUS displays an error message informing the user about the empty contact list. 
+  
+        Use case ends.
+
+#### Use Case: UC04 - Find Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User searches for a contact using its name.
+2. coNnectUS returns a list containing the contacts matching the keyword provided. 
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects that no contacts match the keyword.
+    * 1a1. coNnectUS displays an error message informing the user that no matching contacts were found.
+    
+      Use case ends.
+
+* 1b. coNnectUS detects that no keyword was provided. 
+    * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
+
+      Use case resumes at step 1.
+    
 #### Use Case UC05 - Edit Contacts
 
 **Actor: User**
@@ -396,16 +461,30 @@ Use case ends.
 
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+1. Should work without an internet connection.
+2. Should store data locally in a human-editable text file.
+3. Able to operate with 1000 contacts saved without sluggish performance.
+4. Should work on any mainstream OS with Java 25 installed.
+5. A user who is capable of an average typing speed of 45 WPM should be able to accomplish goals faster than using a mouse and keyboard.
+6. Besides Java 25, users should not require additional installations.
+7. Error messages should be descriptive such that a well-intentioned user does not make the same mistake more than twice in a row.
+8. GUI should be functional and not cause interruptions to the user at most standard screen resolutions (e.g. 1920 x 1080).
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
+* **Command**: The string of words you enter in order to make use of a feature of the program.
+* **(Command-line) Parameters/Arguments/Fields**: The input that you add into commands.
+* **(Command) Switch**: An argument modifier added to a command to change how it behaves.
+* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
+* **List Index**: The item’s position in the contact list. This always begins at 1.
+* **Domain Name**: Refers to a human-readable string used to visit a website.
+* **Export**: Create a data file that contains a number of contacts specified by the user.
+* **Import**: Using information from an existing data file to create contacts previously specified.
+* **Context**: Where/how a user of coNnectUS met the corresponding contact.
+* **Tag**: A string label attached to a contact item, as a means to identify attributes related to the contact or group contacts with similar associations.
+
 
 --------------------------------------------------------------------------------------------------------------------
 
