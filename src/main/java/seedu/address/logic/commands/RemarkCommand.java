@@ -18,9 +18,9 @@ public class RemarkCommand extends Command {
             + "by the index number used in the last person listing. "
             + "Existing remark will be overwritten by the input.\n"
             + "Parameters: INDEX (must be a positive integer) "
-            + "r/ [REMARK]\n"
+            + "-r [REMARK]\n"
             + "Example: " + COMMAND_WORD + " 1 "
-            + "r/ Likes to swim.";
+            + "-r Likes to swim.";
 
     private final Index index;
     private final Remark remark;

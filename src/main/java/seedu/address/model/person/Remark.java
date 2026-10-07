@@ -10,7 +10,7 @@ public class Remark {
 
     public static final String MESSAGE_CONSTRAINTS =
             "Remarks should only contain alphanumeric characters, periods, colons and spaces and can be blank";
-    public static final String VALIDATION_REGEX = "(?:[\\p{Alnum}][\\p{Alnum} .:]*)?";
+    public static final String VALIDATION_REGEX = "(?:[\\p{Alnum}][\\p{Alnum} .:!]*)?";
 
     public final String value;
 
