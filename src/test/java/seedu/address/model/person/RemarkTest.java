@@ -1,6 +1,7 @@
 package seedu.address.model.person;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -27,5 +28,14 @@ public class RemarkTest {
 
         assertFalse(remark.equals(null));
         assertFalse(remark.equals(new Remark("Another Remark")));
+    }
+
+    @Test
+    public void hashCode_equalRemarks_sameHashCode() {
+        Remark first = new Remark("Some remark");
+        Remark second = new Remark("Some remark");
+
+        assertEquals(first, second);
+        assertEquals(first.hashCode(), second.hashCode());
     }
 }
