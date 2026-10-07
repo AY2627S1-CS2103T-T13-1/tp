@@ -38,11 +38,16 @@ public class EditCommand extends Command {
     public static final String COMMAND_DESCRIPTION = "Updates the fields specified for the contact "
             + "at the specified list index. Existing values will be overwritten by the new input values.";
 
-    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX [-n NAME] [-p PHONE_NUMBER]"
-            + " [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]";
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
+            + "[" + PREFIX_NAME + " NAME] "
+            + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
+            + "[" + PREFIX_EMAIL + " EMAIL] "
+            + "[" + PREFIX_ADDRESS + " ADDRESS] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]";
 
-    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 4 -p 92008100 "
-            + "-t CS1001 Groupmate";
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 4 "
+            + PREFIX_PHONE + " 92008100 "
+            + PREFIX_TAG + " CS1001 Groupmate";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"

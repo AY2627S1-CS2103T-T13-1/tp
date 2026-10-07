@@ -1,6 +1,11 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
@@ -19,10 +24,16 @@ public class FindCommand extends Command {
             + " criteria (i.e. name, tag, phone number, email address and/or address) and displays"
             + " them as a list with index numbers.";
 
-    public static final String COMMAND_SYNTAX = COMMAND_WORD + " [-n NAME] [-t TAG_CATEGORY TAG_NAME]"
-            + " [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS]";
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
+            + "[" + PREFIX_NAME + " NAME] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME] "
+            + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
+            + "[" + PREFIX_EMAIL + " EMAIL] "
+            + "[" + PREFIX_ADDRESS + " ADDRESS]";
 
-    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " -n Johnny -t coder";
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " "
+            + PREFIX_NAME + " Johnny "
+            + PREFIX_TAG + " coder";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"
