@@ -9,16 +9,16 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Finds and lists all persons whose names contain the supplied search phrase.
+ * Finds and lists all persons matching every supplied search criterion.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds contacts using name.\n"
-            + "Parameters: -n NAME\n"
-            + "Example: " + COMMAND_WORD + " -n Johnny Doe";
+            + ": Finds contacts using one or more search criteria.\n"
+            + "Parameters: [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS]\n"
+            + "Example: " + COMMAND_WORD + " -n Johnny Doe -a Clementi";
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
     public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found";

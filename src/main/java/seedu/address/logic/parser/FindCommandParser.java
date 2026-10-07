@@ -1,6 +1,9 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -15,7 +18,7 @@ import seedu.address.model.person.PersonMatchesCriteriaPredicate;
 public class FindCommandParser implements Parser<FindCommand> {
 
     private static final Prefix[] FIND_PREFIXES = {
-        PREFIX_NAME
+        PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS
     };
 
     /**
@@ -27,12 +30,24 @@ public class FindCommandParser implements Parser<FindCommand> {
         try {
             ArgumentMultimap arguments = extractArguments(args);
             Optional<String> name = arguments.getValue(PREFIX_NAME);
+            Optional<String> phone = arguments.getValue(PREFIX_PHONE);
+            Optional<String> email = arguments.getValue(PREFIX_EMAIL);
+            Optional<String> address = arguments.getValue(PREFIX_ADDRESS);
 
             if (name.isPresent()) {
                 ParserUtil.parseName(name.get());
             }
+            if (phone.isPresent()) {
+                ParserUtil.parsePhone(phone.get());
+            }
+            if (email.isPresent()) {
+                ParserUtil.parseEmail(email.get());
+            }
+            if (address.isPresent()) {
+                ParserUtil.parseAddress(address.get());
+            }
 
-            return new FindCommand(new PersonMatchesCriteriaPredicate(name));
+            return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address));
         } catch (ParseException e) {
             throw new ParseException(e.getMessage() + "\n" + FindCommand.MESSAGE_USAGE, e);
         }
