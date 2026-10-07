@@ -17,8 +17,8 @@ public class FindCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Finds contacts using one or more search criteria.\n"
-            + "Parameters: [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS]\n"
-            + "Example: " + COMMAND_WORD + " -n Johnny Doe -a Clementi";
+            + "Parameters: [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG_NAME]\n"
+            + "Example: " + COMMAND_WORD + " -n Johnny Doe -t others coder";
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
     public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found";

@@ -4,6 +4,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a new FindCommand object
@@ -18,7 +20,7 @@ import seedu.address.model.person.PersonMatchesCriteriaPredicate;
 public class FindCommandParser implements Parser<FindCommand> {
 
     private static final Prefix[] FIND_PREFIXES = {
-        PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS
+        PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG
     };
 
     /**
@@ -33,6 +35,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             Optional<String> phone = arguments.getValue(PREFIX_PHONE);
             Optional<String> email = arguments.getValue(PREFIX_EMAIL);
             Optional<String> address = arguments.getValue(PREFIX_ADDRESS);
+            Optional<Tag> tag = Optional.empty();
 
             if (name.isPresent()) {
                 ParserUtil.parseName(name.get());
@@ -46,8 +49,11 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (address.isPresent()) {
                 ParserUtil.parseAddress(address.get());
             }
+            if (arguments.getValue(PREFIX_TAG).isPresent()) {
+                tag = Optional.of(ParserUtil.parseTag(arguments.getValue(PREFIX_TAG).get()));
+            }
 
-            return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address));
+            return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address, tag));
         } catch (ParseException e) {
             throw new ParseException(e.getMessage() + "\n" + FindCommand.MESSAGE_USAGE, e);
         }
