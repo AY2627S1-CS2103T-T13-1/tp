@@ -20,6 +20,7 @@ public class Messages {
                 "Multiple values specified for the following single-valued field(s): ";
     public static final String MESSAGE_UNKNOWN_TAG_CATEGORY = "The provided tag category is invalid!";
     public static final String MESSAGE_MISSING_TAG_FIELD = "A tag category and tag name is required!";
+    public static final String MESSAGE_EMPTY_LIST = "Your current contact list is empty! Time to populate them with your friend's details!";
 
     /**
      * Returns an error message indicating the duplicate prefixes.
