@@ -35,13 +35,13 @@ public class MainWindow extends UiPart<Stage> {
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
     private ResultDisplay resultDisplay;
-    private HelpWindow helpWindow;
+    private UserGuideAccessWindow userGuideAccessWindow;
 
     @FXML
     private StackPane commandBoxPlaceholder;
 
     @FXML
-    private MenuItem helpMenuItem;
+    private MenuItem userGuideMenuItem;
 
     @FXML
     private StackPane personListPanelPlaceholder;
@@ -69,7 +69,7 @@ public class MainWindow extends UiPart<Stage> {
 
         setAccelerators();
 
-        helpWindow = new HelpWindow();
+        userGuideAccessWindow = new UserGuideAccessWindow();
     }
 
     public Stage getPrimaryStage() {
@@ -77,7 +77,7 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void setAccelerators() {
-        setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
+        setAccelerator(userGuideMenuItem, KeyCombination.valueOf("F1"));
     }
 
     /**
@@ -99,7 +99,7 @@ public class MainWindow extends UiPart<Stage> {
          * the TextInputControl(s).
          *
          * For now, we add the following event filter to capture such key events and open
-         * the help window purposely so as to support accelerators even when focus is
+         * the user guide access window purposely so as to support accelerators even when focus is
          * in CommandBox or ResultDisplay.
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
@@ -140,14 +140,14 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Opens the help window or focuses on it if it's already opened.
+     * Opens the user guide access window or focuses on it if it's already opened.
      */
     @FXML
-    public void handleHelp() {
-        if (!helpWindow.isShowing()) {
-            helpWindow.show();
+    public void handleUserGuide() {
+        if (!userGuideAccessWindow.isShowing()) {
+            userGuideAccessWindow.show();
         } else {
-            helpWindow.focus();
+            userGuideAccessWindow.focus();
         }
     }
 
@@ -163,7 +163,7 @@ public class MainWindow extends UiPart<Stage> {
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
                 (int) primaryStage.getX(), (int) primaryStage.getY());
         logic.setGuiSettings(guiSettings);
-        helpWindow.hide();
+        userGuideAccessWindow.hide();
         primaryStage.hide();
     }
 
@@ -183,7 +183,7 @@ public class MainWindow extends UiPart<Stage> {
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
 
             if (commandResult.isShowHelp()) {
-                handleHelp();
+                handleUserGuide();
             }
 
             if (commandResult.isExit()) {
