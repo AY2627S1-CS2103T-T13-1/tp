@@ -35,6 +35,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             Optional<String> phone = arguments.getValue(PREFIX_PHONE);
             Optional<String> email = arguments.getValue(PREFIX_EMAIL);
             Optional<String> address = arguments.getValue(PREFIX_ADDRESS);
+            Optional<String> tagValue = arguments.getValue(PREFIX_TAG);
             Optional<Tag> tag = Optional.empty();
 
             if (name.isPresent()) {
@@ -49,8 +50,8 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (address.isPresent()) {
                 ParserUtil.parseAddress(address.get());
             }
-            if (arguments.getValue(PREFIX_TAG).isPresent()) {
-                tag = Optional.of(ParserUtil.parseTag(arguments.getValue(PREFIX_TAG).get()));
+            if (tagValue.isPresent()) {
+                tag = Optional.of(ParserUtil.parseTag(tagValue.get()));
             }
 
             return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address, tag));
