@@ -10,6 +10,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
@@ -33,11 +34,16 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " Johnny "
-            + PREFIX_TAG + " coder";
+            + PREFIX_TAG + " others coder";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
+            + "Parameters: "
+            + "[" + PREFIX_NAME + " NAME] "
+            + "[" + PREFIX_PHONE + " PHONE] "
+            + "[" + PREFIX_EMAIL + " EMAIL] "
+            + "[" + PREFIX_ADDRESS + " ADDRESS] "
+            + "[" + PREFIX_TAG + " CATEGORY TAG]...\n"
             + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
