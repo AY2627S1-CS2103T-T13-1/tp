@@ -11,13 +11,14 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
-import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonMatchesCriteriaPredicate;
 import seedu.address.model.tag.OthersTag;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 
@@ -127,8 +128,8 @@ public class CommandTestUtil {
         assertTrue(targetIndex.getZeroBased() < model.getFilteredPersonList().size());
 
         Person person = model.getFilteredPersonList().get(targetIndex.getZeroBased());
-        final String[] splitName = person.getName().fullName.split("\\s+");
-        model.updateFilteredPersonList(new NameContainsKeywordsPredicate(List.of(splitName[0])));
+        model.updateFilteredPersonList(new PersonMatchesCriteriaPredicate(Optional.of(person.getName().fullName),
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
 
         assertEquals(1, model.getFilteredPersonList().size());
     }
