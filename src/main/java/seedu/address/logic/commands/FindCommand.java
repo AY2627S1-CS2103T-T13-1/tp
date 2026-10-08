@@ -21,7 +21,7 @@ public class FindCommand extends Command {
             + "Example: " + COMMAND_WORD + " -n Johnny Doe -t others coder";
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
-    public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found";
+    public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found.";
 
     private final Predicate<Person> predicate;
 
