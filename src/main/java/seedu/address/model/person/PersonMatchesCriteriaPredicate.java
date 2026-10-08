@@ -23,11 +23,12 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
 
     /**
      * Creates a predicate from validated optional search values.
+     * The name criterion must have its whitespace normalized to single spaces.
      */
     public PersonMatchesCriteriaPredicate(Optional<String> name, Optional<String> phone, Optional<String> email,
             Optional<String> address, Optional<Tag> tag) {
         requireAllNonNull(name, phone, email, address, tag);
-        this.name = name.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));
+        this.name = name.map(value -> value.toLowerCase(Locale.ROOT));
         this.phone = phone;
         this.email = email.map(value -> value.toLowerCase(Locale.ROOT));
         this.address = address.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));

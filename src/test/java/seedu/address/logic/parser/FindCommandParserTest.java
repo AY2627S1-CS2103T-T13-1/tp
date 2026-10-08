@@ -95,6 +95,17 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_nameWithInternalTab_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.of("Wolf Alice"),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty());
+        assertParseSuccess(parser, " -n Wolf\tAlice", new FindCommand(predicate));
+    }
+
+    @Test
     public void parse_multipleCriteriaWithWhitespace_returnsFindCommand() {
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
                 Optional.of("Wolf Alice"),

@@ -31,7 +31,8 @@ public class FindCommandParser implements Parser<FindCommand> {
     public FindCommand parse(String args) throws ParseException {
         try {
             ArgumentMultimap arguments = extractArguments(args);
-            Optional<String> name = arguments.getValue(PREFIX_NAME);
+            Optional<String> name = arguments.getValue(PREFIX_NAME)
+                    .map(value -> value.trim().replaceAll("\\s+", " "));
             Optional<String> phone = arguments.getValue(PREFIX_PHONE);
             Optional<String> email = arguments.getValue(PREFIX_EMAIL);
             Optional<String> address = arguments.getValue(PREFIX_ADDRESS);
