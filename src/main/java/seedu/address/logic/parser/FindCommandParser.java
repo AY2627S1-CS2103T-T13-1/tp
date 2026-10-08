@@ -97,9 +97,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (arguments.getAllValues(prefix).size() > 1) {
                 throw new ParseException("The " + prefix + " parameter may only be specified once.");
             }
-        }
 
-        for (Prefix prefix : FIND_PREFIXES) {
             if (arguments.getValue(prefix).filter(String::isEmpty).isPresent()) {
                 throw new ParseException("The value for '" + prefix + "' cannot be empty.");
             }
