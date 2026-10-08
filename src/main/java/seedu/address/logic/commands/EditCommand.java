@@ -35,7 +35,7 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String COMMAND_DESCRIPTION = "Updates the fields specified for the contact "
+    public static final String COMMAND_DESCRIPTION = "Updates the specified fields for the contact "
             + "at the specified list index. Existing values will be overwritten by the new input values.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
@@ -47,7 +47,7 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 4 "
             + PREFIX_PHONE + " 92008100 "
-            + PREFIX_TAG + " CS1001 Groupmate";
+            + PREFIX_TAG + " Others CS1001 Groupmate";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"
