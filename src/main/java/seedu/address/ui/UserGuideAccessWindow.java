@@ -1,5 +1,7 @@
 package seedu.address.ui;
 
+import static seedu.address.commons.core.AppConstants.USERGUIDE_URL;
+
 import java.util.logging.Logger;
 
 import javafx.fxml.FXML;
@@ -11,41 +13,40 @@ import javafx.stage.Stage;
 import seedu.address.commons.core.LogsCenter;
 
 /**
- * Controller for a help page
+ * Controller for a User Guide Access page
  */
-public class HelpWindow extends UiPart<Stage> {
+public class UserGuideAccessWindow extends UiPart<Stage> {
 
-    public static final String USERGUIDE_URL = "https://se-education.org/addressbook-level3/UserGuide.html";
-    public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
+    public static final String USERGUIDE_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
 
-    private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
-    private static final String FXML = "HelpWindow.fxml";
+    private static final Logger logger = LogsCenter.getLogger(UserGuideAccessWindow.class);
+    private static final String FXML = "UserGuideAccessWindow.fxml";
 
     @FXML
     private Button copyButton;
 
     @FXML
-    private Label helpMessage;
+    private Label userGuideMessage;
 
     /**
-     * Creates a new HelpWindow.
+     * Creates a new UserGuideAccessWindow.
      *
-     * @param root Stage to use as the root of the HelpWindow.
+     * @param root Stage to use as the root of the UserGuideAccessWindow.
      */
-    public HelpWindow(Stage root) {
+    public UserGuideAccessWindow(Stage root) {
         super(FXML, root);
-        helpMessage.setText(HELP_MESSAGE);
+        userGuideMessage.setText(USERGUIDE_MESSAGE);
     }
 
     /**
-     * Creates a new HelpWindow.
+     * Creates a new UserGuideAccessWindow.
      */
-    public HelpWindow() {
+    public UserGuideAccessWindow() {
         this(new Stage());
     }
 
     /**
-     * Shows the help window.
+     * Shows the access window.
      * @throws IllegalStateException
      *     <ul>
      *         <li>
@@ -63,27 +64,27 @@ public class HelpWindow extends UiPart<Stage> {
      *     </ul>
      */
     public void show() {
-        logger.fine("Showing help page about the application.");
+        logger.fine("Showing the user guide link for the application.");
         getRoot().show();
         getRoot().centerOnScreen();
     }
 
     /**
-     * Returns true if the help window is currently being shown.
+     * Returns true if the access window is currently being shown.
      */
     public boolean isShowing() {
         return getRoot().isShowing();
     }
 
     /**
-     * Hides the help window.
+     * Hides the access window.
      */
     public void hide() {
         getRoot().hide();
     }
 
     /**
-     * Focuses on the help window.
+     * Focuses on the access window.
      */
     public void focus() {
         getRoot().requestFocus();
