@@ -21,7 +21,7 @@ public class ListCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        if(model.getFilteredPersonList().isEmpty()){
+        if (model.getFilteredPersonList().isEmpty()) {
             throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
         }
 
