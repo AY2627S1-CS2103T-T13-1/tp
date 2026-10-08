@@ -35,18 +35,29 @@ public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
-            + "by the index number used in the displayed person list. "
-            + "Existing values will be overwritten by the input values.\n"
+    public static final String COMMAND_DESCRIPTION = "Updates the specified fields for the contact "
+            + "at the specified list index. Existing values will be overwritten by the new input values.";
+
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
+            + "[" + PREFIX_NAME + " NAME] "
+            + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
+            + "[" + PREFIX_EMAIL + " EMAIL] "
+            + "[" + PREFIX_ADDRESS + " ADDRESS] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]";
+
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 4 "
+            + PREFIX_PHONE + " 92008100 "
+            + PREFIX_TAG + " Others CS1001 Groupmate";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
+            + COMMAND_DESCRIPTION + "\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + " NAME] "
             + "[" + PREFIX_PHONE + " PHONE] "
             + "[" + PREFIX_EMAIL + " EMAIL] "
             + "[" + PREFIX_ADDRESS + " ADDRESS] "
             + "[" + PREFIX_TAG + " CATEGORY TAG]...\n"
-            + "Example: " + COMMAND_WORD + " 1 "
-            + PREFIX_PHONE + " 91234567 "
-            + PREFIX_EMAIL + " johndoe@example.com";
+            + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
