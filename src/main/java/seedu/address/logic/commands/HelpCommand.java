@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import seedu.address.model.Model;
+import seedu.address.ui.HelpWindow;
 
 /**
  * Formats full help instructions for every command for display.
@@ -32,7 +33,9 @@ public class HelpCommand extends Command {
             formatHelpEntry(
                     EditCommand.COMMAND_SYNTAX,
                     EditCommand.COMMAND_DESCRIPTION,
-                    EditCommand.COMMAND_SAMPLE_USAGE));
+                    EditCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
+                    "User Guide Link: " + HelpWindow.USERGUIDE_URL));
 
     @Override
     public CommandResult execute(Model model) {
