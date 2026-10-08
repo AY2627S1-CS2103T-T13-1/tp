@@ -27,33 +27,33 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
     public PersonMatchesCriteriaPredicate(Optional<String> name, Optional<String> phone, Optional<String> email,
             Optional<String> address, Optional<Tag> tag) {
         requireAllNonNull(name, phone, email, address, tag);
-        this.name = name.map(value -> normalizeName(value).toLowerCase(Locale.ROOT));
+        this.name = name.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));
         this.phone = phone;
         this.email = email.map(value -> value.toLowerCase(Locale.ROOT));
-        this.address = address.map(value -> value.toLowerCase(Locale.ROOT));
+        this.address = address.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));
         this.tag = tag;
     }
 
     @Override
     public boolean test(Person person) {
-        return matches(normalizeName(person.getName().fullName), name)
-                && matches(person.getPhone().value, phone)
-                && matches(person.getEmail().value, email)
-                && matches(person.getAddress().value, address)
+        return matchesCriterion(normalizeCriteria(person.getName().fullName), name)
+                && matchesCriterion(person.getPhone().value, phone)
+                && matchesCriterion(person.getEmail().value, email)
+                && matchesCriterion(normalizeCriteria(person.getAddress().value), address)
                 && tag.map(criterion -> person.getTags().stream().anyMatch(personTag ->
-                        personTag.getTagType().equals(criterion.getTagType())
-                                && containsIgnoreCase(personTag.tagName, criterion.tagName))).orElse(true);
+                personTag.getTagType().equals(criterion.getTagType())
+                                && containsCaseInsensitive(personTag.tagName, criterion.tagName))).orElse(true);
     }
 
-    private static boolean matches(String value, Optional<String> criterion) {
-        return criterion.map(search -> containsIgnoreCase(value, search)).orElse(true);
+    private static boolean matchesCriterion(String value, Optional<String> criterion) {
+        return criterion.map(search -> containsCaseInsensitive(value, search)).orElse(true);
     }
 
-    private static boolean containsIgnoreCase(String value, String search) {
+    private static boolean containsCaseInsensitive(String value, String search) {
         return value.toLowerCase(Locale.ROOT).contains(search.toLowerCase(Locale.ROOT));
     }
 
-    private static String normalizeName(String value) {
+    private static String normalizeCriteria(String value) {
         return value.trim().replaceAll("\\s+", " ");
     }
 
