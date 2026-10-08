@@ -1,6 +1,11 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.function.Predicate;
 
@@ -15,10 +20,25 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds contacts using one or more search criteria.\n"
-            + "Parameters: [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG_NAME]\n"
-            + "Example: " + COMMAND_WORD + " -n Johnny Doe -t others coder";
+    public static final String COMMAND_DESCRIPTION = "Finds contacts that match the supplied search"
+            + " criteria (i.e. name, tag, phone number, email address and/or address) and displays"
+            + " them as a list with index numbers.";
+
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
+            + "[" + PREFIX_NAME + " NAME] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME] "
+            + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
+            + "[" + PREFIX_EMAIL + " EMAIL] "
+            + "[" + PREFIX_ADDRESS + " ADDRESS]";
+
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " "
+            + PREFIX_NAME + " Johnny "
+            + PREFIX_TAG + " coder";
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
+            + COMMAND_DESCRIPTION + "\n"
+            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
+            + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";
     public static final String MESSAGE_CONTACTS_FOUND = "%1$d contact(s) found.";
