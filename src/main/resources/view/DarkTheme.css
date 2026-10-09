@@ -350,3 +350,16 @@
     -fx-background-radius: 2;
     -fx-font-size: 11;
 }
+
+/* Category colours. */
+#tags .label.tag-module {
+    -fx-background-color: #782828;
+}
+
+#tags .label.tag-faculty {
+    -fx-background-color: #56478d;
+}
+
+#tags .label.tag-others {
+    -fx-background-color: #356644;
+}
