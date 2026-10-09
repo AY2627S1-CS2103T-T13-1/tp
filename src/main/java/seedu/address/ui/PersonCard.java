@@ -53,10 +53,10 @@ public class PersonCard extends UiPart<Region> {
         address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);
         person.getTags().stream()
-                .sorted(Comparator.comparing(tag -> tag.getTagType()))
+                .sorted(Comparator.comparing(tag -> tag.getTagCategory()))
                 .forEach(tag -> {
                     Label tagLabel = new Label(tag.tagName);
-                    tagLabel.getStyleClass().add("tag-" + tag.getTagType());
+                    tagLabel.getStyleClass().add("tag-" + tag.getTagCategory());
                     tags.getChildren().add(tagLabel);
                 }
                 );
