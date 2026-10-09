@@ -13,15 +13,15 @@ import seedu.address.model.tag.TagFactory;
 class JsonAdaptedTag {
 
     private final String tagName;
-    private final String tagType;
+    private final String tagCategory;
 
     /**
      * Constructs a {@code JsonAdaptedTag} with the given {@code tagName}.
      */
     @JsonCreator
-    public JsonAdaptedTag(@JsonProperty("tagName") String tagName, @JsonProperty("tagType") String tagType) {
+    public JsonAdaptedTag(@JsonProperty("tagName") String tagName, @JsonProperty("tagType") String tagCategory) {
         this.tagName = tagName;
-        this.tagType = tagType;
+        this.tagCategory = tagCategory;
     }
 
     /**
@@ -29,15 +29,15 @@ class JsonAdaptedTag {
      */
     public JsonAdaptedTag(Tag source) {
         tagName = source.tagName;
-        tagType = source.getTagType();
+        tagCategory = source.getTagCategory();
     }
 
     public String getTagName() {
         return tagName;
     }
 
-    public String getTagType() {
-        return tagType;
+    public String getTagCategory() {
+        return tagCategory;
     }
 
     /**
@@ -49,7 +49,7 @@ class JsonAdaptedTag {
         if (!Tag.isValidTagName(tagName)) {
             throw new IllegalValueException(Tag.MESSAGE_CONSTRAINTS);
         }
-        return TagFactory.create(tagType, tagName);
+        return TagFactory.create(tagCategory, tagName);
     }
 
 }

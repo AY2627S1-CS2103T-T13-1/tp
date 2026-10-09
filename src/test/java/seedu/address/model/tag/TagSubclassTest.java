@@ -23,9 +23,9 @@ public class TagSubclassTest {
 
     @Test
     public void getTagTypeMethod() {
-        assertEquals(new ModuleTag("CS2103").getTagType(), "module");
-        assertEquals(new FacultyTag("FOS").getTagType(), "faculty");
-        assertEquals(new OthersTag("friend").getTagType(), "others");
+        assertEquals(new ModuleTag("CS2103").getTagCategory(), "module");
+        assertEquals(new FacultyTag("FOS").getTagCategory(), "faculty");
+        assertEquals(new OthersTag("friend").getTagCategory(), "others");
 
     }
 
