@@ -37,6 +37,11 @@ public class CommandTestUtil {
     public static final String VALID_ADDRESS_BOB = "Block 123, Bobby Street 3";
     public static final String VALID_TAG_OTHERS_HUSBAND = "husband";
     public static final String VALID_TAG_OTHERS_FRIEND = "friend";
+    public static final String VALID_TAG_FACULTY_SOC = "SOC";
+    public static final String VALID_TAG_FACULTY_FASS = "FASS";
+    public static final String VALID_TAG_MODULE_CS2103 = "CS2103";
+    public static final String VALID_TAG_MODULE_CS2101 = "CS2101";
+
 
     public static final String TAG_CATEGORY_OTHERS = "others";
     public static final String TAG_CATEGORY_FACULTY = "faculty";
@@ -55,6 +60,14 @@ public class CommandTestUtil {
             + " " + TAG_CATEGORY_OTHERS + " " + VALID_TAG_OTHERS_FRIEND;
     public static final String TAG_DESC_HUSBAND = " " + PREFIX_TAG
             + " " + TAG_CATEGORY_OTHERS + " " + VALID_TAG_OTHERS_HUSBAND;
+    public static final String TAG_DESC_SOC = " " + PREFIX_TAG
+            + " " + TAG_CATEGORY_FACULTY + " " + VALID_TAG_FACULTY_SOC;
+    public static final String TAG_DESC_FASS = " " + PREFIX_TAG
+            + " " + TAG_CATEGORY_FACULTY + " " + VALID_TAG_FACULTY_FASS;
+    public static final String TAG_DESC_CS2103 = " " + PREFIX_TAG
+            + " " + TAG_CATEGORY_MODULE + " " + VALID_TAG_MODULE_CS2103;
+    public static final String TAG_DESC_CS2101 = " " + PREFIX_TAG
+            + " " + TAG_CATEGORY_MODULE + " " + VALID_TAG_MODULE_CS2101;
 
     public static final String INVALID_NAME_DESC = " " + PREFIX_NAME + " James&"; // '&' not allowed in names
     public static final String INVALID_PHONE_DESC = " " + PREFIX_PHONE + " 911a"; // 'a' not allowed in phones
