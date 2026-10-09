@@ -96,11 +96,11 @@ public class EditCommandParserTest {
         // while parsing {@code PREFIX_TAG} alone will reset the tags of the {@code Person} being edited,
         // parsing it together with a valid tag results in error
         assertParseFailure(parser, "1" + TAG_DESC_FRIEND + TAG_DESC_HUSBAND
-                + TAG_EMPTY, Messages.MESSAGE_MISSING_TAG_FIELD);
+                + TAG_EMPTY, Tag.MESSAGE_MISSING_TAG_FIELD);
         assertParseFailure(parser, "1" + TAG_DESC_FRIEND + TAG_EMPTY
-                + TAG_DESC_HUSBAND, Messages.MESSAGE_MISSING_TAG_FIELD);
+                + TAG_DESC_HUSBAND, Tag.MESSAGE_MISSING_TAG_FIELD);
         assertParseFailure(parser, "1" + TAG_EMPTY + TAG_DESC_FRIEND
-                + TAG_DESC_HUSBAND, Messages.MESSAGE_MISSING_TAG_FIELD);
+                + TAG_DESC_HUSBAND, Tag.MESSAGE_MISSING_TAG_FIELD);
 
         // multiple invalid values, but only the first invalid value is captured
         assertParseFailure(parser, "1" + INVALID_NAME_DESC + INVALID_EMAIL_DESC

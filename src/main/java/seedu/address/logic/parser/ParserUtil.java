@@ -9,7 +9,6 @@ import java.util.Set;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.StringUtil;
-import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
@@ -108,7 +107,7 @@ public class ParserUtil {
         requireNonNull(tag);
         String[] tagParts = tag.trim().split("\\s+", 2);
         if (tagParts.length < 2) {
-            throw new ParseException(Messages.MESSAGE_MISSING_TAG_FIELD);
+            throw new ParseException(Tag.MESSAGE_MISSING_TAG_FIELD);
         }
         String tagCategory = tagParts[0].toLowerCase(Locale.ROOT);
         String tagName = tagParts[1].trim().replaceAll("\\s+", " ");
