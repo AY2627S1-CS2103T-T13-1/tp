@@ -42,7 +42,7 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
                 && matchesCriterion(person.getEmail().value, email)
                 && matchesCriterion(normalizeCriteria(person.getAddress().value), address)
                 && tag.map(criterion -> person.getTags().stream().anyMatch(personTag ->
-                personTag.getTagType().equals(criterion.getTagType())
+                personTag.getTagCategory().equals(criterion.getTagCategory())
                                 && containsCaseInsensitive(personTag.tagName, criterion.tagName))).orElse(true);
     }
 

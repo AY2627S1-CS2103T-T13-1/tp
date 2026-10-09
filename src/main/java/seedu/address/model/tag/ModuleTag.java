@@ -18,7 +18,7 @@ public class ModuleTag extends Tag {
      * {@inheritDoc}
      */
     @Override
-    public String getTagType() {
+    public String getTagCategory() {
         return "module";
     }
 

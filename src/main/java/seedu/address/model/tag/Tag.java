@@ -40,7 +40,7 @@ public abstract class Tag {
     /**
      * Returns a string describing a tag's type
      */
-    public abstract String getTagType();
+    public abstract String getTagCategory();
 
     /**
      * Returns true if a given string is a valid tag name.
