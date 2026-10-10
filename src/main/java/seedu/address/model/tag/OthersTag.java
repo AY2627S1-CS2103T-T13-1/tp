@@ -18,7 +18,7 @@ public class OthersTag extends Tag {
      * {@inheritDoc}
      */
     @Override
-    public String getTagType() {
+    public String getTagCategory() {
         return "others";
     }
 

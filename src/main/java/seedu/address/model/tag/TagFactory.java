@@ -1,6 +1,5 @@
 package seedu.address.model.tag;
 
-import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -23,7 +22,7 @@ public class TagFactory {
             case "module" -> new ModuleTag(tagName);
             case "faculty" -> new FacultyTag(tagName);
             case "others" -> new OthersTag(tagName);
-            default -> throw new ParseException(Messages.MESSAGE_UNKNOWN_TAG_CATEGORY);
+            default -> throw new ParseException(Tag.MESSAGE_UNKNOWN_TAG_CATEGORY);
         };
     }
 }

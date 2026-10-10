@@ -18,7 +18,7 @@ public class FacultyTag extends Tag {
      * {@inheritDoc}
      */
     @Override
-    public String getTagType() {
+    public String getTagCategory() {
         return "faculty";
     }
 
