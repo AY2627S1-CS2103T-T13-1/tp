@@ -74,6 +74,14 @@ public class PersonBuilder {
     }
 
     /**
+     * Sets the {@code Address} of the {@code Person} that we are building to be empty.
+     */
+    public PersonBuilder withoutAddress() {
+        this.address = Address.EMPTY;
+        return this;
+    }
+
+    /**
      * Sets the {@code Phone} of the {@code Person} that we are building.
      */
     public PersonBuilder withPhone(String phone) {
