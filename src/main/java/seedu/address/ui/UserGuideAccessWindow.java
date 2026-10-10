@@ -101,6 +101,8 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
      */
     @FXML
     private void handleUrl() {
+        // Solution below adapted from:
+        // https://stackoverflow.com/questions/5226212/how-to-open-url-in-default-webbrowser-using-java
         if (canOpenBrowser()) {
             try {
                 Desktop.getDesktop().browse(new URI(USERGUIDE_URL));
