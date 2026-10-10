@@ -26,7 +26,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press <kbd>Enter</kbd> to view the commands available.<br>
    Some example commands you can try:
 
    * `list` : Lists all contacts.
@@ -69,9 +69,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
-
-![help message](images/helpMessage.png)
+Displays the list of commands, their usages, descriptions, examples and the link for the User Guide.
 
 Format: `help`
 
@@ -187,7 +185,7 @@ _Details coming soon ..._
 ## Known issues
 
 1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+2. **If you minimize the User Guide Window** and then use the `User Guide` menu, or the keyboard shortcut `F1` again, the original User Guide Window may remain minimized, and no new User Guide Window will appear. The remedy is to manually restore the minimized User Guide Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
