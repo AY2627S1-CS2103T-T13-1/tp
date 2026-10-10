@@ -27,7 +27,7 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
     private static final String FXML = "UserGuideAccessWindow.fxml";
 
     @FXML
-    private Button copyButton;
+    private Button button;
 
     @FXML
     private Label userGuideMessage;
@@ -40,7 +40,7 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
     public UserGuideAccessWindow(Stage root) {
         super(FXML, root);
         userGuideMessage.setText(USERGUIDE_MESSAGE);
-        copyButton.setText(canOpenBrowser() ? "Open User Guide" : "Copy URL");
+        button.setText(canOpenBrowser() ? "Open User Guide" : "Copy URL");
     }
 
     /**
@@ -108,8 +108,8 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
                 Desktop.getDesktop().browse(new URI(USERGUIDE_URL));
             } catch (IOException | URISyntaxException e) {
                 logger.warning("Unable to open the user guide: " + e.getMessage());
-                copyButton.setText("Copy URL");
-                copyButton.setOnAction(event -> copyUrl());
+                button.setText("Copy URL");
+                button.setOnAction(event -> copyUrl());
                 userGuideMessage.setText("Unable to open the user guide in default browser. "
                         + "Please copy the URL instead.");
             }
