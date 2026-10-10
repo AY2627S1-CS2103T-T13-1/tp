@@ -108,6 +108,10 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
                 Desktop.getDesktop().browse(new URI(USERGUIDE_URL));
             } catch (IOException | URISyntaxException e) {
                 logger.warning("Unable to open the user guide: " + e.getMessage());
+                copyButton.setText("Copy URL");
+                copyButton.setOnAction(event -> copyUrl());
+                userGuideMessage.setText("Unable to open the user guide in default browser. "
+                        + "Please copy the URL instead.");
             }
         } else {
             copyUrl();
