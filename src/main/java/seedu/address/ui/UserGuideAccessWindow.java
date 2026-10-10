@@ -2,6 +2,10 @@ package seedu.address.ui;
 
 import static seedu.address.commons.core.AppConstants.USERGUIDE_URL;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 import javafx.fxml.FXML;
@@ -36,6 +40,7 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
     public UserGuideAccessWindow(Stage root) {
         super(FXML, root);
         userGuideMessage.setText(USERGUIDE_MESSAGE);
+        copyButton.setText(canOpenBrowser() ? "Open User Guide" : "Copy URL");
     }
 
     /**
@@ -91,13 +96,31 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
     }
 
     /**
-     * Copies the URL to the user guide to the clipboard.
+     * Opens the user guide in the default browser if browsing is supported.
+     * Otherwise, falls back to copying the user guide URL to the clipboard.
      */
     @FXML
+    private void handleUrl() {
+        if (canOpenBrowser()) {
+            try {
+                Desktop.getDesktop().browse(new URI(USERGUIDE_URL));
+            } catch (IOException | URISyntaxException e) {
+                logger.warning("Unable to open the user guide: " + e.getMessage());
+            }
+        } else {
+            copyUrl();
+        }
+    }
+
     private void copyUrl() {
         final Clipboard clipboard = Clipboard.getSystemClipboard();
         final ClipboardContent url = new ClipboardContent();
         url.putString(USERGUIDE_URL);
         clipboard.setContent(url);
+    }
+
+    private static boolean canOpenBrowser() {
+        return Desktop.isDesktopSupported()
+                && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE);
     }
 }
