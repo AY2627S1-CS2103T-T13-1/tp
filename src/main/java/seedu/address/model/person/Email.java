@@ -9,13 +9,17 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Email {
 
+    public static final int MAXIMUM_EMAIL_LENGTH = 254;
+    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered email address is too long,"
+            + " should be at most 254 characters";
     private static final String SPECIAL_CHARACTERS = "+_.-";
     public static final String MESSAGE_CONSTRAINTS = "Emails should be of the format local-part@domain "
             + "and adhere to the following constraints:\n"
-            + "1. The local-part should only contain alphanumeric characters and these special characters, excluding "
+            + "1. Should not be blank\n"
+            + "2. The local-part should only contain alphanumeric characters and these special characters, excluding "
             + "the parentheses, (" + SPECIAL_CHARACTERS + "). The local-part may not start or end with any special "
             + "characters.\n"
-            + "2. The local-part is followed by an '@' and then a domain name. The domain name is made up of domain "
+            + "3. The local-part is followed by an '@' and then a domain name. The domain name is made up of domain "
             + "labels separated by periods.\n"
             + "The domain name must:\n"
             + "    - end with a domain label at least 2 characters long\n"
@@ -31,6 +35,7 @@ public class Email {
     private static final String DOMAIN_REGEX = "(" + DOMAIN_PART_REGEX + "\\.)*" + DOMAIN_LAST_PART_REGEX;
     public static final String VALIDATION_REGEX = LOCAL_PART_REGEX + "@" + DOMAIN_REGEX;
 
+
     public final String value;
 
     /**
@@ -41,6 +46,7 @@ public class Email {
     public Email(String email) {
         requireNonNull(email);
         checkArgument(isValidEmail(email), MESSAGE_CONSTRAINTS);
+        checkArgument(isValidLength(email), MESSAGE_EXCEED_MAX_LENGTH);
         value = email;
     }
 
@@ -49,6 +55,10 @@ public class Email {
      */
     public static boolean isValidEmail(String test) {
         return test.matches(VALIDATION_REGEX);
+    }
+
+    public static boolean isValidLength(String test) {
+        return test.length() <= MAXIMUM_EMAIL_LENGTH;
     }
 
     @Override

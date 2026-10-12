@@ -35,6 +35,13 @@ public class AddressTest {
     }
 
     @Test
+    public void isValidLength() {
+        assertTrue(Address.isValidLength("Blk 111, Bor Road"));
+        assertFalse(Address.isValidLength("Blk 111, Bor Road Blk 111, Bor Road Blk 111,"
+                + "Bor Road Blk 111, Bor Road Blk 111, Bor Road Blk 111, Bor Road Blk 111, Bor Road"));
+    }
+
+    @Test
     public void equals() {
         Address address = new Address("Valid Address");
 
