@@ -342,11 +342,29 @@
     -fx-vgap: 3;
 }
 
-#tags .label {
+#tags .label, #tagLegend .label {
     -fx-text-fill: white;
     -fx-background-color: #3e7b91;
     -fx-padding: 1 3 1 3;
     -fx-border-radius: 2;
     -fx-background-radius: 2;
     -fx-font-size: 11;
+}
+
+/* Category colours. */
+#tags .label.tag-module, #tagLegend .label.tag-module {
+    -fx-background-color: #782828;
+}
+
+#tags .label.tag-faculty, #tagLegend .label.tag-faculty {
+    -fx-background-color: #56478d;
+}
+
+#tags .label.tag-others, #tagLegend .label.tag-others {
+    -fx-background-color: #356644;
+}
+
+#tagLegend .label.tag-legend-title {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
 }

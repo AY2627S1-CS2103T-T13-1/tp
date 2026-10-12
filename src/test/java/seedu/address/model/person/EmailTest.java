@@ -67,6 +67,14 @@ public class EmailTest {
     }
 
     @Test
+    public void isValidLength() {
+        assertTrue(Email.isValidLength("PeterJack@example.com"));
+        assertFalse(Email.isValidLength("peterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeter"
+            + "jackpeterjackpeterjackpeterjackpeterjackpeterpeterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeter"
+            + "jackpeterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeterjackpeterjack@example.com"));
+    }
+
+    @Test
     public void equals() {
         Email email = new Email("valid@email");
 

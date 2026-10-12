@@ -8,9 +8,11 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Guarantees: immutable; is valid as declared in {@link #isValidName(String)}
  */
 public class Name {
-
+    public static final int MAXIMUM_NAME_LENGTH = 70;
     public static final String MESSAGE_CONSTRAINTS =
             "Names should only contain alphanumeric characters and spaces, and should not be blank";
+
+    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered name is too long (Should be at most 70 characters)";
 
     /*
      * The first character of the name must not be a whitespace,
@@ -27,6 +29,7 @@ public class Name {
      */
     public Name(String name) {
         requireNonNull(name);
+        checkArgument(isValidLength(name), MESSAGE_EXCEED_MAX_LENGTH);
         checkArgument(isValidName(name), MESSAGE_CONSTRAINTS);
         fullName = name;
     }
@@ -38,6 +41,9 @@ public class Name {
         return test.matches(VALIDATION_REGEX);
     }
 
+    public static boolean isValidLength(String test) {
+        return test.length() <= MAXIMUM_NAME_LENGTH;
+    }
 
     @Override
     public String toString() {
