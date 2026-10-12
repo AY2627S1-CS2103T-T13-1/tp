@@ -12,6 +12,8 @@ public class Name {
     public static final String MESSAGE_CONSTRAINTS =
             "Names should only contain alphanumeric characters and spaces, and should not be blank";
 
+    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered name is too long (Should be at most 70 characters)";
+
     /*
      * The first character of the name must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
@@ -20,6 +22,8 @@ public class Name {
 
     public final String fullName;
 
+    public static final int MAXIMUM_NAME_LENGTH = 70;
+
     /**
      * Constructs a {@code Name}.
      *
@@ -27,6 +31,7 @@ public class Name {
      */
     public Name(String name) {
         requireNonNull(name);
+        checkArgument(isValidLength(name), MESSAGE_EXCEED_MAX_LENGTH);
         checkArgument(isValidName(name), MESSAGE_CONSTRAINTS);
         fullName = name;
     }
@@ -38,6 +43,7 @@ public class Name {
         return test.matches(VALIDATION_REGEX);
     }
 
+    public static boolean isValidLength(String test) { return test.length() <= MAXIMUM_NAME_LENGTH; }
 
     @Override
     public String toString() {
