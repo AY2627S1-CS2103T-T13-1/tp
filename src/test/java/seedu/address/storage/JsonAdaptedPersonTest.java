@@ -15,7 +15,9 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
@@ -93,10 +95,24 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
-    public void toModelType_nullAddress_throwsIllegalValueException() {
-        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, null, VALID_TAGS);
-        String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName());
-        assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
+    public void toModelType_nullAddress_returnsPersonWithEmptyAddress() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                null, VALID_TAGS);
+        assertEquals(new PersonBuilder(BENSON).withoutAddress().build(), person.toModelType());
+    }
+
+    @Test
+    public void toModelType_emptyAddress_returnsPersonWithEmptyAddress() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, "",
+                VALID_TAGS);
+        assertEquals(new PersonBuilder(BENSON).withoutAddress().build(), person.toModelType());
+    }
+
+    @Test
+    public void toModelType_personWithoutAddress_returnsSamePerson() throws Exception {
+        Person personWithoutAddress = new PersonBuilder(BENSON).withoutAddress().build();
+        JsonAdaptedPerson person = new JsonAdaptedPerson(personWithoutAddress);
+        assertEquals(personWithoutAddress, person.toModelType());
     }
 
     @Test
