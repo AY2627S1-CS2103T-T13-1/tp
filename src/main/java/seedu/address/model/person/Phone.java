@@ -40,7 +40,9 @@ public class Phone {
         return test.matches(VALIDATION_REGEX);
     }
 
-    public static boolean isValidLength(String test) { return test.length() >= MINIMUM_PHONE_LENGTH && test.length() <= MAXIMUM_PHONE_LENGTH;}
+    public static boolean isValidLength(String test) {
+        return test.length() >= MINIMUM_PHONE_LENGTH && test.length() <= MAXIMUM_PHONE_LENGTH;
+    }
 
     @Override
     public String toString() {

@@ -9,8 +9,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Email {
 
+    public static final int MAXIMUM_EMAIL_LENGTH = 254;
+    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered email address is too long,"
+            + " should be at most 254 characters";
     private static final String SPECIAL_CHARACTERS = "+_.-";
-    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered email address is too long, should be at most 254 characters";
     public static final String MESSAGE_CONSTRAINTS = "Emails should be of the format local-part@domain "
             + "and adhere to the following constraints:\n"
             + "1. Should not be blank\n"
@@ -33,7 +35,7 @@ public class Email {
     private static final String DOMAIN_REGEX = "(" + DOMAIN_PART_REGEX + "\\.)*" + DOMAIN_LAST_PART_REGEX;
     public static final String VALIDATION_REGEX = LOCAL_PART_REGEX + "@" + DOMAIN_REGEX;
 
-    public static final int MAXIMUM_EMAIL_LENGTH = 254;
+
     public final String value;
 
     /**
@@ -55,7 +57,9 @@ public class Email {
         return test.matches(VALIDATION_REGEX);
     }
 
-    public static boolean isValidLength(String test){ return test.length() <= MAXIMUM_EMAIL_LENGTH; }
+    public static boolean isValidLength(String test) {
+        return test.length() <= MAXIMUM_EMAIL_LENGTH;
+    }
 
     @Override
     public String toString() {

@@ -8,7 +8,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  * Guarantees: immutable; is valid as declared in {@link #isValidName(String)}
  */
 public class Name {
-
+    public static final int MAXIMUM_NAME_LENGTH = 70;
     public static final String MESSAGE_CONSTRAINTS =
             "Names should only contain alphanumeric characters and spaces, and should not be blank";
 
@@ -21,8 +21,6 @@ public class Name {
     public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} ]*";
 
     public final String fullName;
-
-    public static final int MAXIMUM_NAME_LENGTH = 70;
 
     /**
      * Constructs a {@code Name}.
@@ -43,7 +41,9 @@ public class Name {
         return test.matches(VALIDATION_REGEX);
     }
 
-    public static boolean isValidLength(String test) { return test.length() <= MAXIMUM_NAME_LENGTH; }
+    public static boolean isValidLength(String test) {
+        return test.length() <= MAXIMUM_NAME_LENGTH;
+    }
 
     @Override
     public String toString() {

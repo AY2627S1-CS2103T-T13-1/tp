@@ -49,7 +49,7 @@ public class ParserUtil {
         if (!Name.isValidName(trimmedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
-        if(!Name.isValidLength(trimmedName)){
+        if (!Name.isValidLength(trimmedName)) {
             throw new ParseException(Name.MESSAGE_EXCEED_MAX_LENGTH);
         }
         return new Name(trimmedName);
@@ -68,7 +68,7 @@ public class ParserUtil {
             throw new ParseException(Phone.MESSAGE_CONSTRAINTS);
         }
 
-        if(!Phone.isValidLength(trimmedPhone)) {
+        if (!Phone.isValidLength(trimmedPhone)) {
             throw new ParseException(Phone.MESSAGE_CONSTRAINTS);
         }
 
@@ -108,7 +108,7 @@ public class ParserUtil {
             throw new ParseException(Email.MESSAGE_CONSTRAINTS);
         }
 
-        if(!Email.isValidLength(trimmedEmail)) {
+        if (!Email.isValidLength(trimmedEmail)) {
             throw new ParseException(Email.MESSAGE_EXCEED_MAX_LENGTH);
         }
 
