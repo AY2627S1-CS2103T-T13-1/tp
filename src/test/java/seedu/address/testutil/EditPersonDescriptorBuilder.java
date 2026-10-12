@@ -72,6 +72,15 @@ public class EditPersonDescriptorBuilder {
     }
 
     /**
+     * Sets the {@code Address} of the {@code EditPersonDescriptor} that we are building to be
+     * empty.
+     */
+    public EditPersonDescriptorBuilder withoutAddress() {
+        descriptor.setAddress(Address.EMPTY);
+        return this;
+    }
+
+    /**
      * Parses the {@code tags} into a {@code Set<Tag>} and sets it to the {@code EditPersonDescriptor}
      * that we are building.
      */
