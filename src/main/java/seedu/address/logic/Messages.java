@@ -48,10 +48,12 @@ public class Messages {
             .append("; Phone: ")
             .append(person.getPhone())
             .append("; Email: ")
-            .append(person.getEmail())
-            .append("; Address: ")
-            .append(person.getAddress())
-            .append("; Tags: ");
+            .append(person.getEmail());
+        if (!person.getAddress().isEmpty()) {
+            builder.append("; Address: ")
+                    .append(person.getAddress());
+        }
+        builder.append("; Tags: ");
         person.getTags().forEach(builder::append);
         return builder.toString();
     }

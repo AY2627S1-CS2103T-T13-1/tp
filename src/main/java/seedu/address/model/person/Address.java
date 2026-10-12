@@ -5,7 +5,8 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents a Person's address in the address book.
- * Guarantees: immutable; is valid as declared in {@link #isValidAddress(String)}
+ * Guarantees: immutable; is either valid as declared in {@link #isValidAddress(String)}
+ * or empty (see {@link #EMPTY}) if no address was provided.
  */
 public class Address {
 
@@ -19,6 +20,9 @@ public class Address {
     public static final String VALIDATION_REGEX = "[^\\s].*";
 
     public static final int MAXIMUM_ADDRESS_LENGTH = 105;
+
+    /** Represents an address that was not provided. */
+    public static final Address EMPTY = new Address();
 
     public final String value;
 
@@ -35,6 +39,13 @@ public class Address {
     }
 
     /**
+     * Constructs an empty {@code Address}. Only used to create {@link #EMPTY}.
+     */
+    private Address() {
+        value = "";
+    }
+
+    /**
      * Returns true if a given string is a valid address.
      */
     public static boolean isValidAddress(String test) {
@@ -42,6 +53,13 @@ public class Address {
     }
 
     public static boolean isValidLength(String test) { return test.length() <= MAXIMUM_ADDRESS_LENGTH;}
+    /**
+     * Returns true if this address was not provided.
+     */
+    public boolean isEmpty() {
+        return value.isEmpty();
+    }
+
     @Override
     public String toString() {
         return value;

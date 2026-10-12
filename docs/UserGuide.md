@@ -78,16 +78,19 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS [-t CATEGORY TAG]... `
+Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t CATEGORY TAG]... `
 
 <box type="tip" seamless>
 
 **Tip:** A person can have any number of tags, including zero.
+
+**Tip:** The address is optional.
 </box>
 
 Examples:
 * `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01`
 * `add -n Betsy Crowe -t others friend -e betsycrowe@example.com -a Newgate Prison -p 1234567 -t others criminal`
+* `add -n Jane Tan -p 87654321 -e janetan@example.com`
 
 ### Listing all persons: `list`
 
@@ -193,7 +196,7 @@ _Details coming soon ..._
 
 Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS [-t CATEGORY TAG]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
+**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t CATEGORY TAG]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
 **Clear**  | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
