@@ -39,6 +39,12 @@ public class NameTest {
     }
 
     @Test
+    public void isValidLength() {
+        assertTrue(Name.isValidLength("Alfonso"));
+        assertFalse(Name.isValidLength("This is supposed to be an incredibly long name im just going to keep typing until"));
+    }
+
+    @Test
     public void equals() {
         Name name = new Name("Valid Name");
 

@@ -21,13 +21,18 @@ import seedu.address.model.tag.Tag;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
+    private static final String INVALID_NAME_LENGTH = "AAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBB";
     private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE_LENGTH = "111122223333444455";
     private static final String INVALID_ADDRESS = " ";
+    private static final String INVALID_ADDRESS_LENGTH = "AAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAABBBBBAAAAABBBBBAAAAA";
     private static final String INVALID_EMAIL = "example.com";
+    private static final String INVALID_EMAIL_LENGTH = "AAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBBAAAAAAABBBBBBB@mail.com";
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = "Rachel Walker";
     private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE_FULL_FORMAT = "(+65)12345678";
     private static final String VALID_ADDRESS = "123 Main Street #0505";
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_OTHERS_TAG_INPUT_1 = "others friend";
@@ -81,6 +86,11 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseName_invalidLength_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseName(INVALID_NAME_LENGTH));
+    }
+
+    @Test
     public void parsePhone_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parsePhone((String) null));
     }
@@ -88,6 +98,11 @@ public class ParserUtilTest {
     @Test
     public void parsePhone_invalidValue_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parsePhone(INVALID_PHONE));
+    }
+
+    @Test
+    public void parsePhone_invalidLength_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parsePhone(INVALID_PHONE_LENGTH));
     }
 
     @Test
@@ -104,6 +119,19 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parsePhone_validFullValueWithoutWhitespace_returnsPhone() throws Exception {
+        Phone expectedPhone = new Phone(VALID_PHONE_FULL_FORMAT);
+        assertEquals(expectedPhone, ParserUtil.parsePhone(VALID_PHONE_FULL_FORMAT));
+    }
+
+    @Test
+    public void parsePhone_validFullValueWithWhitespace_returnsTrimmedPhone() throws Exception {
+        String phoneWithWhiteSpace = WHITESPACE + VALID_PHONE_FULL_FORMAT + WHITESPACE;
+        Phone expectedPhone = new Phone(VALID_PHONE_FULL_FORMAT);
+        assertEquals(expectedPhone, ParserUtil.parsePhone(phoneWithWhiteSpace));
+    }
+
+    @Test
     public void parseAddress_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseAddress((String) null));
     }
@@ -111,6 +139,11 @@ public class ParserUtilTest {
     @Test
     public void parseAddress_invalidValue_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseAddress(INVALID_ADDRESS));
+    }
+
+    @Test
+    public void parseAddress_invalidLength_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseAddress(INVALID_ADDRESS_LENGTH));
     }
 
     @Test
@@ -134,6 +167,11 @@ public class ParserUtilTest {
     @Test
     public void parseEmail_invalidValue_throwsParseException() {
         assertThrows(ParseException.class, () -> ParserUtil.parseEmail(INVALID_EMAIL));
+    }
+
+    @Test
+    public void parseEmail_invalidLength_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseEmail(INVALID_EMAIL_LENGTH));
     }
 
     @Test
