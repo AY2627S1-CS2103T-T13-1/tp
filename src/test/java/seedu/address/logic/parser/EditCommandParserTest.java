@@ -50,7 +50,8 @@ public class EditCommandParserTest {
     private static final String TAG_EMPTY = " " + PREFIX_TAG;
 
     private static final String MESSAGE_INVALID_FORMAT =
-            String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
+            MESSAGE_INVALID_COMMAND_FORMAT + "\n"
+                    + "List index must be a positive integer, and cannot be blank" + "\n" + EditCommand.MESSAGE_USAGE;
 
     private EditCommandParser parser = new EditCommandParser();
 
