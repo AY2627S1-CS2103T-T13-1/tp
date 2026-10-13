@@ -63,7 +63,7 @@ public class EditCommand extends Command {
     public static final String MESSAGE_NOT_EDITED = "A field must be specified for editing.";
     public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified."
-            + "Please check against your contact list.";
+            + " Please check against your contact list.";
 
     private final Index index;
     private final EditPersonDescriptor editPersonDescriptor;

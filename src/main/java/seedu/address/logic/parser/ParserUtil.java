@@ -22,7 +22,8 @@ import seedu.address.model.tag.TagFactory;
  */
 public class ParserUtil {
 
-    public static final String MESSAGE_INVALID_INDEX = "List index must be a positive integer, and cannot be blank";
+    public static final String MESSAGE_INVALID_INDEX =
+            "List index must be a positive integer, and cannot be blank!\n%1$s";
 
     /**
      * Parses {@code oneBasedIndex} into an {@code Index} and returns it. Leading and trailing whitespaces will be
