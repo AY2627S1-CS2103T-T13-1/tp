@@ -30,7 +30,7 @@ public class DeleteCommand extends Command {
             + "Parameters: LIST_INDEX (must be a positive integer)\n"
             + COMMAND_SAMPLE_USAGE;
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed: %1$s from your address book.";
+    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
 
     private final Index targetIndex;
 
