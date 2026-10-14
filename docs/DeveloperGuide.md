@@ -415,7 +415,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
    Use case ends.
 
-**Extensions**
+**Extensions:**
 
 * 2a. The given index is invalid (e.g. the list is empty or the index is outside the displayed list).
 
