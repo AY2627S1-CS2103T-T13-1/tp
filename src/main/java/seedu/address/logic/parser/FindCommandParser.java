@@ -45,9 +45,6 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (phone.isPresent()) {
                 ParserUtil.parsePhone(phone.get());
             }
-            if (email.isPresent()) {
-                ParserUtil.parseEmail(email.get());
-            }
             if (address.isPresent()) {
                 ParserUtil.parseAddress(address.get());
             }
