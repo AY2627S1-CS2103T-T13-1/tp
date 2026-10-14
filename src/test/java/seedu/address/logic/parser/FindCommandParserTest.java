@@ -4,6 +4,7 @@ import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailur
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +31,6 @@ public class FindCommandParserTest {
                 "The -e parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -a Block ABC -a Block DEF",
                 "The -a parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -t others friend -t others colleague",
-                "The -t parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " -n Wolf Alice -p 91230000 -e alice@example.com -a Block ABC, Hougang -t others friend",
@@ -87,7 +86,7 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " -n Wolf Alice -a Block ABC, Hougang -t others friend -e alice@example.com -p 91230000",
@@ -101,7 +100,7 @@ public class FindCommandParserTest {
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty());
+                Set.of());
         assertParseSuccess(parser, " -n Wolf\tAlice", new FindCommand(predicate));
     }
 
@@ -112,7 +111,7 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " \t\n -n \t Wolf   Alice \t\n -p \t 91230000 \t\n"

@@ -7,6 +7,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import seedu.address.logic.commands.FindCommand;
@@ -36,8 +37,7 @@ public class FindCommandParser implements Parser<FindCommand> {
             Optional<String> phone = arguments.getValue(PREFIX_PHONE);
             Optional<String> email = arguments.getValue(PREFIX_EMAIL);
             Optional<String> address = arguments.getValue(PREFIX_ADDRESS);
-            Optional<String> tagValue = arguments.getValue(PREFIX_TAG);
-            Optional<Tag> tag = Optional.empty();
+            Set<Tag> tagList = ParserUtil.parseTags(arguments.getAllValues(PREFIX_TAG));
 
             if (name.isPresent()) {
                 ParserUtil.parseName(name.get());
@@ -51,11 +51,8 @@ public class FindCommandParser implements Parser<FindCommand> {
             if (address.isPresent()) {
                 ParserUtil.parseAddress(address.get());
             }
-            if (tagValue.isPresent()) {
-                tag = Optional.of(ParserUtil.parseTag(tagValue.get()));
-            }
 
-            return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address, tag));
+            return new FindCommand(new PersonMatchesCriteriaPredicate(name, phone, email, address, tagList));
         } catch (ParseException e) {
             throw new ParseException(e.getMessage() + "\n" + FindCommand.MESSAGE_USAGE, e);
         }
@@ -94,11 +91,11 @@ public class FindCommandParser implements Parser<FindCommand> {
         }
 
         for (Prefix prefix : FIND_PREFIXES) {
-            if (arguments.getValue(prefix).filter(String::isEmpty).isPresent()) {
+            if (arguments.getAllValues(prefix).stream().anyMatch(String::isEmpty)) {
                 throw new ParseException("The value for '" + prefix + "' cannot be empty.");
             }
 
-            if (arguments.getAllValues(prefix).size() > 1) {
+            if (arguments.getAllValues(prefix).size() > 1 && !prefix.equals(PREFIX_TAG)) {
                 throw new ParseException("The " + prefix + " parameter may only be specified once.");
             }
         }
