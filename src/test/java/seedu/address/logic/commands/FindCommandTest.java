@@ -80,6 +80,23 @@ public class FindCommandTest {
     }
 
     @Test
+    public void execute_emailSubstring_onePersonFound() {
+        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 1);
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of("JOHN"),
+                Optional.empty(),
+                Set.of());
+        FindCommand command = new FindCommand(predicate);
+        // Only Benson's email, johnd@example.com, contains JOHN ignoring case.
+        expectedModel.updateFilteredPersonList(BENSON::equals);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(List.of(BENSON), model.getFilteredPersonList());
+    }
+
+    @Test
     public void execute_multipleTags_onlyPersonMatchingAllTagsFound() {
         String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 1);
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(

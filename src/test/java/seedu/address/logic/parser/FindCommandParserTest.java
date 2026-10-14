@@ -99,6 +99,17 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_emailSubstring_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of("bob"),
+                Optional.empty(),
+                Set.of());
+        assertParseSuccess(parser, " -e bob", new FindCommand(predicate));
+    }
+
+    @Test
     public void parse_validArgsInDifferentOrder_returnsFindCommand() {
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
                 Optional.of("Wolf Alice"),
