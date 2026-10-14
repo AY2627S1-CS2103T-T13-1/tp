@@ -116,21 +116,24 @@ Examples:
 *  `edit 2 -n Betsy Crower -t` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 *  `edit 3 -a` Removes the address of the 3rd person.
 
-### Locating persons by name: `find`
+### Locating persons by criteria: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds persons in the address book matching the supplied criteria.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `find [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]...`
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* One or more criteria may be specified.
+* Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
+* Matching follows 'AND' logic, all the criteria supplied must match to find a person.
+* Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
+* Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
+* Order of criteria supplied does not matter.
+* For tag criteria, both a valid category and the tag name must be supplied.
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
+* `find -n john` returns `John`, `Johnny`.
+* `find -e alice` matches `alice@example.com`, `alicelow@gmail.com`
+* `find -t others Friend -t faculty Computing -n John` returns persons who have both tags.<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
 ### Deleting a person: `delete`
