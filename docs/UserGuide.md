@@ -113,7 +113,7 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `-t` without a tag after it.
 * To remove a person's address, enter `-a` without an address after it.
-* Refer to the [Tagging a person](#tagging-a-person) section for more info on tags.
+* Refer to [Tagging a person](#tagging-a-person) for more info on tags.
 
 
 Examples:
@@ -157,7 +157,7 @@ Examples:
 
 ### Tagging a person
 
-Tags can be added to a person either through the [Edit](#editing-a-person-edit) or the [Add](#adding-a-person-add) commands.
+Tags can be added to a person through the [Edit](#editing-a-person-edit) or the [Add](#adding-a-person-add) commands.
 
 The following tag categories are supported, with each category being assigned a unique colour code:
 - <span style="background-color:#782828; color:white">module</span>
