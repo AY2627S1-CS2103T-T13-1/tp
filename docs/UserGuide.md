@@ -133,6 +133,7 @@ Examples:
 * `find -n john` returns `John`, `Johnny`.
 * `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
 * `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
+  ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
 ### Deleting a person: `delete`
 
