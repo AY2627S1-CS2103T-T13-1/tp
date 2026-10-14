@@ -26,10 +26,10 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
             + "[" + PREFIX_NAME + " NAME] "
-            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME] "
             + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + " EMAIL] "
-            + "[" + PREFIX_ADDRESS + " ADDRESS]";
+            + "[" + PREFIX_ADDRESS + " ADDRESS] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " Johnny "
