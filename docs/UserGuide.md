@@ -122,19 +122,17 @@ Finds persons in the address book matching the supplied criteria.
 
 Format: `find [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]...`
 
-* One or more criteria may be specified.
+* At least one criterion must be specified.
 * Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
-* Matching follows 'AND' logic, all the criteria supplied must match to find a person.
+* Every criterion supplied must match to find a person.
 * Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
 * Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
-* Order of criteria supplied does not matter.
 * For tag criteria, both a valid category and the tag name must be supplied.
 
 Examples:
 * `find -n john` returns `John`, `Johnny`.
-* `find -e alice` matches `alice@example.com`, `alicelow@gmail.com`
-* `find -t others Friend -t faculty Computing -n John` returns persons who have both tags.<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
+* `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
 
 ### Deleting a person: `delete`
 
