@@ -4,12 +4,16 @@ import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailur
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.tag.FacultyTag;
+import seedu.address.model.tag.ModuleTag;
 import seedu.address.model.tag.OthersTag;
+import seedu.address.model.tag.Tag;
 
 public class FindCommandParserTest {
     private FindCommandParser parser = new FindCommandParser();
@@ -30,8 +34,6 @@ public class FindCommandParserTest {
                 "The -e parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -a Block ABC -a Block DEF",
                 "The -a parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -t others friend -t others colleague",
-                "The -t parameter may only be specified once.\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -59,6 +61,22 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_invalidEarlierTag_throwsParseException() {
+        assertParseFailure(parser, " -t unsupported friends -t others owesMoney",
+                Tag.MESSAGE_UNKNOWN_TAG_CATEGORY + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t others bad@tag -t others owesMoney",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_emptyTagAmongMultipleTags_throwsParseException() {
+        String expectedMessage = "The value for '-t' cannot be empty.\n" + FindCommand.MESSAGE_USAGE;
+        assertParseFailure(parser, " -t -t others friends", expectedMessage);
+        assertParseFailure(parser, " -t others friends -t -t others owesMoney", expectedMessage);
+        assertParseFailure(parser, " -t others friends -t", expectedMessage);
+    }
+
+    @Test
     public void parse_unexpectedTextBeforeFlag_throwsParseException() {
         assertParseFailure(parser, " Wolf Alice -n Wolf",
                 "Unexpected text before the first parameter: 'Wolf Alice'.\n" + FindCommand.MESSAGE_USAGE);
@@ -73,11 +91,22 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " -n Wolf Alice -p 91230000 -e alice@example.com -a Block ABC, Hougang -t others friend",
                 expectedFindCommand);
+    }
+
+    @Test
+    public void parse_emailSubstring_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of("bob"),
+                Optional.empty(),
+                Set.of());
+        assertParseSuccess(parser, " -e bob", new FindCommand(predicate));
     }
 
     @Test
@@ -87,11 +116,55 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " -n Wolf Alice -a Block ABC, Hougang -t others friend -e alice@example.com -p 91230000",
                 expectedFindCommand);
+    }
+
+    @Test
+    public void parse_multipleTags_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.of("Wolf Alice"),
+                Optional.of("91230000"),
+                Optional.of("alice@example.com"),
+                Optional.of("Block ABC, Hougang"),
+                Set.of(new OthersTag("friend"),
+                        new FacultyTag("Science"),
+                        new ModuleTag("BS3402")));
+        FindCommand expectedFindCommand = new FindCommand(predicate);
+        assertParseSuccess(parser,
+                " -n Wolf Alice -p 91230000 -e alice@example.com -a Block ABC, Hougang "
+                        + "-t others friend -t Module BS3402 -t faculty Science",
+                expectedFindCommand);
+    }
+
+    @Test
+    public void parse_multipleTagsInSameCategory_preservesAllTags() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Set.of(new OthersTag("friends"), new OthersTag("owesMoney")));
+        FindCommand expectedFindCommand = new FindCommand(predicate);
+
+        assertParseSuccess(parser, " -t others friends -t others owesMoney", expectedFindCommand);
+        assertParseSuccess(parser, " -t others owesMoney -t others friends", expectedFindCommand);
+    }
+
+    @Test
+    public void parse_sameTagSupplied_findsByTag() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Set.of(new OthersTag("friends")));
+        FindCommand expectedFindCommand = new FindCommand(predicate);
+
+        assertParseSuccess(parser, " -t others friends -t others friends", expectedFindCommand);
     }
 
     @Test
@@ -101,7 +174,7 @@ public class FindCommandParserTest {
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty());
+                Set.of());
         assertParseSuccess(parser, " -n Wolf\tAlice", new FindCommand(predicate));
     }
 
@@ -112,7 +185,7 @@ public class FindCommandParserTest {
                 Optional.of("91230000"),
                 Optional.of("alice@example.com"),
                 Optional.of("Block ABC, Hougang"),
-                Optional.of(new OthersTag("friend")));
+                Set.of(new OthersTag("friend")));
         FindCommand expectedFindCommand = new FindCommand(predicate);
         assertParseSuccess(parser,
                 " \t\n -n \t Wolf   Alice \t\n -p \t 91230000 \t\n"

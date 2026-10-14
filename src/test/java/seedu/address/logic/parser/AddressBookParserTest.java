@@ -8,6 +8,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +78,7 @@ public class AddressBookParserTest {
                 Optional.of("91231100"),
                 Optional.of("alice@example.com"),
                 Optional.of("Jurong"),
-                Optional.of(new OthersTag("friends")));
+                Set.of(new OthersTag("friends")));
         assertEquals(new FindCommand(predicate), command);
     }
 

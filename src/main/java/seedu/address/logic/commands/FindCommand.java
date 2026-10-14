@@ -26,10 +26,10 @@ public class FindCommand extends Command {
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
             + "[" + PREFIX_NAME + " NAME] "
-            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME] "
             + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + " EMAIL] "
-            + "[" + PREFIX_ADDRESS + " ADDRESS]";
+            + "[" + PREFIX_ADDRESS + " ADDRESS] "
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + " Johnny "
@@ -39,10 +39,10 @@ public class FindCommand extends Command {
             + COMMAND_DESCRIPTION + "\n"
             + "Parameters: "
             + "[" + PREFIX_NAME + " NAME] "
-            + "[" + PREFIX_PHONE + " PHONE] "
+            + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + " EMAIL] "
             + "[" + PREFIX_ADDRESS + " ADDRESS] "
-            + "[" + PREFIX_TAG + " CATEGORY TAG]...\n"
+            + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]...\n"
             + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_NO_CRITERION = "Please provide at least one criterion to find.";

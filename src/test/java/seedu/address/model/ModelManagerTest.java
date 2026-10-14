@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -98,7 +99,7 @@ public class ModelManagerTest {
 
         // different filteredList -> returns false
         modelManager.updateFilteredPersonList(new PersonMatchesCriteriaPredicate(Optional.of(ALICE.getName().fullName),
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty()));
+                Optional.empty(), Optional.empty(), Optional.empty(), Set.of()));
         assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
 
         // resets modelManager to initial state for upcoming tests
