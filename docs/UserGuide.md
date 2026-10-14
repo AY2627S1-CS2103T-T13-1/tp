@@ -78,7 +78,7 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t CATEGORY TAG]... `
+Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
 <box type="tip" seamless>
 
@@ -102,7 +102,7 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]... `
+Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
 * At least one of the optional fields must be provided.
@@ -116,22 +116,24 @@ Examples:
 *  `edit 2 -n Betsy Crower -t` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 *  `edit 3 -a` Removes the address of the 3rd person.
 
-### Locating persons by name: `find`
+### Locating persons by criteria: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds persons in the address book matching the supplied criteria.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
-* Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
-* Only full words match; for example, `Han` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* At least one criterion must be specified.
+* Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
+* Every criterion supplied must match to find a person.
+* Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
+* Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
+* For tag criteria, both a valid category and the tag name must be supplied.
 
 Examples:
-* `find John` returns `john` and `John Doe`
-* `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+* `find -n john` returns `John`, `Johnny`.
+* `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
+* `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
+  ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
 ### Deleting a person: `delete`
 
@@ -198,10 +200,10 @@ _Details coming soon ..._
 
 Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t CATEGORY TAG]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
+**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
 **Clear**  | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
-**Find**   | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
+**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **List**   | `list`
 **Help**   | `help`

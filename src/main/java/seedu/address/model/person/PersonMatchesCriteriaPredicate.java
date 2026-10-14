@@ -5,6 +5,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
@@ -19,20 +20,20 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
     private final Optional<String> phone;
     private final Optional<String> email;
     private final Optional<String> address;
-    private final Optional<Tag> tag;
+    private final Set<Tag> tagList;
 
     /**
      * Creates a predicate from validated optional search values.
      * The name criterion must have its whitespace normalized to single spaces.
      */
     public PersonMatchesCriteriaPredicate(Optional<String> name, Optional<String> phone, Optional<String> email,
-            Optional<String> address, Optional<Tag> tag) {
-        requireAllNonNull(name, phone, email, address, tag);
+            Optional<String> address, Set<Tag> tagList) {
+        requireAllNonNull(name, phone, email, address, tagList);
         this.name = name.map(value -> value.toLowerCase(Locale.ROOT));
         this.phone = phone;
         this.email = email.map(value -> value.toLowerCase(Locale.ROOT));
         this.address = address.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));
-        this.tag = tag;
+        this.tagList = Set.copyOf(tagList);
     }
 
     @Override
@@ -41,13 +42,21 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
                 && matchesCriterion(person.getPhone().value, phone)
                 && matchesCriterion(person.getEmail().value, email)
                 && matchesCriterion(normalizeCriteria(person.getAddress().value), address)
-                && tag.map(criterion -> person.getTags().stream().anyMatch(personTag ->
-                personTag.getTagCategory().equals(criterion.getTagCategory())
-                                && containsCaseInsensitive(personTag.tagName, criterion.tagName))).orElse(true);
+                && matchesAllTags(person, tagList);
     }
 
     private static boolean matchesCriterion(String value, Optional<String> criterion) {
         return criterion.map(search -> containsCaseInsensitive(value, search)).orElse(true);
+    }
+
+    private static boolean matchesAllTags(Person person, Set<Tag> tagList) {
+        return tagList.stream()
+                .allMatch(criterion ->
+                        person.getTags().stream().anyMatch(personTag ->
+                                personTag.getTagCategory()
+                                        .equals(criterion.getTagCategory())
+                                && containsCaseInsensitive(
+                                        personTag.tagName, criterion.tagName)));
     }
 
     private static boolean containsCaseInsensitive(String value, String search) {
@@ -70,12 +79,12 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
                 && phone.equals(otherPredicate.phone)
                 && email.equals(otherPredicate.email)
                 && address.equals(otherPredicate.address)
-                && tag.equals(otherPredicate.tag);
+                && tagList.equals(otherPredicate.tagList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, phone, email, address, tag);
+        return Objects.hash(name, phone, email, address, tagList);
     }
 
     @Override
@@ -85,7 +94,7 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
                 .add("phone", phone)
                 .add("email", email)
                 .add("address", address)
-                .add("tag", tag)
+                .add("tagList", tagList)
                 .toString();
     }
 }
