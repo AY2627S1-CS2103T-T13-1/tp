@@ -84,6 +84,9 @@ Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_
 
 **Tip:** A person can have any number of tags, including zero.
 
+**Tip:** Refer to  [Tagging a person](#tagging-a-person) for more info on tags.
+
+
 **Tip:** The address is optional.
 </box>
 
@@ -110,6 +113,8 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `-t` without a tag after it.
 * To remove a person's address, enter `-a` without an address after it.
+* Refer to the [Tagging a person](#tagging-a-person) section for more info on tags.
+
 
 Examples:
 *  `edit 1 -p 91234567 -e johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
@@ -128,6 +133,7 @@ Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGO
 * Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
 * Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
 * For tag criteria, both a valid category and the tag name must be supplied.
+* Refer to [Tagging a person](#tagging-a-person) for a list of valid tag categories.
 
 Examples:
 * `find -n john` returns `John`, `Johnny`.
@@ -148,6 +154,19 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+
+### Tagging a person
+
+Tags can be added to a person either through the [Edit](#editing-a-person-edit) or the [Add](#adding-a-person-add) commands.
+
+The following tag categories are supported, with each category being assigned a unique colour code:
+- <span style="background-color:#782828; color:white">module</span>
+- <span style="background-color:#56478d; color:white">faculty</span>
+- <span style="background-color:#356644; color:white">others</span>
+
+Tag categories are not case-sensitive.
+- `add ... -t OTHERS friend` has the same effect as `add ... -t oThErS friend`.
+
 
 ### Clearing all entries: `clear`
 
