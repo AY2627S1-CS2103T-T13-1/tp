@@ -205,6 +205,6 @@ Action     | Format, Examples
 **Clear**  | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
-**Find**   | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t CATEGORY TAG]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **List**   | `list`
 **Help**   | `help`
