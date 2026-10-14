@@ -4,9 +4,9 @@
   pageNav: 3
 ---
 
-# AB-3 User Guide
+# coNnectUS User Guide
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+coNnectUS is a **desktop Address Book application designed for NUS students** to manage their contacts. It is **optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, coNnectUS can help you manage contacts faster than traditional GUI applications.
 
 <!-- * Table of Contents -->
 <page-nav-print />
@@ -18,7 +18,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-T13-1/tp/releases).
 
 1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
 
@@ -125,9 +125,9 @@ Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGO
 * At least one criterion must be specified.
 * Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
 * Every criterion supplied must match to find a person.
-* Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
-* Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
-* For tag criteria, both a valid category and the tag name must be supplied.
+* Search criteria are case-insensitive. For example, `-n hans` matches `-n Hans`.
+* Persons are matched if the search criterion is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
+* For tag criteria, both a valid category (i.e. `module`, `faculty` or `others`) and the tag name must be supplied.
 
 Examples:
 * `find -n john` returns `John`, `Johnny`.
@@ -147,7 +147,7 @@ Format: `delete INDEX`
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
