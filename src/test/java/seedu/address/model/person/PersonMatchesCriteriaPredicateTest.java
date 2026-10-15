@@ -68,11 +68,12 @@ public class PersonMatchesCriteriaPredicateTest {
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.of("  BLOCK\t ABC    ,   "),
+                Optional.of("  BLOCK\t ABC , HOU "),
                 Set.of());
 
-        assertTrue(predicate.test(new PersonBuilder().withAddress("123 Block   ABC, Hougang").build()));
         assertFalse(predicate.test(new PersonBuilder().withAddress("123 Block DEF, Hougang").build()));
+        assertTrue(predicate.test(new PersonBuilder().withAddress("123 Block ABC,Hougang").build()));
+        assertTrue(predicate.test(new PersonBuilder().withAddress("123 Block    ABC   ,   Hougang").build()));
         assertFalse(predicate.test(new PersonBuilder().withoutAddress().build()));
     }
 
