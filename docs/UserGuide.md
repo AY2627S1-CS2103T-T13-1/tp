@@ -22,7 +22,7 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 
 1. Copy the file to the folder you want to use as the _home folder_ for your instance of coNnectUS.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar coNnectUS.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
