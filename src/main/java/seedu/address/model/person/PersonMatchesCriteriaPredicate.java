@@ -32,7 +32,7 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
         this.name = name.map(value -> value.toLowerCase(Locale.ROOT));
         this.phone = phone;
         this.email = email.map(value -> value.toLowerCase(Locale.ROOT));
-        this.address = address.map(value -> normalizeCriteria(value).toLowerCase(Locale.ROOT));
+        this.address = address.map(value -> normalizeAddress(value).toLowerCase(Locale.ROOT));
         this.tagList = Set.copyOf(tagList);
     }
 
@@ -41,7 +41,7 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
         return matchesCriterion(normalizeCriteria(person.getName().fullName), name)
                 && matchesCriterion(person.getPhone().value, phone)
                 && matchesCriterion(person.getEmail().value, email)
-                && matchesCriterion(normalizeCriteria(person.getAddress().value), address)
+                && matchesCriterion(normalizeAddress(person.getAddress().value), address)
                 && matchesAllTags(person, tagList);
     }
 
@@ -65,6 +65,13 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
 
     private static String normalizeCriteria(String value) {
         return value.trim().replaceAll("\\s+", " ");
+    }
+
+    /**
+     * Normalizes address whitespace, removing spaces before commas and adding one space after each comma.
+     */
+    private static String normalizeAddress(String value) {
+        return normalizeCriteria(value.replaceAll("\\s*,\\s*", ", "));
     }
 
     @Override
