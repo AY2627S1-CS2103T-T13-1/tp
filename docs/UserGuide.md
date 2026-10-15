@@ -4,9 +4,9 @@
   pageNav: 3
 ---
 
-# AB-3 User Guide
+# coNnectUS User Guide
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+coNnectUS is a **desktop Address Book application designed for NUS students** to manage their contacts. It is **optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, coNnectUS can help you manage contacts faster than traditional GUI applications.
 
 <!-- * Table of Contents -->
 <page-nav-print />
@@ -18,11 +18,11 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-T13-1/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1. Copy the file to the folder you want to use as the _home folder_ for your instance of coNnectUS.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
+1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar coNnectUS.jar`.<br>
    A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
@@ -80,14 +80,12 @@ Adds a person to the address book.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
-<box type="tip" seamless>
+<box type="tip" header="**Tips**" seamless>
 
-**Tip:** A person can have any number of tags, including zero.
+- A person can have any number of tags, including zero.
+- Refer to [Tagging a person](#tagging-a-person) for more information on tags.
+- The address parameter is optional.
 
-**Tip:** Refer to  [Tagging a person](#tagging-a-person) for more info on tags.
-
-
-**Tip:** The address is optional.
 </box>
 
 Examples:
@@ -130,9 +128,9 @@ Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGO
 * At least one criterion must be specified.
 * Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
 * Every criterion supplied must match to find a person.
-* Search criteria is case-insensitive; for example, `-n hans` matches `-n Hans`.
-* Persons are matched if the search criteria is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
-* For tag criteria, both a valid category and the tag name must be supplied.
+* Search criteria are case-insensitive. For example, `-n hans` matches `-n Hans`.
+* Persons are matched if the search criterion is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
+* For tag criteria, both a valid category (i.e. `module`, `faculty` or `others`) and the tag name must be supplied.
 * Refer to [Tagging a person](#tagging-a-person) for a list of valid tag categories.
 
 Examples:
@@ -153,7 +151,7 @@ Format: `delete INDEX`
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
 ### Tagging a person
 
@@ -182,29 +180,25 @@ Format: `exit`
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+coNnectUS automatically saves data after every command. You do not need to save manually.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+The address book application data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
 <box type="warning" seamless>
 
 **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run. The invalid file remains on disk until you run a command (coNnectUS saves after every command). Still, we recommend backing up the file before editing it.<br>
+Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways (e.g., if a value entered is outside the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </box>
-
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous coNnectUS home folder.
 
 --------------------------------------------------------------------------------------------------------------------
 
