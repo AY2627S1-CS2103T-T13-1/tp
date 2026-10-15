@@ -118,7 +118,7 @@ public class PersonMatchesCriteriaPredicateTest {
                 Optional.empty(),
                 Set.of(new ModuleTag("friends")));
 
-        assertFalse(predicate.test(ALICE)); // tag category others
+        assertFalse(predicate.test(ALICE)); // Alice has tag category others
     }
 
     @Test
