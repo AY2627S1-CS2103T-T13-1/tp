@@ -9,7 +9,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.model.person.Name;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.person.Phone;
 import seedu.address.model.tag.FacultyTag;
 import seedu.address.model.tag.ModuleTag;
 import seedu.address.model.tag.OthersTag;
@@ -20,6 +22,8 @@ public class FindCommandParserTest {
 
     @Test
     public void parse_noCriteria_throwsParseException() {
+        assertParseFailure(parser, "",
+                FindCommand.MESSAGE_NO_CRITERION + "\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, "     ",
                 FindCommand.MESSAGE_NO_CRITERION + "\n" + FindCommand.MESSAGE_USAGE);
     }
@@ -69,6 +73,20 @@ public class FindCommandParserTest {
     }
 
     @Test
+    public void parse_invalidFieldValue_throwsParseException() {
+        assertParseFailure(parser, " -n Alice@",
+                Name.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -p abc",
+                Phone.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_tagWithoutName_throwsParseException() {
+        assertParseFailure(parser, " -t others",
+                Tag.MESSAGE_MISSING_TAG_FIELD + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
     public void parse_emptyTagAmongMultipleTags_throwsParseException() {
         String expectedMessage = "The value for '-t' cannot be empty.\n" + FindCommand.MESSAGE_USAGE;
         assertParseFailure(parser, " -t -t others friends", expectedMessage);
@@ -85,17 +103,9 @@ public class FindCommandParserTest {
     }
 
     @Test
-    public void parse_validArgs_returnsFindCommand() {
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.of("Wolf Alice"),
-                Optional.of("91230000"),
-                Optional.of("alice@example.com"),
-                Optional.of("Block ABC, Hougang"),
-                Set.of(new OthersTag("friend")));
-        FindCommand expectedFindCommand = new FindCommand(predicate);
-        assertParseSuccess(parser,
-                " -n Wolf Alice -p 91230000 -e alice@example.com -a Block ABC, Hougang -t others friend",
-                expectedFindCommand);
+    public void parse_emptyFieldAndDuplicateField_throwsParseException() {
+        assertParseFailure(parser, " -n Jacob -n",
+                "The value for '-n' cannot be empty.\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -107,6 +117,18 @@ public class FindCommandParserTest {
                 Optional.empty(),
                 Set.of());
         assertParseSuccess(parser, " -e bob", new FindCommand(predicate));
+    }
+
+    @Test
+    public void parse_phoneSubstring_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(),
+                Optional.of("243"),
+                Optional.empty(),
+                Optional.empty(),
+                Set.of());
+
+        assertParseSuccess(parser, " -p 243", new FindCommand(predicate));
     }
 
     @Test
@@ -155,7 +177,7 @@ public class FindCommandParserTest {
     }
 
     @Test
-    public void parse_sameTagSupplied_findsByTag() {
+    public void parse_duplicateTags_returnsFindCommandWithOneTag() {
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
                 Optional.empty(),
                 Optional.empty(),
