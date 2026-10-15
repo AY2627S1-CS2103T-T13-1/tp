@@ -22,7 +22,7 @@ The following commands perform common Gradle tasks.
 * **`clean`**: Deletes the files created during the previous build tasks (e.g. files in the `build` folder).<br>
   For example: `./gradlew clean`
 
-* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/addressbook.jar`.<br>
+* **`shadowJar`**: Uses the Shadow plugin to create the fat JAR file `build/libs/coNnectUS.jar`.<br>
   For example: `./gradlew shadowJar`
 
 * **`run`**: Builds and runs the application.<br>
@@ -76,7 +76,7 @@ Any warnings or errors will be printed out to the console.
 
 Here are the steps to create a new release.
 
-1. Update the version number in [`MainApp.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java).
+1. Update the version number in [`MainApp.java`](https://github.com/AY2627S1-CS2103T-T13-1/tp/tree/master/src/main/java/seedu/address/MainApp.java).
 1. Generate a fat JAR file using Gradle (i.e., `./gradlew shadowJar`).
 1. Tag the repo with the version number. e.g. `v0.1`
 1. [Create a new release using GitHub](https://help.github.com/articles/creating-releases/). Upload the JAR file you created.
