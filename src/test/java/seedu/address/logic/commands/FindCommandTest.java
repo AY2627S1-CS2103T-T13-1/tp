@@ -12,15 +12,15 @@ import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
-import seedu.address.model.tag.ModuleTag;
-import seedu.address.model.tag.OthersTag;
 
 /**
  * Contains integration tests (interaction with the Model) for {@code FindCommand}.
@@ -41,7 +41,7 @@ public class FindCommandTest {
         assertTrue(findFirstCommand.equals(findFirstCommand));
 
         // same values -> returns true
-        FindCommand findFirstCommandCopy = new FindCommand(firstPredicate);
+        FindCommand findFirstCommandCopy = new FindCommand(createPredicate("first"));
         assertTrue(findFirstCommand.equals(findFirstCommandCopy));
 
         // different types -> returns false
@@ -50,14 +50,14 @@ public class FindCommandTest {
         // null -> returns false
         assertFalse(findFirstCommand.equals(null));
 
-        // different person -> returns false
+        // different predicate -> returns false
         assertFalse(findFirstCommand.equals(findSecondCommand));
     }
 
     @Test
-    public void execute_nonMatchingNamePhrase_noPersonFound() {
+    public void execute_noMatches_noPersonFound() {
         String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 0);
-        PersonMatchesCriteriaPredicate predicate = createPredicate("Kurz Elle Kunz");
+        Predicate<Person> predicate = person -> false;
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
@@ -74,77 +74,20 @@ public class FindCommandTest {
                 Optional.empty(),
                 Set.of());
         FindCommand command = new FindCommand(predicate);
-        expectedModel.updateFilteredPersonList(predicate);
+        expectedModel.updateFilteredPersonList(ELLE::equals);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(List.of(ELLE), model.getFilteredPersonList());
     }
 
     @Test
-    public void execute_emailSubstring_onePersonFound() {
-        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 1);
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.empty(),
-                Optional.empty(),
-                Optional.of("JOHN"),
-                Optional.empty(),
-                Set.of());
+    public void execute_multipleMatches_multiplePersonsFound() {
+        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 2);
+        Predicate<Person> predicate = person -> BENSON.equals(person) || ELLE.equals(person);
         FindCommand command = new FindCommand(predicate);
-        // Only Benson's email, johnd@example.com, contains JOHN ignoring case.
-        expectedModel.updateFilteredPersonList(BENSON::equals);
+        expectedModel.updateFilteredPersonList(predicate);
 
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(List.of(BENSON), model.getFilteredPersonList());
-    }
-
-    @Test
-    public void execute_multipleTags_onlyPersonMatchingAllTagsFound() {
-        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 1);
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Set.of(new OthersTag("friends"), new OthersTag("owesMoney")));
-        FindCommand command = new FindCommand(predicate);
-        // Benson has both tags; Alice and Daniel have only the friends tag.
-        expectedModel.updateFilteredPersonList(BENSON::equals);
-
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(List.of(BENSON), model.getFilteredPersonList());
-    }
-
-    @Test
-    public void execute_nameAndMultipleTagsMatchingDifferentPersons_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 0);
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.of("Alice"),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Set.of(new OthersTag("friends"), new OthersTag("owesMoney")));
-        FindCommand command = new FindCommand(predicate);
-        // Alice matches the name but only one tag; Benson matches both tags but not the name.
-        expectedModel.updateFilteredPersonList(person -> false);
-
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(List.of(), model.getFilteredPersonList());
-    }
-
-    @Test
-    public void execute_tagNameMatchesButCategoryDiffers_noPersonFound() {
-        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 0);
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Optional.empty(),
-                Set.of(new ModuleTag("friends")));
-        FindCommand command = new FindCommand(predicate);
-        // Alice, Benson and Daniel have others friends, rather than module friends.
-        expectedModel.updateFilteredPersonList(person -> false);
-
-        assertCommandSuccess(command, model, expectedMessage, expectedModel);
-        assertEquals(List.of(), model.getFilteredPersonList());
+        assertEquals(List.of(BENSON, ELLE), model.getFilteredPersonList());
     }
 
     @Test
@@ -156,7 +99,7 @@ public class FindCommandTest {
     }
 
     /**
-     * Creates a predicate that matches {@code name} as a whole phrase.
+     * Creates a predicate that matches {@code name} as a case-insensitive substring.
      */
     private PersonMatchesCriteriaPredicate createPredicate(String name) {
         return new PersonMatchesCriteriaPredicate(Optional.of(name),
