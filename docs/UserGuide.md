@@ -80,14 +80,12 @@ Adds a person to the address book.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
-<box type="tip" seamless>
+<box type="tip" header="**Tips**" seamless>
 
-**Tip:** A person can have any number of tags, including zero.
+- A person can have any number of tags, including zero.
+- Refer to [Tagging a person](#tagging-a-person) for more information on tags.
+- The address parameter is optional.
 
-**Tip:** Refer to  [Tagging a person](#tagging-a-person) for more info on tags.
-
-
-**Tip:** The address is optional.
 </box>
 
 Examples:
