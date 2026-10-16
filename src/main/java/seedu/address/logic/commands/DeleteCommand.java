@@ -30,7 +30,10 @@ public class DeleteCommand extends Command {
             + "Parameters: LIST_INDEX (must be a positive integer)\n"
             + COMMAND_SAMPLE_USAGE;
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
+    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed %1$s from your address book.";
+
+    public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
+        + "Please check again with list.";
 
     private final Index targetIndex;
 
@@ -43,8 +46,12 @@ public class DeleteCommand extends Command {
         requireNonNull(model);
         List<Person> lastShownList = model.getFilteredPersonList();
 
+        if (lastShownList.isEmpty()) {
+            throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
+        }
+
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
-            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+            throw new CommandException(MESSAGE_INVALID_INDEX);
         }
 
         Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
