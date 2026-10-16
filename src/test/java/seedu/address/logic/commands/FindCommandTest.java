@@ -5,17 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.FindCommand.MESSAGE_CONTACTS_FOUND;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.ELLE;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
 
 /**
@@ -37,7 +41,7 @@ public class FindCommandTest {
         assertTrue(findFirstCommand.equals(findFirstCommand));
 
         // same values -> returns true
-        FindCommand findFirstCommandCopy = new FindCommand(firstPredicate);
+        FindCommand findFirstCommandCopy = new FindCommand(createPredicate("first"));
         assertTrue(findFirstCommand.equals(findFirstCommandCopy));
 
         // different types -> returns false
@@ -46,14 +50,14 @@ public class FindCommandTest {
         // null -> returns false
         assertFalse(findFirstCommand.equals(null));
 
-        // different person -> returns false
+        // different predicate -> returns false
         assertFalse(findFirstCommand.equals(findSecondCommand));
     }
 
     @Test
-    public void execute_nonMatchingNamePhrase_noPersonFound() {
+    public void execute_noMatches_noPersonFound() {
         String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 0);
-        PersonMatchesCriteriaPredicate predicate = createPredicate("Kurz Elle Kunz");
+        Predicate<Person> predicate = person -> false;
         FindCommand command = new FindCommand(predicate);
         expectedModel.updateFilteredPersonList(predicate);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
@@ -68,11 +72,22 @@ public class FindCommandTest {
                 Optional.of("948"),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty());
+                Set.of());
         FindCommand command = new FindCommand(predicate);
-        expectedModel.updateFilteredPersonList(predicate);
+        expectedModel.updateFilteredPersonList(ELLE::equals);
         assertCommandSuccess(command, model, expectedMessage, expectedModel);
         assertEquals(List.of(ELLE), model.getFilteredPersonList());
+    }
+
+    @Test
+    public void execute_multipleMatches_multiplePersonsFound() {
+        String expectedMessage = String.format(MESSAGE_CONTACTS_FOUND, 2);
+        Predicate<Person> predicate = person -> BENSON.equals(person) || ELLE.equals(person);
+        FindCommand command = new FindCommand(predicate);
+        expectedModel.updateFilteredPersonList(predicate);
+
+        assertCommandSuccess(command, model, expectedMessage, expectedModel);
+        assertEquals(List.of(BENSON, ELLE), model.getFilteredPersonList());
     }
 
     @Test
@@ -84,13 +99,13 @@ public class FindCommandTest {
     }
 
     /**
-     * Creates a predicate that matches {@code name} as a whole phrase.
+     * Creates a predicate that matches {@code name} as a case-insensitive substring.
      */
     private PersonMatchesCriteriaPredicate createPredicate(String name) {
         return new PersonMatchesCriteriaPredicate(Optional.of(name),
                 Optional.empty(),
                 Optional.empty(),
                 Optional.empty(),
-                Optional.empty());
+                Set.of());
     }
 }
