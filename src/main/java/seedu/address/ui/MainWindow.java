@@ -3,6 +3,7 @@ package seedu.address.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
@@ -14,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.core.Theme;
 import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -32,6 +34,7 @@ public class MainWindow extends UiPart<Stage> {
     private Stage primaryStage;
     private Logic logic;
     private Path dataFilePath;
+    private Theme currentTheme;
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
@@ -70,6 +73,7 @@ public class MainWindow extends UiPart<Stage> {
 
         // Configure the UI
         setWindowDefaultSize(logic.getGuiSettings());
+        applyTheme(logic.getGuiSettings().getTheme());
 
         setAccelerators();
 
@@ -148,6 +152,24 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
+     * Switches the window to the given {@code theme} by swapping its color stylesheet.
+     */
+    private void applyTheme(Theme theme) {
+        assert theme != null;
+        ObservableList<String> stylesheets = primaryStage.getScene().getStylesheets();
+        for (Theme t : Theme.values()) {
+            stylesheets.remove(getStylesheetUrl(t));
+        }
+        stylesheets.add(getStylesheetUrl(theme));
+        currentTheme = theme;
+        logger.info("Theme changed to " + theme);
+    }
+
+    private String getStylesheetUrl(Theme theme) {
+        return getClass().getResource(theme.getStylesheetPath()).toExternalForm();
+    }
+
+    /**
      * Opens the user guide access window or focuses on it if it's already opened.
      */
     @FXML
@@ -169,7 +191,7 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private void handleExit() {
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
-                (int) primaryStage.getX(), (int) primaryStage.getY());
+                (int) primaryStage.getX(), (int) primaryStage.getY(), currentTheme);
         logic.setGuiSettings(guiSettings);
         userGuideAccessWindow.hide();
         primaryStage.hide();
@@ -189,6 +211,7 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+            commandResult.getTheme().ifPresent(this::applyTheme);
 
             if (commandResult.isExit()) {
                 handleExit();
