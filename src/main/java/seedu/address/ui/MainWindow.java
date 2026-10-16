@@ -3,7 +3,6 @@ package seedu.address.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
@@ -78,11 +77,11 @@ public class MainWindow extends UiPart<Stage> {
 
         // Configure the UI
         setWindowDefaultSize(logic.getGuiSettings());
-        applyTheme(logic.getGuiSettings().getTheme());
 
         setAccelerators();
 
         userGuideAccessWindow = new UserGuideAccessWindow();
+        applyTheme(logic.getGuiSettings().getTheme());
     }
 
     public Stage getPrimaryStage() {
@@ -157,15 +156,12 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Switches the window to the given {@code theme} by swapping its color stylesheet.
+     * Switches this window and the user guide window to the given {@code theme}.
      */
     private void applyTheme(Theme theme) {
         assert theme != null;
-        ObservableList<String> stylesheets = primaryStage.getScene().getStylesheets();
-        for (Theme t : Theme.values()) {
-            stylesheets.remove(getStylesheetUrl(t));
-        }
-        stylesheets.add(getStylesheetUrl(theme));
+        ThemeStylesheet.apply(primaryStage.getScene(), theme);
+        userGuideAccessWindow.applyTheme(theme);
         currentTheme = theme;
         themeToggle.setSelected(theme == Theme.LIGHT);
         themeToggle.setText(theme == Theme.LIGHT ? "Light" : "Dark");
@@ -181,10 +177,6 @@ public class MainWindow extends UiPart<Stage> {
         applyTheme(newTheme);
         resultDisplay.setFeedbackToUser(
                 String.format(ThemeCommand.MESSAGE_SUCCESS, newTheme.name().toLowerCase()));
-    }
-
-    private String getStylesheetUrl(Theme theme) {
-        return getClass().getResource(theme.getStylesheetPath()).toExternalForm();
     }
 
     /**
