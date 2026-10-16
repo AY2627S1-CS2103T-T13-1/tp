@@ -1,0 +1,12 @@
+/* Light palette. Base.css uses these names instead of hard-coded colors. */
+.root {
+    theme-bg: #ffffff;
+    theme-raised: #f4f5f6;
+    theme-row-even: #ffffff;
+    theme-row-odd: #f3f4f5;
+    theme-row-selected: #e1eef3;
+    theme-border: #dcdfe3;
+    theme-text: #111111;
+    theme-text-muted: #555b61;
+    theme-input-line: #111111;
+}

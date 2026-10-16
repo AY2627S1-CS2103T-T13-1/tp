@@ -1,0 +1,12 @@
+/* OLED dark palette. Base.css uses these names instead of hard-coded colors. */
+.root {
+    theme-bg: #000000;
+    theme-raised: #0d0d0d;
+    theme-row-even: #000000;
+    theme-row-odd: #0f0f0f;
+    theme-row-selected: #12232b;
+    theme-border: #262626;
+    theme-text: #ffffff;
+    theme-text-muted: #a6a6a6;
+    theme-input-line: #ffffff;
+}
