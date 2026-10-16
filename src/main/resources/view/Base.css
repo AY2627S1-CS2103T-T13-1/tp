@@ -366,5 +366,6 @@
 
 #tagLegend .label.tag-legend-title {
     -fx-background-color: transparent;
+    -fx-text-fill: theme-text;
     -fx-padding: 0;
 }
