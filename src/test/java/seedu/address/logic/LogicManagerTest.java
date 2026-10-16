@@ -61,8 +61,16 @@ public class LogicManagerTest {
 
     @Test
     public void execute_commandExecutionError_throwsCommandException() {
+        model.addPerson(AMY);
+
         String deleteCommand = "delete 9";
         assertCommandException(deleteCommand, DeleteCommand.MESSAGE_INVALID_INDEX);
+    }
+
+    @Test
+    public void execute_deleteFromEmptyList_throwsCommandException() {
+        String deleteCommand = "delete 1";
+        assertCommandException(deleteCommand, MESSAGE_EMPTY_LIST);
     }
 
     @Test
