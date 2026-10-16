@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
@@ -18,6 +19,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.Theme;
 import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -58,6 +60,9 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private FlowPane tagLegend;
+
+    @FXML
+    private ToggleButton themeToggle;
 
     /**
      * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
@@ -162,7 +167,20 @@ public class MainWindow extends UiPart<Stage> {
         }
         stylesheets.add(getStylesheetUrl(theme));
         currentTheme = theme;
+        themeToggle.setSelected(theme == Theme.LIGHT);
+        themeToggle.setText(theme == Theme.LIGHT ? "Light" : "Dark");
         logger.info("Theme changed to " + theme);
+    }
+
+    /**
+     * Switches between the dark and light themes when the theme button is clicked.
+     */
+    @FXML
+    private void handleThemeToggle() {
+        Theme newTheme = currentTheme == Theme.DARK ? Theme.LIGHT : Theme.DARK;
+        applyTheme(newTheme);
+        resultDisplay.setFeedbackToUser(
+                String.format(ThemeCommand.MESSAGE_SUCCESS, newTheme.name().toLowerCase()));
     }
 
     private String getStylesheetUrl(Theme theme) {
