@@ -38,6 +38,10 @@ public class HelpCommand extends Command {
                     ClearCommand.COMMAND_WORD,
                     ClearCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
+                    ThemeCommand.COMMAND_SYNTAX,
+                    ThemeCommand.COMMAND_DESCRIPTION,
+                    ThemeCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     ExitCommand.COMMAND_WORD,
                     ExitCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
