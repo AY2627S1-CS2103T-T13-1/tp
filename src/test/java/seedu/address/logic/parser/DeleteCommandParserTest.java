@@ -28,4 +28,9 @@ public class DeleteCommandParserTest {
     public void parse_invalidArgs_throwsParseException() {
         assertParseFailure(parser, "a", String.format(ParserUtil.MESSAGE_INVALID_INDEX, DeleteCommand.MESSAGE_USAGE));
     }
+
+    @Test
+    public void parse_blankArg_throwsParseException() {
+        assertParseFailure(parser, "", String.format(DeleteCommandParser.MESSAGE_BLANK_ARGUMENT));
+    }
 }
