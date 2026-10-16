@@ -159,6 +159,60 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Dark and light themes
+
+The user can switch between an OLED dark theme and a light theme by typing `theme dark` / `theme light`, or by clicking the theme button in the menu bar. The chosen theme is saved and restored on the next launch.
+
+#### Implementation
+
+**Stylesheets.** The colors of the app are split into two layers in `src/main/resources/view`:
+
+* `Base.css` and `Extensions.css` contain all the style rules, but refer to colors by name (e.g. `theme-bg`, `theme-text`, `theme-border`) instead of hard-coded values.
+* `DarkTheme.css` and `LightTheme.css` only define what those names mean, in a `.root` block. For example, `theme-bg` is `#000000` in the dark theme and `#ffffff` in the light theme.
+
+JavaFX resolves these names (called _looked-up colors_) from whichever palette stylesheet is currently loaded, so switching themes only requires swapping one small stylesheet. Tag colors and error colors are left hard-coded, as they are readable in both themes.
+
+**Classes involved.**
+
+* `Theme` (in `commons.core`) is an enum of the available themes. Each value stores the path of its palette stylesheet. It is placed in `commons` because the Logic, UI and Storage components all use it.
+* `ThemeCommand` and `ThemeCommandParser` parse and execute the `theme` command. `ThemeCommand` does not change the `Model`. Instead, it returns a `CommandResult` that carries the requested `Theme`, in the same way that `ExitCommand` uses `CommandResult#isExit()` to ask the UI to close the app.
+* `ThemeStylesheet` (in `ui`) removes any palette stylesheet from a `Scene` and adds the one for the given `Theme`. Both `MainWindow` and `UserGuideAccessWindow` use it, so the two windows always show the same theme.
+* `GuiSettings` stores the current `Theme` along with the window size and position. It is written to `preferences.json` when the app closes.
+
+The sequence diagram below shows what happens when the user types `theme light`.
+
+<puml src="diagrams/ThemeSequenceDiagram.puml" alt="Sequence of the `theme light` command" />
+
+1. `MainWindow` passes the input to `LogicManager`, which uses `AddressBookParser` and `ThemeCommandParser` to create a `ThemeCommand` for `Theme.LIGHT`.
+2. Executing the `ThemeCommand` returns a `CommandResult` whose `getTheme()` contains `Theme.LIGHT`.
+3. `MainWindow` sees the theme in the result and calls `applyTheme(LIGHT)`, which swaps the palette stylesheet of both windows and updates the theme button's label.
+
+Clicking the theme button calls `MainWindow#handleThemeToggle()`, which calls the same `applyTheme(...)` method with the other theme, so both ways of switching behave identically.
+
+On start-up, `MainWindow` reads the saved theme with `GuiSettings#getTheme()`. If `preferences.json` has no theme (e.g. it was created by an older version of the app), the default theme `Theme.DARK` is used.
+
+#### Design considerations
+
+**Aspect: How the theme colors are defined**
+
+* **Alternative 1 (current choice):** One shared `Base.css` with named colors, plus one small palette file per theme.
+  * Pros: Each style rule is written only once. Adding a new theme only needs a new palette file and a new `Theme` value.
+  * Cons: Every color in `Base.css` had to be replaced by a name, and new style rules must remember to use the names.
+
+* **Alternative 2:** A full copy of the stylesheet for each theme.
+  * Pros: Simple to set up.
+  * Cons: Every style change must be made in two files, which is easy to get wrong and duplicates about 370 lines of CSS.
+
+**Aspect: How the theme command reaches the UI**
+
+* **Alternative 1 (current choice):** `ThemeCommand` returns the theme inside `CommandResult`, and `MainWindow` applies it.
+  * Pros: Logic does not depend on JavaFX, so `ThemeCommand` can be unit tested without a GUI. This follows the existing pattern used by `exit`.
+  * Cons: `CommandResult` gains another field that most commands do not use.
+
+* **Alternative 2:** Store the theme in the `Model`, and have the UI listen for changes.
+  * Pros: The theme would be available to any component.
+  * Cons: The theme is a display preference, not address book data, so it does not belong in the `Model`.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation
@@ -513,6 +567,32 @@ testers are expected to do more *exploratory* testing.
 
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
+
+### Changing the theme
+
+1. Switching themes with the command
+
+   1. Test case: `theme light`<br>
+      Expected: The window turns white with dark text. The theme button in the menu bar shows "Light". The status message shows "Theme changed to light."
+
+   1. Test case: `theme DARK`<br>
+      Expected: The window turns black with white text. The button shows "Dark".
+
+   1. Test case: `theme blue`<br>
+      Expected: The theme does not change. The status message shows the correct format of the `theme` command.
+
+1. Switching themes with the button
+
+   1. Click the theme button in the menu bar.<br>
+      Expected: The window switches to the other theme, and the status message confirms the change. Typing straight after clicking still goes into the command box.
+
+1. Saving the theme
+
+   1. Switch to the light theme, close the app, then relaunch it.<br>
+      Expected: The app opens in the light theme.
+
+   1. Close the app, delete `preferences.json`, then relaunch it.<br>
+      Expected: The app opens in the dark theme.
 
 1. _{ more test cases … }_
 
