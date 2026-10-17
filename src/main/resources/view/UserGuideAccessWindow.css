@@ -1,19 +1,20 @@
 #button, #userGuideMessage {
-    -fx-text-fill: white;
+    -fx-text-fill: theme-text;
 }
 
 #button {
-    -fx-background-color: dimgray;
+    -fx-background-color: theme-raised;
+    -fx-border-color: theme-border;
 }
 
 #button:hover {
-    -fx-background-color: gray;
+    -fx-border-color: #3e7b91;
 }
 
 #button:armed {
-    -fx-background-color: darkgray;
+    -fx-background-color: theme-border;
 }
 
 #userGuideMessageContainer {
-    -fx-background-color: derive(#1d1d1d, 20%);
+    -fx-background-color: theme-bg;
 }

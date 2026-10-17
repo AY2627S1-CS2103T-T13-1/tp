@@ -15,6 +15,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.core.Theme;
 
 /**
  * Controller for a User Guide Access page
@@ -93,6 +94,13 @@ public class UserGuideAccessWindow extends UiPart<Stage> {
      */
     public void focus() {
         getRoot().requestFocus();
+    }
+
+    /**
+     * Switches the access window to the given {@code theme}.
+     */
+    public void applyTheme(Theme theme) {
+        ThemeStylesheet.apply(getRoot().getScene(), theme);
     }
 
     /**

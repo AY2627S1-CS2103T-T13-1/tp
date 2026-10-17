@@ -1,0 +1,96 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box UI UI_COLOR_T1
+participant ":MainWindow" as MainWindow UI_COLOR
+participant "<<class>>\nThemeStylesheet" as ThemeStylesheet UI_COLOR
+participant ":UserGuideAccessWindow" as UserGuideAccessWindow UI_COLOR
+end box
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":ThemeCommandParser" as ThemeCommandParser LOGIC_COLOR
+participant "c:ThemeCommand" as ThemeCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+[-> MainWindow : executeCommand("theme light")
+activate MainWindow
+
+MainWindow -> LogicManager : execute("theme light")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("theme light")
+activate AddressBookParser
+
+create ThemeCommandParser
+AddressBookParser -> ThemeCommandParser
+activate ThemeCommandParser
+
+ThemeCommandParser --> AddressBookParser
+deactivate ThemeCommandParser
+
+AddressBookParser -> ThemeCommandParser : parse(" light")
+activate ThemeCommandParser
+
+create ThemeCommand
+ThemeCommandParser -> ThemeCommand : new ThemeCommand(LIGHT)
+activate ThemeCommand
+
+ThemeCommand --> ThemeCommandParser
+deactivate ThemeCommand
+
+ThemeCommandParser --> AddressBookParser : c
+deactivate ThemeCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.
+ThemeCommandParser -[hidden]-> AddressBookParser
+destroy ThemeCommandParser
+
+AddressBookParser --> LogicManager : c
+deactivate AddressBookParser
+
+LogicManager -> ThemeCommand : execute(model)
+activate ThemeCommand
+
+create CommandResult
+ThemeCommand -> CommandResult : new CommandResult(msg, false, LIGHT)
+activate CommandResult
+
+CommandResult --> ThemeCommand
+deactivate CommandResult
+
+ThemeCommand --> LogicManager : r
+deactivate ThemeCommand
+
+LogicManager --> MainWindow : r
+deactivate LogicManager
+
+MainWindow -> MainWindow : applyTheme(LIGHT)
+activate MainWindow
+
+MainWindow -> ThemeStylesheet : apply(scene, LIGHT)
+activate ThemeStylesheet
+
+ThemeStylesheet --> MainWindow
+deactivate ThemeStylesheet
+
+MainWindow -> UserGuideAccessWindow : applyTheme(LIGHT)
+activate UserGuideAccessWindow
+
+UserGuideAccessWindow -> ThemeStylesheet : apply(scene, LIGHT)
+activate ThemeStylesheet
+
+ThemeStylesheet --> UserGuideAccessWindow
+deactivate ThemeStylesheet
+
+UserGuideAccessWindow --> MainWindow
+deactivate UserGuideAccessWindow
+
+MainWindow --> MainWindow
+deactivate MainWindow
+
+[<-- MainWindow : r
+deactivate MainWindow
+@enduml

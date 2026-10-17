@@ -159,6 +159,21 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 
 This section describes some noteworthy details on how certain features are implemented.
 
+### Dark and light themes
+
+The user can switch between an OLED dark theme and a light theme with `theme dark` / `theme light`, or with the theme button in the menu bar.
+
+<puml src="diagrams/ThemeSequenceDiagram.puml" alt="Sequence of the `theme light` command" />
+
+The colors are split across two kinds of stylesheets in `src/main/resources/view`. `Base.css` and `Extensions.css` hold all the style rules, but refer to colors by name (e.g. `theme-bg`, `theme-text`). `DarkTheme.css` and `LightTheme.css` only define what those names mean. Switching themes swaps this one palette stylesheet.
+
+The theme feature,
+
+* uses `ThemeCommand`, which returns a `CommandResult` carrying the requested `Theme` instead of changing the `Model`, the same way `exit` asks the UI to close the app.
+* uses `ThemeStylesheet` to swap the palette stylesheet of both `MainWindow` and `UserGuideAccessWindow`, so the two windows always match.
+* uses the same `MainWindow#applyTheme(...)` method for both the command and the button.
+* saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation
@@ -515,6 +530,17 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases … }_
+
+### Changing the theme
+
+1. Test case: `theme light`<br>
+   Expected: The window turns white and the theme button shows "Light".
+
+1. Test case: `theme blue`<br>
+   Expected: The theme does not change. An error message shows the correct format.
+
+1. Click the theme button, close the app, then relaunch it.<br>
+   Expected: The app opens in the theme that was last selected.
 
 ### Deleting a person
 
