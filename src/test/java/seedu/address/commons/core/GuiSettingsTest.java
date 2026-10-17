@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.commons.util.JsonUtil;
+
 public class GuiSettingsTest {
     @Test
     public void toStringMethod() {
@@ -26,5 +28,24 @@ public class GuiSettingsTest {
         GuiSettings dark = new GuiSettings(1, 2, 3, 4, Theme.DARK);
         GuiSettings light = new GuiSettings(1, 2, 3, 4, Theme.LIGHT);
         assertNotEquals(dark, light);
+    }
+
+    @Test
+    public void equals_sameTheme_returnsTrue() {
+        GuiSettings light = new GuiSettings(1, 2, 3, 4, Theme.LIGHT);
+        assertEquals(light, new GuiSettings(1, 2, 3, 4, Theme.LIGHT));
+        assertEquals(light.hashCode(), new GuiSettings(1, 2, 3, 4, Theme.LIGHT).hashCode());
+    }
+
+    @Test
+    public void getTheme_nullThemeInJson_returnsDark() throws Exception {
+        GuiSettings guiSettings = JsonUtil.fromJsonString("{\"theme\" : null}", GuiSettings.class);
+        assertEquals(Theme.DARK, guiSettings.getTheme());
+    }
+
+    @Test
+    public void getTheme_lightThemeInJson_returnsLight() throws Exception {
+        GuiSettings guiSettings = JsonUtil.fromJsonString("{\"theme\" : \"LIGHT\"}", GuiSettings.class);
+        assertEquals(Theme.LIGHT, guiSettings.getTheme());
     }
 }
