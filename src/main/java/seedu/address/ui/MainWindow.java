@@ -175,8 +175,7 @@ public class MainWindow extends UiPart<Stage> {
     private void handleThemeToggle() {
         Theme newTheme = currentTheme == Theme.DARK ? Theme.LIGHT : Theme.DARK;
         applyTheme(newTheme);
-        resultDisplay.setFeedbackToUser(
-                String.format(ThemeCommand.MESSAGE_SUCCESS, newTheme.name().toLowerCase()));
+        resultDisplay.setFeedbackToUser(ThemeCommand.getSuccessMessage(newTheme));
     }
 
     /**

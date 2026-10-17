@@ -31,10 +31,18 @@ public class ThemeCommand extends Command {
         this.theme = theme;
     }
 
+    /**
+     * Returns the message shown to the user after switching to {@code theme}.
+     */
+    public static String getSuccessMessage(Theme theme) {
+        requireNonNull(theme);
+        return String.format(MESSAGE_SUCCESS, theme.getDisplayName());
+    }
+
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, theme.name().toLowerCase()), false, theme);
+        return new CommandResult(getSuccessMessage(theme), false, theme);
     }
 
     @Override
