@@ -14,12 +14,10 @@ public class ThemeCommand extends Command {
     public static final String COMMAND_WORD = "theme";
     public static final String COMMAND_DESCRIPTION = "Changes the color theme.";
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " dark|light";
-    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " light";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: dark|light\n"
-            + COMMAND_SAMPLE_USAGE;
+            + "Parameters: dark|light";
 
     public static final String MESSAGE_SUCCESS = "Theme changed to %1$s.";
 
