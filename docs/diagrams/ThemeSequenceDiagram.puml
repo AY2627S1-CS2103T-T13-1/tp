@@ -51,11 +51,11 @@ destroy ThemeCommandParser
 AddressBookParser --> LogicManager : c
 deactivate AddressBookParser
 
-LogicManager -> ThemeCommand : execute(m)
+LogicManager -> ThemeCommand : execute(model)
 activate ThemeCommand
 
 create CommandResult
-ThemeCommand -> CommandResult : theme = LIGHT
+ThemeCommand -> CommandResult : new CommandResult(msg, false, LIGHT)
 activate CommandResult
 
 CommandResult --> ThemeCommand
@@ -91,6 +91,6 @@ deactivate UserGuideAccessWindow
 MainWindow --> MainWindow
 deactivate MainWindow
 
-[<-- MainWindow
+[<-- MainWindow : r
 deactivate MainWindow
 @enduml
