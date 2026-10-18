@@ -34,6 +34,8 @@ public class PinCommand extends Command {
     public static final String MESSAGE_ALREADY_PINNED = "The selected contact is already pinned! "
             + "Please try again with another contact.";
 
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX";
+
     private final Index index;
 
     /**

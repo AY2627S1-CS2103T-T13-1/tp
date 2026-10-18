@@ -34,6 +34,7 @@ public class UnpinCommand extends Command {
     public static final String MESSAGE_ALREADY_UNPINNED = "The selected contact is already unpinned! "
             + "Please try again with another contact.";
 
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX";
 
     private final Index index;
 
