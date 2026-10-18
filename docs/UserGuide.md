@@ -172,6 +172,26 @@ Clears all entries from the address book.
 
 Format: `clear`
 
+### Changing the theme: `theme`
+
+Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
+
+Format: `theme dark` or `theme light`
+
+* The theme name is not case-sensitive. e.g. `theme LIGHT` works the same as `theme light`.
+* You can also click the **Dark** / **Light** button at the right end of the menu bar to switch to the other theme.
+* The User Guide window changes to the same theme.
+* coNnectUS remembers your theme and opens with it the next time you start the app. The first time you start the app, it opens in the dark theme.
+
+Examples:
+* `theme light` switches to the light theme.
+* `theme dark` switches back to the dark theme.
+
+<div style="display:flex; flex-wrap:wrap; gap:12px">
+  <img src="images/ThemeDark.png" alt="coNnectUS in the dark theme" width="360" />
+  <img src="images/ThemeLight.png" alt="coNnectUS in the light theme" width="360" />
+</div>
+
 ### Exiting the program: `exit`
 
 Exits the program.
@@ -181,6 +201,8 @@ Format: `exit`
 ### Saving the data
 
 coNnectUS automatically saves data after every command. You do not need to save manually.
+
+Your window size, window position and theme are saved in `[JAR file location]/preferences.json` when you close the app.
 
 ### Editing the data file
 
@@ -219,4 +241,5 @@ Action     | Format, Examples
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
 **Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **List**   | `list`
+**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
 **Help**   | `help`

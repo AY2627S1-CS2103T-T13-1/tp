@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import seedu.address.commons.core.Theme;
+
 public class CommandResultTest {
     @Test
     public void equals() {
@@ -15,6 +17,7 @@ public class CommandResultTest {
         // same values -> returns true
         assertTrue(commandResult.equals(new CommandResult("feedback")));
         assertTrue(commandResult.equals(new CommandResult("feedback", false)));
+        assertTrue(commandResult.equals(new CommandResult("feedback", false, null)));
 
         // same object -> returns true
         assertTrue(commandResult.equals(commandResult));
@@ -30,6 +33,9 @@ public class CommandResultTest {
 
         // different exit value -> returns false
         assertFalse(commandResult.equals(new CommandResult("feedback", true)));
+
+        // different theme value -> returns false
+        assertFalse(commandResult.equals(new CommandResult("feedback", false, Theme.LIGHT)));
     }
 
     @Test
@@ -44,6 +50,15 @@ public class CommandResultTest {
 
         // different exit value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", true).hashCode());
+
+        // different theme value -> returns different hashcode
+        assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, Theme.LIGHT).hashCode());
+    }
+
+    @Test
+    public void getTheme() {
+        assertTrue(new CommandResult("feedback").getTheme().isEmpty());
+        assertEquals(Theme.DARK, new CommandResult("feedback", false, Theme.DARK).getTheme().get());
     }
 
     @Test
@@ -51,7 +66,7 @@ public class CommandResultTest {
         CommandResult commandResult = new CommandResult("feedback");
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser()
-                + ", exit=" + commandResult.isExit() + "}";
+                + ", exit=" + commandResult.isExit() + ", theme=null}";
         assertEquals(expected, commandResult.toString());
     }
 }

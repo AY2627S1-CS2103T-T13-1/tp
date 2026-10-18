@@ -7,7 +7,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.VBox?>
@@ -20,19 +22,27 @@
   <scene>
     <Scene>
       <stylesheets>
-        <URL value="@DarkTheme.css" />
+        <URL value="@Base.css" />
         <URL value="@Extensions.css" />
       </stylesheets>
 
       <VBox>
-        <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
-          <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
-          </Menu>
-          <Menu mnemonicParsing="false" text="User Guide">
-            <MenuItem fx:id="userGuideMenuItem" mnemonicParsing="false" onAction="#handleUserGuide" text="User Guide" />
-          </Menu>
-        </MenuBar>
+        <HBox VBox.vgrow="NEVER" alignment="CENTER_LEFT" styleClass="menu-bar">
+          <MenuBar fx:id="menuBar" HBox.hgrow="ALWAYS">
+            <Menu mnemonicParsing="false" text="File">
+              <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="User Guide">
+              <MenuItem fx:id="userGuideMenuItem" mnemonicParsing="false" onAction="#handleUserGuide" text="User Guide" />
+            </Menu>
+          </MenuBar>
+          <Button fx:id="themeButton" onAction="#handleThemeToggle"
+                  styleClass="theme-button" focusTraversable="false">
+            <HBox.margin>
+              <Insets right="8" />
+            </HBox.margin>
+          </Button>
+        </HBox>
 
         <StackPane VBox.vgrow="NEVER" fx:id="commandBoxPlaceholder" styleClass="pane-with-border">
           <padding>
