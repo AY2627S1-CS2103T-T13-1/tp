@@ -103,7 +103,7 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_unpin() throws Exception {
-        assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
+        assertTrue(parser.parseCommand(UnpinCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
     }
 
     @Test
