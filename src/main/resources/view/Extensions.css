@@ -19,7 +19,7 @@
     -fx-text-fill: theme-text;
 }
 
-.theme-toggle {
+.theme-button {
     -fx-background-color: theme-raised;
     -fx-border-color: theme-border;
     -fx-background-radius: 999;
@@ -28,6 +28,6 @@
     -fx-padding: 3 12 3 12;
 }
 
-.theme-toggle:hover {
+.theme-button:hover {
     -fx-border-color: #3e7b91;
 }

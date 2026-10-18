@@ -65,7 +65,7 @@ public class MainWindow extends UiPart<Stage> {
     private FlowPane tagLegend;
 
     @FXML
-    private Button themeToggle;
+    private Button themeButton;
 
     /**
      * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
@@ -184,7 +184,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void setCurrentTheme(Theme theme) {
         currentTheme = theme;
-        themeToggle.setText(theme == Theme.LIGHT ? "Light" : "Dark");
+        themeButton.setText(theme == Theme.LIGHT ? "Light" : "Dark");
     }
 
     private void showMissingThemeMessage(Theme theme) {

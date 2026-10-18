@@ -23,7 +23,7 @@ public class ThemeTest {
         "/view/Base.css", "/view/Extensions.css", "/view/UserGuideAccessWindow.css"
     };
 
-    /** Matches a placeholder used as a value, e.g. "theme-bg" in "color: theme-bg;", but not ".theme-toggle". */
+    /** Matches a placeholder used as a value, e.g. "theme-bg" in "color: theme-bg;", but not ".theme-button". */
     private static final Pattern USED_PLACEHOLDER = Pattern.compile("(?<![\\w.#-])(theme-[a-z-]+)");
 
     /** Matches a placeholder being defined, e.g. "theme-bg" in "theme-bg: #000000;". */

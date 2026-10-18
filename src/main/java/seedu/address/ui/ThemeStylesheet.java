@@ -25,8 +25,8 @@ final class ThemeStylesheet {
         }
 
         ObservableList<String> stylesheets = scene.getStylesheets();
-        for (Theme t : Theme.values()) {
-            URL url = getUrl(t);
+        for (Theme existingTheme : Theme.values()) {
+            URL url = getUrl(existingTheme);
             if (url != null) {
                 stylesheets.remove(url.toExternalForm());
             }
