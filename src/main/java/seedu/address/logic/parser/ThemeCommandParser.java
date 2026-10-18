@@ -3,8 +3,6 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
-import java.util.Locale;
-
 import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -23,12 +21,10 @@ public class ThemeCommandParser implements Parser<ThemeCommand> {
      */
     public ThemeCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        String trimmedArgs = args.trim().toLowerCase(Locale.ROOT);
-        return switch (trimmedArgs) {
-            case "dark" -> new ThemeCommand(Theme.DARK);
-            case "light" -> new ThemeCommand(Theme.LIGHT);
-            default -> throw new ParseException(
-                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ThemeCommand.MESSAGE_USAGE));
-        };
+        Theme theme = Theme.fromName(args.trim());
+        if (theme == null) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ThemeCommand.MESSAGE_USAGE));
+        }
+        return new ThemeCommand(theme);
     }
 }

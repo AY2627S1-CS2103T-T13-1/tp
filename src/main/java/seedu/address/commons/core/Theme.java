@@ -30,7 +30,8 @@ public enum Theme {
 
     /**
      * Returns the theme with the given {@code name}, ignoring case, or null if there is no such theme.
-     * Used when reading preferences.json, so that an unknown theme does not stop the other preferences from loading.
+     * Used by {@code ThemeCommandParser}, and when reading preferences.json so that an unknown theme does not
+     * stop the other preferences from loading.
      */
     @JsonCreator
     public static Theme fromName(String name) {
