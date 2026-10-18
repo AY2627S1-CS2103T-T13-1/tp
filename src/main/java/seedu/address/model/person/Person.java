@@ -67,6 +67,10 @@ public class Person {
         return address;
     }
 
+    public boolean isPinned() {
+        return isPinned;
+    }
+
     /**
      * Creates a copy of the person with {@code isPinned} set to true.
      */
