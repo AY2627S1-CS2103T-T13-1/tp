@@ -106,6 +106,8 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unpin() throws Exception {
         assertTrue(parser.parseCommand(UnpinCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
+    }
+    
     public void parseCommand_theme() throws Exception {
         ThemeCommand command = (ThemeCommand) parser.parseCommand(ThemeCommand.COMMAND_WORD + " light");
         assertEquals(new ThemeCommand(Theme.LIGHT), command);
