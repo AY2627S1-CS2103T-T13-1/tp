@@ -2,9 +2,14 @@ package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+
 import seedu.address.commons.core.index.Index;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonComparatorFactory;
 
 /**
  * Pins a person within the address book.
@@ -24,6 +29,9 @@ public class PinCommand extends Command {
             + "Parameters: LIST_INDEX (must be a positive integer)\n"
             + COMMAND_SAMPLE_USAGE;
 
+    public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
+            + "Please check again with list.";
+
     private final Index index;
 
     /**
@@ -38,6 +46,17 @@ public class PinCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        return new CommandResult(MESSAGE_SUCCESS);
+        List<Person> lastShownList = model.getFilteredPersonList();
+
+        if (index.getZeroBased() >= lastShownList.size()) {
+            throw new CommandException(MESSAGE_INVALID_INDEX);
+        }
+
+        Person personToPin = lastShownList.get(index.getZeroBased());
+        Person pinnedPerson = personToPin.pinPerson();
+
+        model.setPerson(personToPin, pinnedPerson);
+
+        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(pinnedPerson)));
     }
 }
