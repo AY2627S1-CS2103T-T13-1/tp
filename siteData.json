@@ -51,6 +51,7 @@
         "storage-component": "Storage component",
         "common-classes": "Common classes",
         "implementation": "Implementation",
+        "dark-and-light-themes": "Dark and light themes",
         "proposed-undo-redo-feature": "[Proposed] Undo/redo feature",
         "proposed-data-archiving": "[Proposed] Data archiving",
         "documentation-logging-testing-dev-ops": "Documentation, logging, testing, dev-ops",
@@ -62,6 +63,7 @@
         "glossary": "Glossary",
         "appendix-instructions-for-manual-testing": "Appendix: Instructions for manual testing",
         "launch-and-shutdown": "Launch and shutdown",
+        "changing-the-theme": "Changing the theme",
         "deleting-a-person": "Deleting a person",
         "saving-data": "Saving data"
       },
@@ -118,6 +120,7 @@
         "deleting-a-person-delete": "Deleting a person: delete",
         "tagging-a-person": "Tagging a person",
         "clearing-all-entries-clear": "Clearing all entries: clear",
+        "changing-the-theme-theme": "Changing the theme: theme",
         "exiting-the-program-exit": "Exiting the program: exit",
         "saving-the-data": "Saving the data",
         "editing-the-data-file": "Editing the data file",
