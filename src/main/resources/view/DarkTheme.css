@@ -1,4 +1,4 @@
-/* OLED dark palette. Base.css uses these names instead of hard-coded colors. */
+/* OLED dark palette. Defines the color of each placeholder used in the other stylesheets. */
 .root {
     theme-bg: #000000;
     theme-raised: #0d0d0d;
@@ -9,4 +9,5 @@
     theme-text: #ffffff;
     theme-text-muted: #a6a6a6;
     theme-input-line: #ffffff;
+    theme-accent: #3e7b91;
 }

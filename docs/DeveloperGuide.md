@@ -165,7 +165,7 @@ The user can switch between an OLED dark theme and a light theme with `theme dar
 
 <puml src="diagrams/ThemeSequenceDiagram.puml" alt="Sequence of the `theme light` command" />
 
-The colors are split across two kinds of stylesheets in `src/main/resources/view`. `Base.css` and `Extensions.css` hold all the style rules, but use color placeholders (e.g. `theme-bg`, `theme-text`) instead of actual colors. `DarkTheme.css` and `LightTheme.css` only define the color of each placeholder. Switching themes swaps this one palette stylesheet.
+The colors are split across two kinds of stylesheets in `src/main/resources/view`. `Base.css`, `Extensions.css` and `UserGuideAccessWindow.css` hold all the style rules, but use color placeholders (e.g. `theme-bg`, `theme-text`) instead of actual colors. `DarkTheme.css` and `LightTheme.css` only define the color of each placeholder. Switching themes swaps this one palette stylesheet.
 
 The theme feature,
 

@@ -8,7 +8,7 @@
 }
 
 #button:hover {
-    -fx-border-color: #3e7b91;
+    -fx-border-color: theme-accent;
 }
 
 #button:armed {
