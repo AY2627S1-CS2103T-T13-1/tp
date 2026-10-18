@@ -105,8 +105,12 @@ class JsonAdaptedPerson {
         } else {
             modelAddress = new Address(address);
         }
-
-        final boolean isPinned = this.isPinned.equals("true");
+        final boolean isPinned;
+        if (this.isPinned == null) {
+            isPinned = false;
+        } else {
+            isPinned = this.isPinned.equals("true");
+        }
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, isPinned);
