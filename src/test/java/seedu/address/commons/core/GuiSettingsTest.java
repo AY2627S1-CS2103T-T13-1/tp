@@ -48,4 +48,18 @@ public class GuiSettingsTest {
         GuiSettings guiSettings = JsonUtil.fromJsonString("{\"theme\" : \"LIGHT\"}", GuiSettings.class);
         assertEquals(Theme.LIGHT, guiSettings.getTheme());
     }
+
+    @Test
+    public void getTheme_lowerCaseThemeInJson_returnsTheme() throws Exception {
+        GuiSettings guiSettings = JsonUtil.fromJsonString("{\"theme\" : \"light\"}", GuiSettings.class);
+        assertEquals(Theme.LIGHT, guiSettings.getTheme());
+    }
+
+    @Test
+    public void getTheme_unknownThemeInJson_returnsDarkAndKeepsOtherSettings() throws Exception {
+        GuiSettings guiSettings = JsonUtil.fromJsonString(
+                "{\"windowWidth\" : 900.0, \"theme\" : \"BLUE\"}", GuiSettings.class);
+        assertEquals(Theme.DARK, guiSettings.getTheme());
+        assertEquals(900.0, guiSettings.getWindowWidth());
+    }
 }

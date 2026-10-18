@@ -2,6 +2,8 @@ package seedu.address.commons.core;
 
 import java.util.Locale;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * Represents the color themes available in the app.
  */
@@ -24,5 +26,19 @@ public enum Theme {
      */
     public String getDisplayName() {
         return name().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Returns the theme with the given {@code name}, ignoring case, or null if there is no such theme.
+     * Used when reading preferences.json, so that an unknown theme does not stop the other preferences from loading.
+     */
+    @JsonCreator
+    public static Theme fromName(String name) {
+        for (Theme theme : values()) {
+            if (theme.name().equalsIgnoreCase(name)) {
+                return theme;
+            }
+        }
+        return null;
     }
 }

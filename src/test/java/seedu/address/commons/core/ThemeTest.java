@@ -3,6 +3,7 @@ package seedu.address.commons.core;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -56,6 +57,20 @@ public class ThemeTest {
     public void getDisplayName_allThemes_returnsLowerCaseName() {
         assertEquals("dark", Theme.DARK.getDisplayName());
         assertEquals("light", Theme.LIGHT.getDisplayName());
+    }
+
+    @Test
+    public void fromName_validName_returnsTheme() {
+        assertEquals(Theme.DARK, Theme.fromName("DARK"));
+        assertEquals(Theme.LIGHT, Theme.fromName("light"));
+        assertEquals(Theme.LIGHT, Theme.fromName("LiGhT"));
+    }
+
+    @Test
+    public void fromName_invalidName_returnsNull() {
+        assertNull(Theme.fromName("blue"));
+        assertNull(Theme.fromName(""));
+        assertNull(Theme.fromName(null));
     }
 
     private static String readResource(String path) throws IOException {
