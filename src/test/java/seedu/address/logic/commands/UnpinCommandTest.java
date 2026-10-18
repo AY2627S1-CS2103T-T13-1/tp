@@ -38,7 +38,7 @@ public class UnpinCommandTest {
         Index outOfBoundIndex = Index.fromOneBased(model.getFilteredPersonList().size() + 1);
         UnpinCommand unpinCommand = new UnpinCommand(outOfBoundIndex);
 
-        assertCommandFailure(unpinCommand, model, PinCommand.MESSAGE_INVALID_INDEX);
+        assertCommandFailure(unpinCommand, model, UnpinCommand.MESSAGE_INVALID_INDEX);
     }
 
     @Test
