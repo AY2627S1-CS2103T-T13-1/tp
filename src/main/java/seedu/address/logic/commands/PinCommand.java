@@ -65,4 +65,18 @@ public class PinCommand extends Command {
 
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(pinnedPerson)));
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        // instanceof handles nulls
+        if (!(other instanceof PinCommand otherPinCommand)) {
+            return false;
+        }
+
+        return index.equals(otherPinCommand.index);
+    }
 }
