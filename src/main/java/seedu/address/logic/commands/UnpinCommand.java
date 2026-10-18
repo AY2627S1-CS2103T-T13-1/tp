@@ -11,7 +11,7 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Pins a person within the address book.
+ * Unpins a person within the address book.
  */
 public class UnpinCommand extends Command {
 
@@ -41,7 +41,7 @@ public class UnpinCommand extends Command {
     /**
      * Creates a UnpinCommand to unpin the contact specified at {@code index}.
      *
-     * @param index list index of contact to be pinned.
+     * @param index list index of contact to be unpinned.
      */
     public UnpinCommand(Index index) {
         this.index = index;
