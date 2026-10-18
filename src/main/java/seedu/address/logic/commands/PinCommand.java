@@ -9,7 +9,6 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.PersonComparatorFactory;
 
 /**
  * Pins a person within the address book.
