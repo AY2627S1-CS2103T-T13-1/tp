@@ -24,6 +24,6 @@ public class PinCommandParserTest {
 
     @Test
     public void parse_blankArg_throwsParseException() {
-        assertParseFailure(parser, "", String.format(PinCommandParser.MESSAGE_BLANK_ARGUMENT));
+        assertParseFailure(parser, "", PinCommandParser.MESSAGE_BLANK_ARGUMENT);
     }
 }

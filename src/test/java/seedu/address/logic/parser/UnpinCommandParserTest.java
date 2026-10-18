@@ -24,6 +24,6 @@ public class UnpinCommandParserTest {
 
     @Test
     public void parse_blankArg_throwsParseException() {
-        assertParseFailure(parser, "", String.format(UnpinCommandParser.MESSAGE_BLANK_ARGUMENT));
+        assertParseFailure(parser, "", UnpinCommandParser.MESSAGE_BLANK_ARGUMENT);
     }
 }
