@@ -1,5 +1,7 @@
 package seedu.address.ui;
 
+import java.net.URL;
+
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import seedu.address.commons.core.Theme;
@@ -13,17 +15,30 @@ final class ThemeStylesheet {
 
     /**
      * Replaces any theme stylesheet in {@code scene} with the stylesheet of {@code theme}.
+     * Returns false and leaves {@code scene} unchanged if the stylesheet of {@code theme} cannot be found.
      */
-    static void apply(Scene scene, Theme theme) {
+    static boolean apply(Scene scene, Theme theme) {
         assert scene != null && theme != null;
+        URL newUrl = getUrl(theme);
+        if (newUrl == null) {
+            return false;
+        }
+
         ObservableList<String> stylesheets = scene.getStylesheets();
         for (Theme t : Theme.values()) {
-            stylesheets.remove(getUrl(t));
+            URL url = getUrl(t);
+            if (url != null) {
+                stylesheets.remove(url.toExternalForm());
+            }
         }
-        stylesheets.add(getUrl(theme));
+        stylesheets.add(newUrl.toExternalForm());
+        return true;
     }
 
-    private static String getUrl(Theme theme) {
-        return ThemeStylesheet.class.getResource(theme.getStylesheetPath()).toExternalForm();
+    /**
+     * Returns the location of the stylesheet of {@code theme}, or null if it cannot be found.
+     */
+    private static URL getUrl(Theme theme) {
+        return ThemeStylesheet.class.getResource(theme.getStylesheetPath());
     }
 }

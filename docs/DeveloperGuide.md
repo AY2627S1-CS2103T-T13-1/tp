@@ -172,6 +172,7 @@ The theme feature,
 * uses `ThemeCommand`, which returns a `CommandResult` carrying the requested `Theme` instead of changing the `Model`, the same way `exit` asks the UI to close the app.
 * uses `ThemeStylesheet` to swap the palette stylesheet of both `MainWindow` and `UserGuideAccessWindow`, so the two windows always match.
 * uses the same `MainWindow#applyTheme(...)` method for both the command and the button.
+* keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
 ### \[Proposed\] Undo/redo feature

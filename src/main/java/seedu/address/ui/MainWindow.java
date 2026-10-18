@@ -1,6 +1,7 @@
 package seedu.address.ui;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javafx.event.ActionEvent;
@@ -29,6 +30,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+    private static final String MESSAGE_MISSING_THEME = "Could not load the %1$s theme because its stylesheet "
+            + "is missing.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -36,6 +39,7 @@ public class MainWindow extends UiPart<Stage> {
     private Logic logic;
     private Path dataFilePath;
     private Theme currentTheme;
+    private boolean isThemeMissingOnStartup;
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
@@ -81,7 +85,10 @@ public class MainWindow extends UiPart<Stage> {
         setAccelerators();
 
         userGuideAccessWindow = new UserGuideAccessWindow();
-        applyTheme(logic.getGuiSettings().getTheme());
+
+        // Keep the saved theme even if its stylesheet is missing, so that it is still saved on exit
+        setCurrentTheme(logic.getGuiSettings().getTheme());
+        isThemeMissingOnStartup = !applyTheme(currentTheme);
     }
 
     public Stage getPrimaryStage() {
@@ -141,6 +148,10 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+
+        if (isThemeMissingOnStartup) {
+            showMissingThemeMessage(currentTheme);
+        }
     }
 
     /**
@@ -157,14 +168,27 @@ public class MainWindow extends UiPart<Stage> {
 
     /**
      * Switches this window and the user guide window to the given {@code theme}.
+     * Returns false and keeps the current theme if the stylesheet of {@code theme} cannot be found.
      */
-    private void applyTheme(Theme theme) {
+    private boolean applyTheme(Theme theme) {
         assert theme != null;
-        ThemeStylesheet.apply(primaryStage.getScene(), theme);
+        if (!ThemeStylesheet.apply(primaryStage.getScene(), theme)) {
+            logger.warning("Missing stylesheet for theme " + theme + ": " + theme.getStylesheetPath());
+            return false;
+        }
         userGuideAccessWindow.applyTheme(theme);
+        setCurrentTheme(theme);
+        logger.info("Theme changed to " + theme);
+        return true;
+    }
+
+    private void setCurrentTheme(Theme theme) {
         currentTheme = theme;
         themeToggle.setText(theme == Theme.LIGHT ? "Light" : "Dark");
-        logger.info("Theme changed to " + theme);
+    }
+
+    private void showMissingThemeMessage(Theme theme) {
+        resultDisplay.setFeedbackToUser(String.format(MESSAGE_MISSING_THEME, theme.getDisplayName()));
     }
 
     /**
@@ -173,8 +197,11 @@ public class MainWindow extends UiPart<Stage> {
     @FXML
     private void handleThemeToggle() {
         Theme newTheme = currentTheme == Theme.DARK ? Theme.LIGHT : Theme.DARK;
-        applyTheme(newTheme);
-        resultDisplay.setFeedbackToUser(ThemeCommand.getSuccessMessage(newTheme));
+        if (applyTheme(newTheme)) {
+            resultDisplay.setFeedbackToUser(ThemeCommand.getSuccessMessage(newTheme));
+        } else {
+            showMissingThemeMessage(newTheme);
+        }
     }
 
     /**
@@ -219,7 +246,10 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
-            commandResult.getTheme().ifPresent(this::applyTheme);
+            Optional<Theme> theme = commandResult.getTheme();
+            if (theme.isPresent() && !applyTheme(theme.get())) {
+                showMissingThemeMessage(theme.get());
+            }
 
             if (commandResult.isExit()) {
                 handleExit();

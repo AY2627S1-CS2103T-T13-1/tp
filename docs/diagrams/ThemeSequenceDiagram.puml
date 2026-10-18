@@ -73,7 +73,7 @@ activate MainWindow
 MainWindow -> ThemeStylesheet : apply(scene, LIGHT)
 activate ThemeStylesheet
 
-ThemeStylesheet --> MainWindow
+ThemeStylesheet --> MainWindow : true
 deactivate ThemeStylesheet
 
 MainWindow -> UserGuideAccessWindow : applyTheme(LIGHT)
@@ -82,13 +82,13 @@ activate UserGuideAccessWindow
 UserGuideAccessWindow -> ThemeStylesheet : apply(scene, LIGHT)
 activate ThemeStylesheet
 
-ThemeStylesheet --> UserGuideAccessWindow
+ThemeStylesheet --> UserGuideAccessWindow : true
 deactivate ThemeStylesheet
 
 UserGuideAccessWindow --> MainWindow
 deactivate UserGuideAccessWindow
 
-MainWindow --> MainWindow
+MainWindow --> MainWindow : true
 deactivate MainWindow
 
 [<-- MainWindow : r
