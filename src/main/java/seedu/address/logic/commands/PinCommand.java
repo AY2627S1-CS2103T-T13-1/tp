@@ -31,6 +31,9 @@ public class PinCommand extends Command {
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
             + "Please check again with list.";
 
+    public static final String MESSAGE_ALREADY_PINNED = "The selected contact is already pinned! "
+            + "Please try again with another contact.";
+
     private final Index index;
 
     /**
@@ -52,6 +55,10 @@ public class PinCommand extends Command {
         }
 
         Person personToPin = lastShownList.get(index.getZeroBased());
+        if (personToPin.isPinned()) {
+            throw new CommandException(MESSAGE_ALREADY_PINNED);
+        }
+
         Person pinnedPerson = personToPin.pinPerson();
 
         model.setPerson(personToPin, pinnedPerson);

@@ -31,6 +31,10 @@ public class UnpinCommand extends Command {
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
             + "Please check again with list.";
 
+    public static final String MESSAGE_ALREADY_UNPINNED = "The selected contact is already unpinned! "
+            + "Please try again with another contact.";
+
+
     private final Index index;
 
     /**
@@ -52,6 +56,9 @@ public class UnpinCommand extends Command {
         }
 
         Person personToUnpin = lastShownList.get(index.getZeroBased());
+        if (!personToUnpin.isPinned()) {
+            throw new CommandException(MESSAGE_ALREADY_UNPINNED);
+        }
         Person unpinnedPerson = personToUnpin.unpinPerson();
 
         model.setPerson(personToUnpin, unpinnedPerson);
