@@ -23,8 +23,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
-import seedu.address.logic.commands.UnpinCommand;
 import seedu.address.logic.commands.ThemeCommand;
+import seedu.address.logic.commands.UnpinCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
@@ -107,7 +107,7 @@ public class AddressBookParserTest {
     public void parseCommand_unpin() throws Exception {
         assertTrue(parser.parseCommand(UnpinCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
     }
-    
+
     public void parseCommand_theme() throws Exception {
         ThemeCommand command = (ThemeCommand) parser.parseCommand(ThemeCommand.COMMAND_WORD + " light");
         assertEquals(new ThemeCommand(Theme.LIGHT), command);
