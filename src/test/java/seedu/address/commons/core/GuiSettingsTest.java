@@ -31,6 +31,12 @@ public class GuiSettingsTest {
     }
 
     @Test
+    public void equals_differentWindowCoordinates_returnsFalse() {
+        GuiSettings guiSettings = new GuiSettings(1, 2, 3, 4, Theme.DARK);
+        assertNotEquals(guiSettings, new GuiSettings(1, 2, 30, 4, Theme.DARK));
+    }
+
+    @Test
     public void equals_sameTheme_returnsTrue() {
         GuiSettings light = new GuiSettings(1, 2, 3, 4, Theme.LIGHT);
         assertEquals(light, new GuiSettings(1, 2, 3, 4, Theme.LIGHT));
