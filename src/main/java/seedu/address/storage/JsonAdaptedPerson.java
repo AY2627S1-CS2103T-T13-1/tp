@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.logic.Messages;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -105,12 +106,13 @@ class JsonAdaptedPerson {
         } else {
             modelAddress = new Address(address);
         }
+
         final boolean isPinned;
-        if (this.isPinned == null) {
-            isPinned = false;
-        } else {
-            isPinned = this.isPinned.equals("true");
+        if (!("true".equals(this.isPinned) || "false".equals(this.isPinned))) {
+            throw new IllegalValueException(Messages.MESSAGE_UNKNOWN_PINNED_STATUS);
         }
+
+        isPinned = "true".equals(this.isPinned);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, isPinned);
