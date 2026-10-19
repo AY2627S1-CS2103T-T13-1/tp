@@ -47,8 +47,11 @@ public class AddressBook implements ReadOnlyAddressBook {
         setPersons(newData.getPersonList());
     }
 
-    public void sortPersons(Comparator<Person> comp) {
-        persons.sort(comp);
+    /**
+     * Sorts the persons in the address book using {@code comparator}
+     */
+    public void sortPersons(Comparator<Person> comparator) {
+        persons.sort(comparator);
     }
 
     //// person-level operations

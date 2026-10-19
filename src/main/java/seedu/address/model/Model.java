@@ -70,5 +70,8 @@ public interface Model {
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
 
-    void sortAddressBook(Comparator<Person> comp);
+    /**
+     * Sorts the persons in the address book using {@code comparator}
+     */
+    void sortAddressBook(Comparator<Person> comparator);
 }

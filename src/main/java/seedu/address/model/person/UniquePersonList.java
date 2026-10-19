@@ -49,8 +49,11 @@ public class UniquePersonList implements Iterable<Person> {
         internalList.add(toAdd);
     }
 
-    public void sort(Comparator<Person> comp) {
-        internalList.sort(comp);
+    /**
+     * Sorts the persons in the address book using {@code comparator}
+     */
+    public void sort(Comparator<Person> comparator) {
+        internalList.sort(comparator);
     }
 
     /**
