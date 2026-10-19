@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -15,7 +16,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 
 public class UnpinCommandTest {
-    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void execute_validIndexUnfilteredList_success() {
@@ -28,7 +29,7 @@ public class UnpinCommandTest {
         String expectedMessage = String.format(UnpinCommand.MESSAGE_SUCCESS,
                 Messages.format(personToUnpin));
 
-        ModelManager expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        ModelManager expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
         assertCommandSuccess(unpinCommand, model, expectedMessage, expectedModel);
     }

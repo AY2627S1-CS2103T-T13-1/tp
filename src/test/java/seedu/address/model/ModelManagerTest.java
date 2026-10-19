@@ -3,6 +3,7 @@ package seedu.address.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
@@ -19,7 +20,7 @@ import seedu.address.testutil.AddressBookBuilder;
 
 public class ModelManagerTest {
 
-    private ModelManager modelManager = new ModelManager();
+    private ModelManager modelManager = new ModelManager(BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void constructor() {
@@ -32,7 +33,7 @@ public class ModelManagerTest {
     public void constructor_validUserPrefs_copiesUserPrefs() {
         UserPrefs userPrefs = new UserPrefs();
         userPrefs.setGuiSettings(new GuiSettings(1, 2, 3, 4));
-        modelManager = new ModelManager(new AddressBook(), userPrefs);
+        modelManager = new ModelManager(new AddressBook(), userPrefs, BUILT_IN_COMMAND_WORDS);
         assertEquals(userPrefs, modelManager.getUserPrefs());
 
         // Modifying userPrefs should not modify modelManager's userPrefs
@@ -81,8 +82,8 @@ public class ModelManagerTest {
         UserPrefs userPrefs = new UserPrefs();
 
         // same values -> returns true
-        modelManager = new ModelManager(addressBook, userPrefs);
-        ModelManager modelManagerCopy = new ModelManager(addressBook, userPrefs);
+        modelManager = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
+        ModelManager modelManagerCopy = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
         assertTrue(modelManager.equals(modelManagerCopy));
 
         // same object -> returns true
@@ -95,12 +96,12 @@ public class ModelManagerTest {
         assertFalse(modelManager.equals(5));
 
         // different addressBook -> returns false
-        assertFalse(modelManager.equals(new ModelManager(differentAddressBook, userPrefs)));
+        assertFalse(modelManager.equals(new ModelManager(differentAddressBook, userPrefs, BUILT_IN_COMMAND_WORDS)));
 
         // different filteredList -> returns false
         modelManager.updateFilteredPersonList(new PersonMatchesCriteriaPredicate(Optional.of(ALICE.getName().fullName),
                 Optional.empty(), Optional.empty(), Optional.empty(), Set.of()));
-        assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs)));
+        assertFalse(modelManager.equals(new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS)));
 
         // resets modelManager to initial state for upcoming tests
         modelManager.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
@@ -108,6 +109,6 @@ public class ModelManagerTest {
         // different userPrefs -> returns false
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setGuiSettings(new GuiSettings(1, 2, 3, 4));
-        assertFalse(modelManager.equals(new ModelManager(addressBook, differentUserPrefs)));
+        assertFalse(modelManager.equals(new ModelManager(addressBook, differentUserPrefs, BUILT_IN_COMMAND_WORDS)));
     }
 }

@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.ExitCommand.MESSAGE_EXIT_ACKNOWLEDGEMENT;
 
@@ -9,8 +10,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 
 public class ExitCommandTest {
-    private Model model = new ModelManager();
-    private Model expectedModel = new ModelManager();
+    private Model model = new ModelManager(BUILT_IN_COMMAND_WORDS);
+    private Model expectedModel = new ModelManager(BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void execute_exit_success() {
