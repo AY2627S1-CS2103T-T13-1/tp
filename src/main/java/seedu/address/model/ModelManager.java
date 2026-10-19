@@ -3,6 +3,7 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -11,6 +12,7 @@ import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonComparatorFactory;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -62,6 +64,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
     }
 
     @Override
@@ -78,11 +81,13 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
@@ -91,6 +96,7 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -124,6 +130,11 @@ public class ModelManager implements Model {
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
                 && filteredPersons.equals(otherModelManager.filteredPersons);
+    }
+
+    @Override
+    public void sortAddressBook(Comparator<Person> comp) {
+        addressBook.sortPersons(comp);
     }
 
 }

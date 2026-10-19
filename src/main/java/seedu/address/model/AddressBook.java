@@ -2,6 +2,7 @@ package seedu.address.model;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Comparator;
 import java.util.List;
 
 import javafx.collections.ObservableList;
@@ -44,6 +45,13 @@ public class AddressBook implements ReadOnlyAddressBook {
         requireNonNull(newData);
 
         setPersons(newData.getPersonList());
+    }
+
+    /**
+     * Sorts the persons in the address book using {@code comparator}
+     */
+    public void sortPersons(Comparator<Person> comparator) {
+        persons.sort(comparator);
     }
 
     //// person-level operations

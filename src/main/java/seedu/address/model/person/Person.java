@@ -24,17 +24,31 @@ public class Person {
     // Data fields
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
+    private final boolean isPinned;
+
+    /**
+     * Every field must be present and not null.
+     * Creates a person that is not pinned
+     */
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
+        this(name, phone, email, address, tags, false);
+    }
 
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, boolean isPinned) {
+        requireAllNonNull(name, phone, email, address, tags, isPinned);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.isPinned = isPinned;
+    }
+
+    private Person(Person otherPerson, boolean isPinned) {
+        this(otherPerson.name, otherPerson.phone, otherPerson.email, otherPerson.address, otherPerson.tags, isPinned);
     }
 
     public Name getName() {
@@ -51,6 +65,24 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public boolean isPinned() {
+        return isPinned;
+    }
+
+    /**
+     * Creates a copy of the person with {@code isPinned} set to true.
+     */
+    public Person pinPerson() {
+        return new Person(this, true);
+    }
+
+    /**
+     * Creates a copy of the person with {@code isPinned} set to false.
+     */
+    public Person unpinPerson() {
+        return new Person(this, false);
     }
 
     /**
@@ -95,13 +127,14 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
-                && tags.equals(otherPerson.tags);
+                && tags.equals(otherPerson.tags)
+                && isPinned == otherPerson.isPinned;
     }
 
     @Override
     public int hashCode() {
         // use this method for custom fields hashing instead of implementing your own
-        return Objects.hash(name, phone, email, address, tags);
+        return Objects.hash(name, phone, email, address, tags, isPinned);
     }
 
     @Override
