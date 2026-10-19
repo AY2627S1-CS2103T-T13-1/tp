@@ -45,6 +45,7 @@ public class UnpinCommand extends Command {
      * @param index list index of contact to be unpinned.
      */
     public UnpinCommand(Index index) {
+        requireNonNull(index);
         this.index = index;
     }
 
