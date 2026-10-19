@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 
 /**
@@ -74,4 +75,9 @@ public interface Model {
      * Sorts the persons in the address book using {@code comparator}
      */
     void sortAddressBook(Comparator<Person> comparator);
+
+    /**
+     * Returns the alias registry of the current application session.
+     */
+    AliasRegistry getAliasRegistry();
 }

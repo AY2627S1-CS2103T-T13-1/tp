@@ -2,6 +2,7 @@ package seedu.address.model.alias;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,8 +36,7 @@ public class AliasRegistry {
      *                                  the alias conflicts with another alias previously defined.
      */
     public void register(String commandWord, String alias) throws IllegalArgumentException {
-        requireNonNull(commandWord);
-        requireNonNull(alias);
+        requireAllNonNull(commandWord, alias);
 
         checkArgument(builtInCommandWords.contains(commandWord),
                 "Unsupported command word " + commandWord);
