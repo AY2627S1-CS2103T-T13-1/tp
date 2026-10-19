@@ -2,6 +2,9 @@ package seedu.address.logic.commands;
 
 import java.util.Set;
 
+/**
+ * Defines the supported command words for the application.
+ */
 public class CommandCatalog {
     public static final Set<String> BUILT_IN_COMMAND_WORDS = Set.of(
             AddCommand.COMMAND_WORD,
