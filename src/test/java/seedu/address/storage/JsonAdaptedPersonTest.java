@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.logic.Messages;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
@@ -42,6 +43,67 @@ public class JsonAdaptedPersonTest {
     public void toModelType_validPersonDetails_returnsPerson() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(BENSON);
         assertEquals(BENSON, person.toModelType());
+    }
+
+    @Test
+    public void toModelType_pinnedStatus_returnsPinnedPerson() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, PINNED);
+
+        assertEquals(BENSON.pinPerson(), person.toModelType());
+    }
+
+    @Test
+    public void toModelType_unpinnedStatus_returnsUnpinnedPerson() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+        assertEquals(BENSON.unpinPerson(), person.toModelType());
+    }
+
+    @Test
+    public void toModelType_pinnedPerson_preservesPinnedStatus() throws Exception {
+        Person pinnedPerson = BENSON.pinPerson();
+        JsonAdaptedPerson person = new JsonAdaptedPerson(pinnedPerson);
+
+        assertEquals(pinnedPerson, person.toModelType());
+    }
+
+    @Test
+    public void toModelType_unpinnedPerson_preservesPinnedStatus() throws Exception {
+        Person unpinnedPerson = BENSON.unpinPerson();
+        JsonAdaptedPerson person = new JsonAdaptedPerson(unpinnedPerson);
+
+        assertEquals(unpinnedPerson, person.toModelType());
+    }
+
+    @Test
+    public void toModelType_nullPinnedStatus_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, null);
+
+        assertThrows(IllegalValueException.class, Messages.MESSAGE_UNKNOWN_PINNED_STATUS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_emptyPinnedStatus_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, "");
+
+        assertThrows(IllegalValueException.class, Messages.MESSAGE_UNKNOWN_PINNED_STATUS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_invalidPinnedStatus_throwsIllegalValueException() {
+        String[] invalidStatuses = {
+            "TRUE", "FALSE", "True", "False", " true", "false ", " ", "1", "0", "yes", "pinned"
+        };
+        for (String invalidStatus : invalidStatuses) {
+            JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                    VALID_ADDRESS, VALID_TAGS, invalidStatus);
+
+            assertThrows(IllegalValueException.class, Messages.MESSAGE_UNKNOWN_PINNED_STATUS, person::toModelType);
+        }
     }
 
     @Test
