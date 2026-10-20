@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
+import seedu.address.model.alias.AliasRegistry;
 
 public class AliasCommandTest {
     private final Model model = new ModelManager(BUILT_IN_COMMAND_WORDS);
@@ -74,7 +75,7 @@ public class AliasCommandTest {
         // Boundary: an empty alias. Non-boundary: an alias containing whitespace.
         for (String alias : new String[] {"", "two words"}) {
             assertRegistrationFailure("list", alias,
-                    "Alias must be non-empty and contain no whitespace.");
+                    AliasRegistry.MESSAGE_REGEX_MISMATCH);
         }
     }
 
