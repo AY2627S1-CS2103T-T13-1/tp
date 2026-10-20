@@ -186,6 +186,7 @@ The pin feature makes use of sorting to ensure pinned contacts are displayed on 
 - When a person is pinned, `Model` uses `previousComparator` from `PersonComparatorFactory` to sort the contacts
 - This sorts the list according to pinned status first, followed by the sorting method previously set by the user (such as by Name)
 
+As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
 
 ### \[Proposed\] Undo/redo feature
 
