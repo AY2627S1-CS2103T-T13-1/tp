@@ -14,7 +14,7 @@ public class AliasCommand extends Command {
 
     public static final String COMMAND_WORD = "alias";
 
-    public static final String COMMAND_DESCRIPTION = "Registers an alias for a command.";
+    public static final String COMMAND_DESCRIPTION = "Registers an alias for a specified command word.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " COMMAND_WORD ALIAS_TO_SET";
 
