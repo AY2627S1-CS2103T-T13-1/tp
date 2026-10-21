@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.address.logic.commands.CommandTestUtil.DESC_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
@@ -34,7 +35,7 @@ import seedu.address.testutil.PersonBuilder;
  */
 public class EditCommandTest {
 
-    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void execute_allFieldsSpecifiedUnfilteredList_success() {
@@ -44,7 +45,8 @@ public class EditCommandTest {
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
@@ -65,7 +67,8 @@ public class EditCommandTest {
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
         expectedModel.setPerson(lastPerson, editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
@@ -83,8 +86,8 @@ public class EditCommandTest {
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS,
                 Messages.format(editedPerson));
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new
-                UserPrefs());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
         expectedModel.setPerson(firstPerson, editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
@@ -97,7 +100,8 @@ public class EditCommandTest {
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
     }
@@ -113,7 +117,8 @@ public class EditCommandTest {
 
         String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
 
-        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
         expectedModel.setPerson(model.getFilteredPersonList().get(0), editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
@@ -126,6 +131,78 @@ public class EditCommandTest {
         EditCommand editCommand = new EditCommand(INDEX_SECOND_PERSON, descriptor);
 
         assertCommandFailure(editCommand, model, EditCommand.MESSAGE_DUPLICATE_PERSON);
+    }
+
+    @Test
+    public void execute_allFieldsSpecifiedPinnedPerson_preservesPinnedStatus() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        model.setPerson(firstPerson, firstPerson.pinPerson());
+        Person editedPerson = new PersonBuilder().build().pinPerson();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder(editedPerson).build();
+
+        assertEditPreservesPinnedStatus(descriptor, editedPerson);
+    }
+
+    @Test
+    public void execute_allFieldsSpecifiedUnpinnedPerson_preservesPinnedStatus() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        model.setPerson(firstPerson, firstPerson.unpinPerson());
+        // The descriptor's source is pinned, but its pin status must not be copied to the edited person.
+        Person descriptorSource = new PersonBuilder().build().pinPerson();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder(descriptorSource).build();
+
+        assertEditPreservesPinnedStatus(descriptor, descriptorSource.unpinPerson());
+    }
+
+    @Test
+    public void execute_someFieldsSpecifiedPinnedPerson_preservesPinnedStatus() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        model.setPerson(firstPerson, firstPerson.pinPerson());
+        Person editedPerson = new PersonBuilder(firstPerson).withName(VALID_NAME_BOB).build().pinPerson();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();
+
+        assertEditPreservesPinnedStatus(descriptor, editedPerson);
+    }
+
+    @Test
+    public void execute_noFieldSpecifiedPinnedPerson_preservesPinnedStatus() {
+        Person firstPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person pinnedPerson = firstPerson.pinPerson();
+        model.setPerson(firstPerson, pinnedPerson);
+
+        assertEditPreservesPinnedStatus(new EditPersonDescriptor(), pinnedPerson);
+    }
+
+    @Test
+    public void execute_filteredListPinnedPerson_preservesPinnedStatus() {
+        Person secondPerson = model.getFilteredPersonList().get(INDEX_SECOND_PERSON.getZeroBased());
+        Person pinnedPerson = secondPerson.pinPerson();
+        model.setPerson(secondPerson, pinnedPerson);
+        model.updateFilteredPersonList(pinnedPerson::equals);
+        assertEquals(1, model.getFilteredPersonList().size());
+        Person editedPerson = new PersonBuilder(secondPerson).withName(VALID_NAME_BOB).build().pinPerson();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_BOB).build();
+
+        assertEditPreservesPinnedStatus(descriptor, editedPerson);
+    }
+
+    /**
+     * Verifies that editing the first displayed person updates their details and preserves their pin status.
+     */
+    private void assertEditPreservesPinnedStatus(EditPersonDescriptor descriptor, Person editedPerson) {
+        Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        boolean wasPinned = personToEdit.isPinned();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        String expectedMessage = String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson));
+        Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
+        expectedModel.setPerson(personToEdit, editedPerson);
+
+        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        Person actualPerson = model.getAddressBook().getPersonList().stream()
+                .filter(person -> person.isSamePerson(editedPerson))
+                .findFirst().orElseThrow();
+        assertEquals(wasPinned, actualPerson.isPinned());
     }
 
     @Test

@@ -24,6 +24,14 @@ public class HelpCommand extends Command {
                     DeleteCommand.COMMAND_DESCRIPTION,
                     DeleteCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
+                    PinCommand.COMMAND_SYNTAX,
+                    PinCommand.COMMAND_DESCRIPTION,
+                    PinCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
+                    UnpinCommand.COMMAND_SYNTAX,
+                    UnpinCommand.COMMAND_DESCRIPTION,
+                    UnpinCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     ListCommand.COMMAND_WORD,
                     ListCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
@@ -35,8 +43,15 @@ public class HelpCommand extends Command {
                     EditCommand.COMMAND_DESCRIPTION,
                     EditCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
+                    AliasCommand.COMMAND_SYNTAX,
+                    AliasCommand.COMMAND_DESCRIPTION,
+                    AliasCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     ClearCommand.COMMAND_WORD,
                     ClearCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
+                    ThemeCommand.COMMAND_SYNTAX,
+                    ThemeCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
                     ExitCommand.COMMAND_WORD,
                     ExitCommand.COMMAND_DESCRIPTION),

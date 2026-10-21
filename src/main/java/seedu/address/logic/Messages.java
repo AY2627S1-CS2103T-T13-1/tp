@@ -24,6 +24,8 @@ public class Messages {
     public static final String MESSAGE_EMPTY_LIST =
         "Your current contact list is empty! Time to populate them with your"
         + " friend's details!";
+    public static final String MESSAGE_UNKNOWN_PINNED_STATUS =
+            "Please only specify 'true'/'false' for the contact's isPinned!";
 
     /**
      * Returns an error message indicating the duplicate prefixes.

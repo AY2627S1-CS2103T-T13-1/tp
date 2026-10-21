@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
@@ -18,7 +19,11 @@ import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.PinCommand;
+import seedu.address.logic.commands.ThemeCommand;
+import seedu.address.logic.commands.UnpinCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.alias.AliasRegistry;
 
 /**
  * Parses user input.
@@ -30,6 +35,17 @@ public class AddressBookParser {
      */
     private static final Pattern BASIC_COMMAND_FORMAT = Pattern.compile("(?<commandWord>\\S+)(?<arguments>.*)");
     private static final Logger logger = LogsCenter.getLogger(AddressBookParser.class);
+
+    private final AliasRegistry aliasRegistry;
+
+    /**
+     * Creates a parser that resolves command aliases using the supplied registry.
+     *
+     * @param aliasRegistry the alias mapping registry.
+     */
+    public AddressBookParser(AliasRegistry aliasRegistry) {
+        this.aliasRegistry = aliasRegistry;
+    }
 
     /**
      * Parses user input into command for execution.
@@ -52,7 +68,10 @@ public class AddressBookParser {
         // Lower level log messages are used sparingly to minimize noise in the code.
         logger.fine("Command word: " + commandWord + "; Arguments: " + arguments);
 
-        return switch (commandWord) {
+        // Ensure that aliases are resolve to their corresponding command words before processing.
+        String resolvedCommandWord = aliasRegistry.resolve(commandWord);
+
+        return switch (resolvedCommandWord) {
             case AddCommand.COMMAND_WORD -> new AddCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
@@ -61,6 +80,10 @@ public class AddressBookParser {
             case ListCommand.COMMAND_WORD -> new ListCommand();
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case PinCommand.COMMAND_WORD -> new PinCommandParser().parse(arguments);
+            case UnpinCommand.COMMAND_WORD -> new UnpinCommandParser().parse(arguments);
+            case ThemeCommand.COMMAND_WORD -> new ThemeCommandParser().parse(arguments);
+            case AliasCommand.COMMAND_WORD -> new AliasCommandParser().parse(arguments);
             case ExportCommand.COMMAND_WORD -> new ExportCommandParser().parse(arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
