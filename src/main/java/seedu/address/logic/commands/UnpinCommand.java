@@ -30,7 +30,7 @@ public class UnpinCommand extends Command {
             + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
-            + "Please check again with list.";
+            + "Please check against your contact list.";
 
     public static final String MESSAGE_ALREADY_UNPINNED = "The selected contact is already unpinned! "
             + "Please try again with another contact.";
