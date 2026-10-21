@@ -27,10 +27,11 @@ public class DeleteCommand extends Command {
     public static final String COMMAND_WORD = "delete";
 
     public static final String COMMAND_DESCRIPTION = "Deletes a contact identified either by their"
-            + " index number used in the displayed person list, or at least one tag supplied."
+            + " index number used in the displayed person list, or at least one tag supplied.\n"
             + " If all supplied tags match, the person is deleted.";
 
-    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX";
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
+            + "OR [-t TAG-CATEGORY TAG_NAME]...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1, "
             + COMMAND_WORD + " -t others Friend";
