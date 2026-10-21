@@ -1,5 +1,6 @@
 package seedu.address.storage;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -59,5 +60,13 @@ public class FilenameTest {
         assertFalse(filename.equals(5.0f));
         assertTrue(filename.equals(new Filename("sample file")));
         assertFalse(filename.equals(new Filename("other file")));
+    }
+
+    @Test
+    public void hashCode_sameFilename_returnsSameHashCode() {
+        Filename filename = new Filename("sample file");
+        Filename sameFilename = new Filename("sample file");
+
+        assertEquals(filename.hashCode(), sameFilename.hashCode());
     }
 }
