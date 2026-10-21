@@ -54,4 +54,6 @@ public interface Storage {
      */
     void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException;
 
+    void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException;
+
 }

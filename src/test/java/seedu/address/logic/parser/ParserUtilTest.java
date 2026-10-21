@@ -18,6 +18,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.OthersTag;
 import seedu.address.model.tag.Tag;
+import seedu.address.storage.Filename;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
@@ -65,6 +66,43 @@ public class ParserUtilTest {
 
         // Leading and trailing whitespaces
         assertEquals(INDEX_FIRST_PERSON, ParserUtil.parseIndex("  1  "));
+    }
+
+    @Test
+    public void parseFilename_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseFilename(null));
+    }
+
+    @Test
+    public void parseFilename_invalidValue_throwsParseException() {
+        assertThrows(ParseException.class, Filename.MESSAGE_CONSTRAINTS, ()
+                -> ParserUtil.parseFilename("sample@file"));
+        assertThrows(ParseException.class, Filename.MESSAGE_CONSTRAINTS, ()
+                -> ParserUtil.parseFilename("sample.json"));
+        assertThrows(ParseException.class, Filename.MESSAGE_CONSTRAINTS, ()
+                -> ParserUtil.parseFilename(""));
+    }
+
+    @Test
+    public void parseFilename_invalidLength_throwsParseException() {
+        String filename = "a".repeat(Filename.MAXIMUM_NAME_LENGTH + 1);
+
+        assertThrows(ParseException.class, Filename.MESSAGE_EXCEED_MAX_LENGTH, ()
+                -> ParserUtil.parseFilename(filename));
+    }
+
+    @Test
+    public void parseFilename_validValue_returnsFilename() throws Exception {
+        Filename actualFilename = ParserUtil.parseFilename("sample file 2026");
+
+        assertEquals("sample file 2026", actualFilename.fileName);
+    }
+
+    @Test
+    public void parseFilename_validValueWithWhitespace_returnsTrimmedFilename() throws Exception {
+        Filename actualFilename = ParserUtil.parseFilename("  sample file 2026  ");
+
+        assertEquals("sample file 2026", actualFilename.fileName);
     }
 
     @Test

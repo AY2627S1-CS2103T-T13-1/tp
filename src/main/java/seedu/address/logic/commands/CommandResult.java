@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
 
@@ -12,6 +13,7 @@ import seedu.address.commons.util.ToStringBuilder;
 public class CommandResult {
 
     private final String feedbackToUser;
+    private final Optional<ExportRequest> exportRequest;
 
     /** The application should exit. */
     private final boolean exit;
@@ -21,6 +23,7 @@ public class CommandResult {
      */
     public CommandResult(String feedbackToUser, boolean exit) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
+        this.exportRequest = Optional.empty();
         this.exit = exit;
     }
 
@@ -29,11 +32,30 @@ public class CommandResult {
      * and other fields set to their default value.
      */
     public CommandResult(String feedbackToUser) {
-        this(feedbackToUser, false);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.empty();
+        this.exit = false;
+    }
+
+    /**
+     * Constructs a {@code CommandResult} with the specified feedback message and export request,
+     * with other fields set to their default values.
+     *
+     * @param feedbackToUser the feedback message to display to the user
+     * @param exportRequest the export request associated with this result
+     */
+    public CommandResult(String feedbackToUser, ExportRequest exportRequest) {
+        this.feedbackToUser = feedbackToUser;
+        this.exit = false;
+        this.exportRequest = Optional.of(exportRequest);
     }
 
     public String getFeedbackToUser() {
         return feedbackToUser;
+    }
+
+    public Optional<ExportRequest> getExportRequest() {
+        return this.exportRequest;
     }
 
     public boolean isExit() {
