@@ -153,6 +153,25 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
+### Pinning and unpinning a person
+
+Persons can be pinned to be displayed on top of unpinned contacts, and unpinned to be displayed amongst unpinned contacts.
+
+Format: `pin INDEX`, `unpin INDEX`
+
+* Pins the person at the specified `INDEX`.
+* The index refers to the index number specified in the displayed person list (either using `find` or `list`).
+* The index **must be a positive integer**.
+  * If using `pin`, the person specified at `INDEX` **must be** an unpinned person.
+  * If using `unpin`, the person specified at `INDEX`  **must be** a pinned person.
+
+
+
+Examples:
+* `list` followed by `pin 3` pins the 3rd person in the address book.
+* `find -n Bob` followed by `pin 5` pins the 5th person in the results of the `find` command. 
+* `find -e mary@gmail.com` followed by `unpin 1` unpins the 1st person in the results of the `find` command.
+
 ### Tagging a person
 
 Tags can be added to a person through the [Edit](#editing-a-person-edit) or the [Add](#adding-a-person-add) commands.
@@ -240,6 +259,8 @@ Action     | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
 **Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
+**Pin**    | `pin INDEX`
+**Unpin**  | `unpin INDEX`
 **List**   | `list`
 **Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
 **Help**   | `help`
