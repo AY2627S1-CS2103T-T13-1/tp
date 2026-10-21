@@ -61,7 +61,7 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Constructs a command to delete all persons whose tag sets match the supplied tags,
+     * Constructs a command to delete all persons whose tag sets match the supplied tags.
      *
      * @param tagList Nonempty set of tags to match against the entire address book.
      * @throws NullPointerException if {@code tagList} or any of its elements is null.
@@ -70,7 +70,7 @@ public class DeleteCommand extends Command {
     public DeleteCommand(Set<Tag> tagList) {
         requireAllNonNull(tagList);
         checkArgument(!tagList.isEmpty(), "At least one tag must be supplied.");
-        this.tagList = tagList;
+        this.tagList = Set.copyOf(tagList);
         this.targetIndex = null;
     }
 
