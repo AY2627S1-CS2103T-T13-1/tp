@@ -80,4 +80,9 @@ public interface Model {
      * Returns the alias registry of the current application session.
      */
     AliasRegistry getAliasRegistry();
+
+    /**
+     * Registers an alias for the given command word.
+     */
+    void registerAlias(String commandWord, String alias);
 }

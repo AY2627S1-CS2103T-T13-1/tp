@@ -153,6 +153,11 @@ public class AddCommandTest {
         public AliasRegistry getAliasRegistry() {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public void registerAlias(String commandWord, String alias) {
+            throw new AssertionError("This method should not be called.");
+        }
     }
 
     /**

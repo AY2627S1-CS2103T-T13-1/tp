@@ -150,4 +150,9 @@ public class ModelManager implements Model {
         return aliasRegistry;
     }
 
+    @Override
+    public void registerAlias(String commandWord, String alias) {
+        aliasRegistry.register(commandWord, alias);
+    }
+
 }

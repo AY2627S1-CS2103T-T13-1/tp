@@ -5,7 +5,6 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.alias.AliasRegistry;
 
 /**
  * Registers an alias for a built-in command.
@@ -46,8 +45,7 @@ public class AliasCommand extends Command {
         requireNonNull(model);
 
         try {
-            AliasRegistry aliasRegistry = model.getAliasRegistry();
-            aliasRegistry.register(commandWord, alias);
+            model.registerAlias(commandWord, alias);
         } catch (IllegalArgumentException exception) {
             throw new CommandException(exception.getMessage());
         }
