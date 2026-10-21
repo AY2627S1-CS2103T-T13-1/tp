@@ -488,6 +488,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 3.
 
+* 2h. User provides an empty address field.
+
+    * 2h1. coNnectUS removes the contact's address.
+
+      Use case resumes at step 3.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
