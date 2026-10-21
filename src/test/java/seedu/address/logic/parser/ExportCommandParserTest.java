@@ -2,6 +2,8 @@ package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
+import static seedu.address.logic.parser.ExportCommandParser.MESSAGE_MISSING_FILENAME;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.DANIEL;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -24,7 +26,7 @@ import seedu.address.storage.Filename;
 public class ExportCommandParserTest {
 
     private final ExportCommandParser parser = new ExportCommandParser();
-    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void parse_filenameOnly_exportsAllContacts() throws ParseException {
@@ -52,8 +54,8 @@ public class ExportCommandParserTest {
 
     @Test
     public void parse_missingFilename_throwsParseException() {
-        assertParseFailure("", ExportCommandParser.MESSAGE_MISSING_FILENAME);
-        assertParseFailure(" -n Alice", ExportCommandParser.MESSAGE_MISSING_FILENAME);
+        assertParseFailure("", MESSAGE_MISSING_FILENAME + "\n" + ExportCommand.MESSAGE_USAGE);
+        assertParseFailure(" -n Alice", MESSAGE_MISSING_FILENAME + "\n" + ExportCommand.MESSAGE_USAGE);
     }
 
     @Test

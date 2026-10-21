@@ -18,6 +18,7 @@ public class CommandCatalog {
             PinCommand.COMMAND_WORD,
             UnpinCommand.COMMAND_WORD,
             ThemeCommand.COMMAND_WORD,
-            AliasCommand.COMMAND_WORD
+            AliasCommand.COMMAND_WORD,
+            ExportCommand.COMMAND_WORD
     );
 }

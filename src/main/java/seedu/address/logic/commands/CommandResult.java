@@ -36,7 +36,12 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields and no theme change.
      */
     public CommandResult(String feedbackToUser, boolean exit) {
-        this(feedbackToUser, exit, null);
+
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.empty();
+        this.exit = exit;
+        this.theme = null;
+
     }
 
     /**
@@ -47,6 +52,7 @@ public class CommandResult {
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.exit = false;
+        this.theme = null;
     }
 
     /**
@@ -60,6 +66,7 @@ public class CommandResult {
         this.feedbackToUser = feedbackToUser;
         this.exit = false;
         this.exportRequest = Optional.of(exportRequest);
+        this.theme = null;
     }
 
     public String getFeedbackToUser() {
