@@ -197,7 +197,7 @@ Switches coNnectUS between a dark theme (true black, which saves power on OLED s
 
 Format: `theme dark` or `theme light`
 
-* The theme name is not case-sensitive. e.g. `theme LIGHT` works the same as `theme light`.
+* The theme name is not case-sensitive. For example, `theme LIGHT` works the same as `theme light`.
 * You can also click the **Dark** / **Light** button at the right end of the menu bar to switch to the other theme.
 * The User Guide window changes to the same theme.
 * coNnectUS remembers your theme and opens with it the next time you start the app. The first time you start the app, it opens in the dark theme.
