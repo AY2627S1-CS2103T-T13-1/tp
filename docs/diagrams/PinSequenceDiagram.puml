@@ -56,7 +56,7 @@ activate Person
 Person --> PinCommand
 deactivate Person
 
-PinCommand -> Model : editPerson(personToPin, pinnedPerson)
+PinCommand -> Model : setPerson(personToPin, pinnedPerson)
 activate Model
 Model -> PersonComparatorFactory : getPreviousComparator()
 activate PersonComparatorFactory
