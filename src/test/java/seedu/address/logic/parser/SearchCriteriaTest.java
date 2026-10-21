@@ -1,9 +1,9 @@
 package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.CARL;
@@ -57,8 +57,8 @@ public class SearchCriteriaTest {
                 Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
                 Set.of(new OthersTag("friends")));
 
-        assertThrows(UnsupportedOperationException.class,
-                () -> criteria.getTags().add(new OthersTag("colleagues")));
+        assertThrows(UnsupportedOperationException.class, ()
+                -> criteria.getTags().add(new OthersTag("colleagues")));
     }
 
     @Test
