@@ -175,6 +175,19 @@ The theme feature,
 * keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
+### Pinning a contact
+
+Users are able to pin contacts, placing them above other unpinned contacts.
+
+<puml src="diagrams/PinSequenceDiagram.puml" alt="Sequence of pin command"/>
+
+The pin feature makes use of sorting to ensure pinned contacts are displayed on top of unpinned contacts.
+- The default sorting method from `PersonComparatorFactory` sorts persons by their pinned status.
+- When a person is pinned, `Model` uses `previousComparator` from `PersonComparatorFactory` to sort the contacts.
+- This sorts the list according to pinned status first, followed by the sorting method previously set by the user (such as by Name).
+
+As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation
