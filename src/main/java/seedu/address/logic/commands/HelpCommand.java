@@ -61,6 +61,6 @@ public class HelpCommand extends Command {
 
     // help command formatter
     private static String formatHelpEntry(String... lines) {
-        return String.join("\n\t", lines);
+        return String.join("\n", lines).replace("\n", "\n\t");
     }
 }
