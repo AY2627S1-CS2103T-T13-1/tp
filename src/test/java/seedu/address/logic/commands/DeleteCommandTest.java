@@ -293,7 +293,7 @@ public class DeleteCommandTest {
      * Returns a model containing only the supplied persons.
      */
     private Model modelWithPersons(Person... persons) {
-        Model tagModel = new ModelManager();
+        Model tagModel = new ModelManager(BUILT_IN_COMMAND_WORDS);
         for (Person person : persons) {
             tagModel.addPerson(person);
         }
