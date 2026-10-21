@@ -1,6 +1,8 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.testutil.Assert.assertThrows;
 
@@ -109,5 +111,27 @@ public class AliasCommandTest {
 
         assertEquals(originalResolution, model.getAliasRegistry().resolve(alias));
         assertEquals("find", model.getAliasRegistry().resolve("f"));
+    }
+
+    @Test
+    public void equals() {
+        AliasCommand command = new AliasCommand("find", "f");
+
+        // same object
+        assertTrue(command.equals(command));
+
+        // same field values
+        assertTrue(command.equals(new AliasCommand("find", "f")));
+
+        // different type and null
+        assertFalse(command.equals(1));
+        assertFalse(command.equals(null));
+
+        // each field differs independently
+        assertFalse(command.equals(new AliasCommand("list", "f")));
+        assertFalse(command.equals(new AliasCommand("find", "search")));
+
+        // alias comparison is case-sensitive
+        assertFalse(command.equals(new AliasCommand("find", "F")));
     }
 }
