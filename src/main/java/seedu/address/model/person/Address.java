@@ -52,9 +52,13 @@ public class Address {
         return test.matches(VALIDATION_REGEX);
     }
 
+    /**
+     * Returns true if a given string is within the maximum address length.
+     */
     public static boolean isValidLength(String test) {
         return test.length() <= MAXIMUM_ADDRESS_LENGTH;
     }
+
     /**
      * Returns true if this address was not provided.
      */
