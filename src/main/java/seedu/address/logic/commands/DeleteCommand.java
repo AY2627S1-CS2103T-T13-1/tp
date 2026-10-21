@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
@@ -46,6 +48,8 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
         + "Please check again with list.";
 
+    private static final Logger logger = LogsCenter.getLogger(DeleteCommand.class);
+
     private final Index targetIndex;
 
     private final Set<Tag> tagList;
@@ -78,6 +82,8 @@ public class DeleteCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        assert (targetIndex != null) ^ (tagList != null)
+                : "DeleteCommand must have exactly one deletion mode";
 
         if (targetIndex != null) {
             Person personToDelete = deletePersonAtIndex(model);
@@ -97,15 +103,26 @@ public class DeleteCommand extends Command {
      * Returns the deleted persons, or an empty list if no persons match.
      */
     private List<Person> deletePeopleWithTags(Model model) {
-        assert tagList != null;
+        int originalSize = model.getAddressBook().getPersonList().size();
         Set<String> normalizedTargetTags = normalizeTags(tagList);
         List<Person> personsToDelete = model.getAddressBook().getPersonList().stream()
                 .filter(person -> normalizeTags(person.getTags()).equals(normalizedTargetTags))
                 .toList();
 
+        logger.fine(() -> "Bulk delete matched " + personsToDelete.size()
+                + " of " + originalSize
+                + " contacts using exact, case-insensitive tag-set matching");
+
         for (Person person : personsToDelete) {
             model.deletePerson(person);
         }
+
+        assert model.getAddressBook().getPersonList().size() == originalSize - personsToDelete.size()
+                : "Bulk deletion must remove exactly the matched number of contacts";
+
+        logger.info(() -> "Bulk delete removed " + personsToDelete.size()
+                + " contacts from the address book");
+
         return personsToDelete;
     }
 
@@ -131,13 +148,15 @@ public class DeleteCommand extends Command {
             throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
         }
 
-        assert targetIndex != null;
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(MESSAGE_INVALID_INDEX);
         }
 
         Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
+        int originalSize = model.getAddressBook().getPersonList().size();
         model.deletePerson(personToDelete);
+        assert model.getAddressBook().getPersonList().size() == originalSize - 1
+                : "Index deletion must remove exactly one contact";
         return personToDelete;
     }
 
