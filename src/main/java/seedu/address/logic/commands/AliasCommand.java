@@ -53,4 +53,18 @@ public class AliasCommand extends Command {
         }
         return new CommandResult(String.format(MESSAGE_SUCCESS, alias, commandWord));
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof AliasCommand otherAliasCommand)) {
+            return false;
+        }
+
+        return commandWord.equals(otherAliasCommand.commandWord)
+                && alias.equals(otherAliasCommand.alias);
+    }
 }
