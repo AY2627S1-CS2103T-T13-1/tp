@@ -42,9 +42,9 @@ public class ParserUtil {
     /**
      * Parses the given filename and returns a validated {@link Filename}.
      *
-     * <p>Leading and trailing whitespace is removed before validation.
+     * Leading and trailing whitespace is removed before validation.
      * A {@code ParseException} is thrown if the filename exceeds the maximum
-     * allowed length or contains invalid characters.</p>
+     * allowed length or contains invalid characters.
      *
      * @param fileName the filename to parse
      * @return a validated {@code Filename}

@@ -75,7 +75,7 @@ public class ExportCommandParserTest {
 
     @Test
     public void parse_unknownPrefix_throwsParseException() {
-        assertParseFailure(" -f samplefile -x value", "Unknown find parameter: '-x'.");
+        assertParseFailure(" -f samplefile -x value", "Unknown export parameter: '-x'.");
     }
 
     @Test

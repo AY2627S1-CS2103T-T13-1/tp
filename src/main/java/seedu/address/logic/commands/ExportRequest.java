@@ -15,7 +15,7 @@ public class ExportRequest {
      * Constructs an {@code ExportRequest} with the specified address book and file path.
      *
      * @param addressBook the address book to export
-     * @param filePath the path of the file to export to
+     * @param filePath the path of the target file to export to
      */
     public ExportRequest(ReadOnlyAddressBook addressBook, Path filePath) {
         this.addressBook = addressBook;

@@ -6,9 +6,9 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 /**
  * Represents a filename used for exporting an address book.
  *
- * <p>A filename must contain only alphanumeric characters and spaces,
+ * A filename must contain only alphanumeric characters and spaces,
  * must begin with an alphanumeric character, and must not exceed
- * {@value #MAXIMUM_NAME_LENGTH} characters.</p>
+ * {@value #MAXIMUM_NAME_LENGTH} characters.
  */
 public class Filename {
 
@@ -70,11 +70,7 @@ public class Filename {
     }
 
     /**
-     * Returns whether this filename is equal to another object.
-     *
-     * @param other the object to compare with
-     * @return {@code true} if both objects represent the same filename;
-     *         {@code false} otherwise
+     * {@inheritDoc}
      */
     @Override
     public boolean equals(Object other) {
@@ -91,9 +87,7 @@ public class Filename {
     }
 
     /**
-     * Returns the hash code of this filename.
-     *
-     * @return the hash code of the filename
+     * {@inheritDoc}
      */
     @Override
     public int hashCode() {

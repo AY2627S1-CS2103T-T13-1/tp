@@ -21,7 +21,7 @@ import seedu.address.model.person.Person;
 /**
  * Exports contacts that match the specified predicate to a file.
  *
- * <p>If no filtering criteria are provided, all contacts are exported.</p>
+ * If no filtering criteria is provided, all contacts are exported by default.
  */
 public class ExportCommand extends Command {
 
@@ -31,7 +31,7 @@ public class ExportCommand extends Command {
 
     public static final String EXPORT_APPEND_FILETYPE = ".json";
 
-    public static final String SUCCESS_MESSAGE = "Contact(s) exported to";
+    public static final String SUCCESS_MESSAGE = "Contact(s) exported to %s";
 
     public static final String EXPORT_FAILED_NONE_MATCH = "No contacts with the specified field(s) found!";
     private static final Path EXPORT_DIRECTORY = Paths.get("data", "exports");
@@ -89,12 +89,11 @@ public class ExportCommand extends Command {
 
         if (matches.isEmpty()) {
             return new CommandResult(EXPORT_FAILED_NONE_MATCH);
-        } else {
-            exportBook = new AddressBook();
-            exportBook.setPersons(matches);
-
-            ExportRequest exportRequest = new ExportRequest(exportBook, EXPORT_DIRECTORY.resolve(fileName));
-            return new CommandResult(SUCCESS_MESSAGE + " " + this.fileName, exportRequest);
         }
+        exportBook = new AddressBook();
+        exportBook.setPersons(matches);
+
+        ExportRequest exportRequest = new ExportRequest(exportBook, EXPORT_DIRECTORY.resolve(fileName));
+        return new CommandResult(String.format(SUCCESS_MESSAGE, this.fileName), exportRequest);
     }
 }

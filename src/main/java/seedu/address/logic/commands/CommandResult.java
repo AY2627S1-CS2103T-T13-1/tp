@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -26,7 +27,9 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean exit, Theme theme) {
-        this.feedbackToUser = requireNonNull(feedbackToUser);
+
+        requireAllNonNull(feedbackToUser, exit, theme);
+        this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.exit = exit;
         this.theme = theme;
@@ -36,7 +39,7 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields and no theme change.
      */
     public CommandResult(String feedbackToUser, boolean exit) {
-
+        requireAllNonNull(feedbackToUser, exit);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.exit = exit;
@@ -49,6 +52,7 @@ public class CommandResult {
      * and other fields set to their default value.
      */
     public CommandResult(String feedbackToUser) {
+        requireNonNull(feedbackToUser);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.exit = false;
@@ -63,9 +67,10 @@ public class CommandResult {
      * @param exportRequest the export request associated with this result
      */
     public CommandResult(String feedbackToUser, ExportRequest exportRequest) {
+        requireAllNonNull(feedbackToUser, exportRequest);
         this.feedbackToUser = feedbackToUser;
-        this.exit = false;
         this.exportRequest = Optional.of(exportRequest);
+        this.exit = false;
         this.theme = null;
     }
 
