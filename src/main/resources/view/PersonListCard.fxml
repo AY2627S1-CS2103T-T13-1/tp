@@ -14,7 +14,8 @@
 <HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <GridPane HBox.hgrow="ALWAYS">
     <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="10" prefWidth="150" />
+      <ColumnConstraints hgrow="NEVER" />
     </columnConstraints>
     <VBox alignment="CENTER_LEFT" minHeight="105" GridPane.columnIndex="0">
       <padding>
@@ -34,7 +35,14 @@
       <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
       <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
     </VBox>
-    <ImageView fx:id="pinImage" fitHeight="24" fitWidth="24" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="0" GridPane.halignment="RIGHT">
+    <ImageView fx:id="pinImage"
+               fitHeight="24" fitWidth="24"
+               pickOnBounds="true" preserveRatio="true"
+               GridPane.columnIndex="1"
+               GridPane.halignment="RIGHT">
+      <GridPane.margin>
+        <Insets left="10" right="10" />
+      </GridPane.margin>
       <Image url="@../images/pin_image.png" />
     </ImageView>
   </GridPane>
