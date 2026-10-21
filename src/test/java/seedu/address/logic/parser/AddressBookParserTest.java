@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -26,6 +28,8 @@ import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UnpinCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
 import seedu.address.model.tag.OthersTag;
@@ -35,7 +39,8 @@ import seedu.address.testutil.PersonUtil;
 
 public class AddressBookParserTest {
 
-    private final AddressBookParser parser = new AddressBookParser();
+    private final Model model = new ModelManager(BUILT_IN_COMMAND_WORDS);
+    private final AddressBookParser parser = new AddressBookParser(model.getAliasRegistry());
 
     @Test
     public void parseCommand_add() throws Exception {
@@ -96,6 +101,12 @@ public class AddressBookParserTest {
     public void parseCommand_list() throws Exception {
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
         assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_alias() throws Exception {
+        assertTrue(parser.parseCommand(AliasCommand.COMMAND_WORD + " find f")
+                instanceof AliasCommand);
     }
 
     @Test

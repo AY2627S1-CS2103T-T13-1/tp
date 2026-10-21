@@ -1,5 +1,6 @@
 package seedu.address.logic.commands;
 
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
@@ -15,7 +16,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 
 public class PinCommandTest {
-    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
     @Test
     public void execute_validIndexUnfilteredList_success() {
@@ -25,7 +26,7 @@ public class PinCommandTest {
         String expectedMessage = String.format(PinCommand.MESSAGE_SUCCESS,
                 Messages.format(personToPin));
 
-        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
         expectedModel.setPerson(personToPin, personToPin.pinPerson());
 
         assertCommandSuccess(pinCommand, model, expectedMessage, expectedModel);

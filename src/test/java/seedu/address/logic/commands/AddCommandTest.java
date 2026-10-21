@@ -22,6 +22,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.PersonBuilder;
 
@@ -145,6 +146,16 @@ public class AddCommandTest {
 
         @Override
         public void sortAddressBook(Comparator<Person> comp) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public AliasRegistry getAliasRegistry() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void registerAlias(String commandWord, String alias) {
             throw new AssertionError("This method should not be called.");
         }
     }
