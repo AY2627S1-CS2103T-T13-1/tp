@@ -118,11 +118,6 @@ public class LogicManagerTest {
                 exportedAddressBooks.add(addressBook);
                 exportedFilePaths.add(path);
             }
-
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
-                regularSaveCount[0]++;
-            }
         };
         logic = new LogicManager(model, storage);
 
@@ -131,7 +126,7 @@ public class LogicManagerTest {
         assertEquals("Contact(s) exported to samplefile.json", result.getFeedbackToUser());
         assertEquals(List.of(model.getAddressBook()), exportedAddressBooks);
         assertEquals(List.of(Path.of("data", "exports", "samplefile.json")), exportedFilePaths);
-        assertEquals(1, regularSaveCount[0]);
+        assertEquals(0, regularSaveCount[0]);
     }
 
     @Test
