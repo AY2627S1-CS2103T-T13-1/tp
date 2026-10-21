@@ -11,7 +11,7 @@ import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.tag.Tag;
 
 /**
- * Parses input arguments and creates a new DeleteCommand object
+ * Parses index or tag deletion arguments and creates a {@link DeleteCommand}.
  */
 public class DeleteCommandParser implements Parser<DeleteCommand> {
 
@@ -22,9 +22,13 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
             + "Please supply either a positive integer as a list index or at least one tag.";
 
     /**
-     * Parses the given {@code String} of arguments in the context of the DeleteCommand
-     * and returns a DeleteCommand object for execution.
-     * @throws ParseException if the user input does not conform to the expected format
+     * Parses either one positive list index or one or more {@code -t TAG_CATEGORY TAG_NAME} arguments
+     * into a {@link DeleteCommand}. The two argument forms cannot be combined.
+     *
+     * @param args Arguments following the delete command word.
+     * @return A command to delete by displayed index or by tag matching.
+     * @throws ParseException if the arguments are blank, combine both forms, contain an unsupported
+     *      parameter, or contain an invalid index or tag.
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
@@ -54,8 +58,6 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
 
     /**
      * Rejects parameters starting with '-' other than the supported tag parameter or negative integers.
-     * Negative integers retain their existing index validation or tag-name interpretation.
-     * Hyphens within a tag name, such as {@code full-stack}, remain valid.
      *
      * @throws ParseException if an unknown parameter is supplied.
      */

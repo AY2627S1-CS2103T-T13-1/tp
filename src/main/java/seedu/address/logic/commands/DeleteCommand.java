@@ -21,8 +21,9 @@ import seedu.address.model.person.Person;
 import seedu.address.model.tag.Tag;
 
 /**
- * Deletes a person by their displayed index or all persons whose complete tag sets match
- * the supplied tags, ignoring case. Tag-based deletion searches the entire address book.
+ * Deletes a person by their currently displayed list index or all persons whose complete tag sets match
+ * the supplied tags by category and case-insensitive name. Tag-based deletion searches
+ * the entire address book, including persons hidden by the current filter.
  */
 public class DeleteCommand extends Command {
 
@@ -66,7 +67,8 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Constructs a command to delete all persons whose tag sets match the supplied tags.
+     * Constructs a command to delete all persons in the entire address book whose complete tag sets
+     * match the supplied tags by category and case-insensitive name.
      *
      * @param tagList Nonempty set of tags to match against the entire address book.
      * @throws NullPointerException if {@code tagList} or any of its elements is null.
@@ -99,7 +101,8 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Collects and deletes all persons with exactly the supplied tags, ignoring case.
+     * Collects and deletes all persons in the entire address book with exactly the supplied tags,
+     * matching by category and case-insensitive name.
      * Returns the deleted persons, or an empty list if no persons match.
      */
     private List<Person> deletePeopleWithTags(Model model) {
@@ -127,7 +130,7 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Returns lowercase category:name keys for comparison without changing the supplied tags.
+     * Returns lowercase tag strings in {@code category:name} format for comparison without changing the supplied tags.
      */
     private Set<String> normalizeTags(Set<Tag> tags) {
         return tags.stream()
