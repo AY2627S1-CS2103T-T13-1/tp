@@ -1,6 +1,5 @@
 package seedu.address.logic.parser;
 
-
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.List;
@@ -29,6 +28,7 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
+            validateParameters(args);
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, PREFIX_TAG);
             List<String> tags = arguments.getAllValues(PREFIX_TAG);
             if (!tags.isEmpty() && !arguments.getPreamble().isBlank()) {
@@ -44,8 +44,30 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
             }
             return new DeleteCommand(tagList);
         } catch (ParseException pe) {
-            String message = String.format(pe.getMessage(), "").stripTrailing();
+            String message = pe.getMessage();
+            if (ParserUtil.MESSAGE_INVALID_INDEX.equals(message)) {
+                message = String.format(message, "").stripTrailing();
+            }
             throw new ParseException(message + "\n" + DeleteCommand.MESSAGE_USAGE, pe);
+        }
+    }
+
+    /**
+     * Rejects parameters starting with '-' other than the supported tag parameter or negative integers.
+     * Negative integers retain their existing index validation or tag-name interpretation.
+     * Hyphens within a tag name, such as {@code full-stack}, remain valid.
+     *
+     * @throws ParseException if an unknown parameter is supplied.
+     */
+    private void validateParameters(String args) throws ParseException {
+        for (String token : args.trim().split("\\s+")) {
+            boolean isUnknownFlag = token.startsWith("-")
+                    && token.length() > 1
+                    && !token.equals(PREFIX_TAG.getPrefix())
+                    && !token.matches("-\\d+");
+            if (isUnknownFlag) {
+                throw new ParseException("Unknown delete parameter: '" + token + "'.");
+            }
         }
     }
 }
