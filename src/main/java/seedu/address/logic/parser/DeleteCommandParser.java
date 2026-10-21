@@ -63,11 +63,11 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
      */
     private void validateParameters(String args) throws ParseException {
         for (String token : args.trim().split("\\s+")) {
-            boolean isUnknownFlag = token.startsWith("-")
+            boolean isUnknownParameter = token.startsWith("-")
                     && token.length() > 1
                     && !token.equals(PREFIX_TAG.getPrefix())
                     && !token.matches("-\\d+");
-            if (isUnknownFlag) {
+            if (isUnknownParameter) {
                 throw new ParseException("Unknown delete parameter: '" + token + "'.");
             }
         }
