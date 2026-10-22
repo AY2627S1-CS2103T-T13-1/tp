@@ -49,27 +49,21 @@ public class LogicManager implements Logic {
         Command command = addressBookParser.parseCommand(commandText);
         commandResult = command.execute(model);
 
-        if (commandResult.getExportRequest().isPresent()) {
-            ExportRequest exportRequest = commandResult.getExportRequest().get();
-
-            try {
-                storage.saveAddressBook(exportRequest.getAddressBook(), exportRequest.getFilePath());
-            } catch (AccessDeniedException e) {
-                throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
-            } catch (IOException ioe) {
-                throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
-            }
-        } else {
-            try {
+        try {
+            if (commandResult.getExportRequest().isPresent()) {
+                ExportRequest exportRequest = commandResult.getExportRequest().get();
+                storage.saveAddressBook(
+                        exportRequest.getAddressBook(), exportRequest.getFilePath());
+            } else {
                 storage.saveAddressBook(model.getAddressBook());
-            } catch (AccessDeniedException e) {
-                throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
-            } catch (IOException ioe) {
-                throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
             }
+        } catch (AccessDeniedException e) {
+            throw new CommandException(
+                    String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
+        } catch (IOException e) {
+            throw new CommandException(
+                    String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
         }
-
-
         return commandResult;
     }
 

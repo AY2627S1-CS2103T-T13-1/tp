@@ -47,11 +47,7 @@ public class CommandResult {
      * and other fields set to their default value.
      */
     public CommandResult(String feedbackToUser) {
-        requireNonNull(feedbackToUser);
-        this.feedbackToUser = feedbackToUser;
-        this.exportRequest = Optional.empty();
-        this.exit = false;
-        this.theme = null;
+        this(feedbackToUser, false);
     }
 
     /**
