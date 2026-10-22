@@ -78,6 +78,7 @@ public class VersionedAddressBook extends AddressBook {
         }
 
         currentStatePointer++;
+        assert currentStatePointer < addressBookStateList.size() : "Redo must not move past the last state";
         resetData(addressBookStateList.get(currentStatePointer));
     }
 }

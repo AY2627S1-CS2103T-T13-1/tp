@@ -18,7 +18,8 @@ import seedu.address.model.UserPrefs;
 
 public class RedoCommandTest {
 
-    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+    private final Model model =
+            new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
     private final Model expectedModel =
             new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 

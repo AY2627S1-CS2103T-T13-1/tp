@@ -15,7 +15,8 @@ public class RedoCommand extends Command {
 
     public static final String COMMAND_DESCRIPTION = "Reapplies the most recent change that was undone.";
 
-    public static final String MESSAGE_SUCCESS = "Redid the most recently undone change to your contact list.";
+    public static final String MESSAGE_SUCCESS =
+            "Redid the most recently undone change to your contact list.";
 
     public static final String MESSAGE_NOTHING_TO_REDO = "There are no undone changes to redo.";
 
