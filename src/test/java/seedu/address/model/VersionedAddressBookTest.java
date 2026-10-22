@@ -19,7 +19,7 @@ public class VersionedAddressBookTest {
             new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON).build();
 
     @Test
-    public void constructor_copiesInitialState() {
+    public void constructor_validInitialState_copiesInitialState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         assertEquals(addressBookWithAlice, versionedAddressBook);
         assertFalse(versionedAddressBook.canUndo());
@@ -147,7 +147,7 @@ public class VersionedAddressBookTest {
     }
 
     @Test
-    public void commit_savesCopyOfData() {
+    public void commit_dataChangedAfterCommit_keepsSavedStateUnchanged() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
         versionedAddressBook.commit();

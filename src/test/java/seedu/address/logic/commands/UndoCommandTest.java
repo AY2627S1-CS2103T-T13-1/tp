@@ -18,7 +18,8 @@ import seedu.address.model.UserPrefs;
 
 public class UndoCommandTest {
 
-    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+    private final Model model =
+            new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
     private final Model expectedModel =
             new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
 
@@ -53,7 +54,8 @@ public class UndoCommandTest {
                 new ModelManager(getTypicalAddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS);
         expectedModelWithoutAlice.deletePerson(ALICE);
 
-        assertCommandSuccess(new UndoCommand(), model, UndoCommand.MESSAGE_SUCCESS, expectedModelWithoutAlice);
+        assertCommandSuccess(new UndoCommand(), model, UndoCommand.MESSAGE_SUCCESS,
+                expectedModelWithoutAlice);
         assertCommandSuccess(new UndoCommand(), model, UndoCommand.MESSAGE_SUCCESS, expectedModel);
     }
 

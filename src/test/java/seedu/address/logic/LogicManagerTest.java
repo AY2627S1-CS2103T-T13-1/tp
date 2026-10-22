@@ -94,7 +94,8 @@ public class LogicManagerTest {
 
     @Test
     public void execute_undoAfterAdd_removesAddedPerson() throws Exception {
-        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
         logic.execute(ListCommand.COMMAND_WORD);
 
         // list does not change the contact list, so undo reverses the add command instead

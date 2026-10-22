@@ -34,6 +34,7 @@ public class VersionedAddressBook extends AddressBook {
         addressBookStateList.subList(currentStatePointer + 1, addressBookStateList.size()).clear();
         addressBookStateList.add(new AddressBook(this));
         currentStatePointer++;
+        assert currentStatePointer == addressBookStateList.size() - 1 : "New state must be the latest";
         return true;
     }
 
@@ -55,6 +56,7 @@ public class VersionedAddressBook extends AddressBook {
         }
 
         currentStatePointer--;
+        assert currentStatePointer >= 0 : "Undo must not move before the first state";
         resetData(addressBookStateList.get(currentStatePointer));
     }
 
