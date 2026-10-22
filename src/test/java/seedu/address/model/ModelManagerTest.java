@@ -76,6 +76,20 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void equals_aliasMappingsComparedByValue() {
+        ModelManager modelManagerCopy = new ModelManager(BUILT_IN_COMMAND_WORDS);
+        assertTrue(modelManager.equals(modelManagerCopy));
+
+        modelManager.registerAlias("find", "f");
+        assertFalse(modelManager.equals(modelManagerCopy));
+        assertFalse(modelManagerCopy.equals(modelManager));
+
+        modelManagerCopy.registerAlias("find", "f");
+        assertTrue(modelManager.equals(modelManagerCopy));
+        assertTrue(modelManagerCopy.equals(modelManager));
+    }
+
+    @Test
     public void equals() {
         AddressBook addressBook = new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON).build();
         AddressBook differentAddressBook = new AddressBook();

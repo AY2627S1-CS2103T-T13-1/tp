@@ -1,6 +1,8 @@
 package seedu.address.model.alias;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.HashSet;
@@ -118,5 +120,37 @@ public class AliasRegistryTest {
         otherRegistry.register("list", "f");
         assertEquals("list", otherRegistry.resolve("f"));
         assertEquals("find", registry.resolve("f"));
+    }
+
+    @Test
+    public void equals() {
+        AliasRegistry otherRegistry = new AliasRegistry(Set.of("find", "list", "alias"));
+
+        assertTrue(registry.equals(registry));
+        assertTrue(registry.equals(otherRegistry));
+        assertFalse(registry.equals(null));
+        assertFalse(registry.equals("registry"));
+
+        // Different alias mappings -> returns false.
+        registry.register("find", "f");
+        assertFalse(registry.equals(otherRegistry));
+
+        // Same alias mappings -> returns true.
+        otherRegistry.register("find", "f");
+        assertTrue(registry.equals(otherRegistry));
+
+        // Same mappings but different supported commands -> returns false.
+        AliasRegistry differentCommandsRegistry = new AliasRegistry(Set.of("find", "list"));
+        differentCommandsRegistry.register("find", "f");
+        assertFalse(registry.equals(differentCommandsRegistry));
+    }
+
+    @Test
+    public void hashCode_equalRegistries_returnsSameHashCode() {
+        AliasRegistry otherRegistry = new AliasRegistry(Set.of("find", "list", "alias"));
+        registry.register("find", "f");
+        otherRegistry.register("find", "f");
+
+        assertEquals(registry.hashCode(), otherRegistry.hashCode());
     }
 }
