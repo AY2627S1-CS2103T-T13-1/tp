@@ -139,19 +139,28 @@ Examples:
 * `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
   ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
-### Deleting a person: `delete`
+### Deleting a person or multiple people: `delete`
 
-Deletes the specified person from the address book.
+Deletes either the specified person from the address book, or people matching tag set supplied.
 
-Format: `delete INDEX`
+Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
+Index-based Deletion:
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, ...
 
+Tag-based Deletion:
+* Deletes people with a complete matching tag set with the one specified. 
+* One or more tags can be specified.
+* Tag categories and names are case-insensitive.
+* If there are no matches, no deletion will occur.
+
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `delete -t faculty Science` deletes all people with only the faculty tag `Science`.
+* `delete -t module TJ3000 -t others Badminton` deletes all people with only the module tag `TJ3000` and others tag `Badminton`.
 
 ### Pinning and unpinning a person
 
@@ -256,7 +265,7 @@ Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
 **Clear**  | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
 **Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **Pin**    | `pin INDEX`
