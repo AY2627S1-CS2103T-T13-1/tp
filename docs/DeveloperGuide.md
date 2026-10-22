@@ -413,20 +413,20 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 
-* 1a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
-    * 1a1. coNnectUS displays an error message with the expected usage instructions
+* 1a. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
+    * 1a1. coNnectUS displays an error message informing the user about the empty contact list.
 
-        Use case resumes from Step 1.
-
-* 1b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
-    * 1b1. coNnectUS displays an error message warning the user of the invalid index. 
-  
-        Use case resumes from Step 1.
-
-* 1c. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
-    * 1c1. coNnectUS displays an error message informing the user about the empty contact list. 
-  
         Use case ends.
+  
+* 2a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
+    * 2a1. coNnectUS displays an error message with the expected usage instructions
+
+        Use case resumes from Step 2.
+
+* 2b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
+    * 2b1. coNnectUS displays an error message warning the user of the invalid index. 
+  
+        Use case resumes from Step 2.
 
 #### Use Case: UC04 - Find Contacts
 
