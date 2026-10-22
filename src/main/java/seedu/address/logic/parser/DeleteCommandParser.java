@@ -32,8 +32,8 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
      */
     public DeleteCommand parse(String args) throws ParseException {
         try {
-            validateParameters(args);
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, PREFIX_TAG);
+            validateParameters(arguments.getPreamble());
             List<String> tags = arguments.getAllValues(PREFIX_TAG);
             if (!tags.isEmpty() && !arguments.getPreamble().isBlank()) {
                 throw new ParseException(MESSAGE_TAG_AND_INDEX_PROVIDED);
@@ -57,7 +57,8 @@ public class DeleteCommandParser implements Parser<DeleteCommand> {
     }
 
     /**
-     * Rejects parameters starting with '-' other than the supported tag parameter or negative integers.
+     * Rejects unsupported parameters before the first tag argument, while allowing negative integers
+     * to be handled by index validation. Hyphen-leading words within tag values are part of tag name.
      *
      * @throws ParseException if an unknown parameter is supplied.
      */
