@@ -8,7 +8,7 @@ import java.util.Comparator;
  * Creates comparators to sort Person objects in the Address Book.
  */
 public class PersonComparatorFactory {
-    
+
     /**
      * Creates a {@link Comparator} that compares {@link Person} based on {@link SortCriteria}.
      *
