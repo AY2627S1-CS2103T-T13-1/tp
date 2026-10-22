@@ -126,6 +126,7 @@ The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* keeps a history of address book states in a `VersionedAddressBook`, so that changes can be undone and redone (see [Undo/redo feature](#undo-redo-feature)).
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -351,6 +352,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *` | Beginner user | See friendly error messages | I can understand what I did wrong and correct them. |
 | `* *` | Forgetful user | Search for my contacts using any of their contexts | I can find my friend without remembering their name |
 | `* *` | Regular User | Update certain fields in contacts | I can reflect changes in contact information or correct mistakes |
+| `* *` | Regular user | Undo or redo my most recent changes | I can quickly recover from a mistake, such as deleting the wrong contact |
 | `* *` | Regular user | Group my contacts | I can find easily find friends with the same context |
 | `* *` | Regular user | Have added contacts automatically be saved | I don't have to worry about contacts not being saved |
 | `*` | Beginner user | Have sample contact information | I can explore features without having to add contacts |
@@ -602,6 +604,29 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases … }_
+
+### Undoing and redoing changes
+
+1. Undoing and redoing a change
+
+   1. Prerequisites: Launch the app with multiple persons in the list.
+
+   1. Test case: `delete 1`, then `undo`<br>
+      Expected: The deleted contact is back in the list. All contacts are shown, with pinned contacts at the top.
+
+   1. Test case: `delete 1`, `undo`, then `redo`<br>
+      Expected: The contact is deleted again.
+
+   1. Test case: `delete 1`, `list`, then `undo`<br>
+      Expected: `list` is skipped, and the deleted contact is back in the list.
+
+1. Nothing to undo or redo
+
+   1. Test case: Relaunch the app, then `undo`<br>
+      Expected: The contact list does not change. The status message shows that there are no changes to undo.
+
+   1. Test case: `delete 1`, `undo`, `delete 2`, then `redo`<br>
+      Expected: The contact list does not change, since `delete 2` cleared the redo history. The status message shows that there are no undone changes to redo.
 
 ### Saving data
 
