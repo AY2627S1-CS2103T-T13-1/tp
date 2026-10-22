@@ -50,6 +50,9 @@ public class HelpCommand extends Command {
                     UndoCommand.COMMAND_WORD,
                     UndoCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
+                    RedoCommand.COMMAND_WORD,
+                    RedoCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
                     ClearCommand.COMMAND_WORD,
                     ClearCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(

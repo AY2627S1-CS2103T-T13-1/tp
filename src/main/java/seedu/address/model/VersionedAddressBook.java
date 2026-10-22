@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An {@code AddressBook} that keeps a history of its saved states so that changes can be undone.
+ * An {@code AddressBook} that keeps a history of its saved states so that changes can be undone and redone.
  */
 public class VersionedAddressBook extends AddressBook {
 
@@ -55,6 +55,27 @@ public class VersionedAddressBook extends AddressBook {
         }
 
         currentStatePointer--;
+        resetData(addressBookStateList.get(currentStatePointer));
+    }
+
+    /**
+     * Returns true if there is an undone state to redo to.
+     */
+    public boolean canRedo() {
+        return currentStatePointer < addressBookStateList.size() - 1;
+    }
+
+    /**
+     * Restores the data to the most recently undone state.
+     *
+     * @throws IllegalStateException if there is no undone state.
+     */
+    public void redo() {
+        if (!canRedo()) {
+            throw new IllegalStateException("There is no undone state to redo to.");
+        }
+
+        currentStatePointer++;
         resetData(addressBookStateList.get(currentStatePointer));
     }
 }
