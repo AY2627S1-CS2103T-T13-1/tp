@@ -54,4 +54,13 @@ public interface Storage {
      */
     void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException;
 
+    /**
+     * Saves the given {@link ReadOnlyAddressBook} to the specified file path.
+     *
+     * @param addressBook the address book to save; cannot be null
+     * @param path the file path to save the address book to; cannot be null
+     * @throws IOException if there was any problem writing to the file
+     */
+    void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException;
+
 }

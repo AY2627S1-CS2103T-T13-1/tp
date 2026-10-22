@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.nio.file.Path;
@@ -58,6 +59,23 @@ public class StorageManagerTest {
         storageManager.saveAddressBook(original);
         ReadOnlyAddressBook retrieved = storageManager.readAddressBook().get();
         assertEquals(original, new AddressBook(retrieved));
+    }
+
+    @Test
+    public void addressBookSaveToSpecifiedPath_success() throws Exception {
+        AddressBook original = getTypicalAddressBook();
+        Path exportFilePath = getTempFilePath("exports/exportedAddressBook.json");
+
+        storageManager.saveAddressBook(original, exportFilePath);
+
+        JsonAddressBookStorage exportedStorage = new JsonAddressBookStorage(exportFilePath);
+        ReadOnlyAddressBook retrieved = exportedStorage.readAddressBook().get();
+        assertEquals(original, new AddressBook(retrieved));
+    }
+
+    @Test
+    public void addressBookSaveToSpecifiedPath_nullPath_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> storageManager.saveAddressBook(new AddressBook(), null));
     }
 
     @Test
