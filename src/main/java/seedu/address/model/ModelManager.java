@@ -36,7 +36,10 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
-        this.addressBook = new VersionedAddressBook(addressBook);
+        // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
+        AddressBook sortedAddressBook = new AddressBook(addressBook);
+        sortedAddressBook.sortPersons(PersonComparatorFactory.getPreviousComparator());
+        this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
