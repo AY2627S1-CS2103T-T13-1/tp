@@ -39,6 +39,14 @@ public class ArgumentStructureValidatorTest {
     }
 
     @Test
+    public void validate_singleHyphenToken_doesNotThrow() {
+        String args = " -n -";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        assertDoesNotThrow(() -> validate(args, arguments));
+    }
+
+    @Test
     public void validate_unexpectedPreamble_throwsParseException() {
         String args = "Alice -n Alice";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);

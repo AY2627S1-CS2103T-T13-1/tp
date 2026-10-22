@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +38,18 @@ public class CommandResultTest {
 
         // different theme value -> returns false
         assertFalse(commandResult.equals(new CommandResult("feedback", false, Theme.LIGHT)));
+
+        ExportRequest exportRequest = new ExportRequest(getTypicalAddressBook(), Path.of("export.json"));
+        CommandResult exportCommandResult = new CommandResult("feedback", exportRequest);
+
+        // equivalent export request -> returns true
+        assertTrue(exportCommandResult.equals(new CommandResult("feedback",
+                new ExportRequest(getTypicalAddressBook(), Path.of("export.json")))));
+
+        // export request value -> returns false
+        assertFalse(exportCommandResult.equals(commandResult));
+        assertFalse(exportCommandResult.equals(new CommandResult("feedback",
+                new ExportRequest(getTypicalAddressBook(), Path.of("other.json")))));
     }
 
     @Test
@@ -52,6 +67,17 @@ public class CommandResultTest {
 
         // different theme value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, Theme.LIGHT).hashCode());
+
+        ExportRequest exportRequest = new ExportRequest(getTypicalAddressBook(), Path.of("export.json"));
+        CommandResult exportCommandResult = new CommandResult("feedback", exportRequest);
+
+        // equivalent export request -> returns same hashcode
+        assertEquals(exportCommandResult.hashCode(), new CommandResult("feedback",
+                new ExportRequest(getTypicalAddressBook(), Path.of("export.json"))).hashCode());
+
+        // different export request value -> returns different hashcode
+        assertNotEquals(exportCommandResult.hashCode(), new CommandResult("feedback",
+                new ExportRequest(getTypicalAddressBook(), Path.of("other.json"))).hashCode());
     }
 
     @Test

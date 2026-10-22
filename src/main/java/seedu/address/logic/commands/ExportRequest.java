@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 import seedu.address.model.ReadOnlyAddressBook;
 
@@ -38,5 +39,24 @@ public class ExportRequest {
      */
     public Path getFilePath() {
         return filePath;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof ExportRequest otherExportRequest)) {
+            return false;
+        }
+
+        return addressBook.equals(otherExportRequest.addressBook)
+                && filePath.equals(otherExportRequest.filePath);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(addressBook, filePath);
     }
 }
