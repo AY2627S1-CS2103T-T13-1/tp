@@ -153,7 +153,7 @@ Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
 <u>__Tag-based Deletion:__</u>
 
-* Deletes people with a __complete matching tag set__ with the one specified. 
+* Deletes people whose complete set of tags exactly matches the supplied tags. 
 * One or more tags can be specified.
 * Matching people not displayed in the active filter will still be deleted.
 * Tag categories and tag names are compared case-insensitively. 
