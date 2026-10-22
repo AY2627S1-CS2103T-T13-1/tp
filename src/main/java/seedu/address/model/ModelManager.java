@@ -155,5 +155,4 @@ public class ModelManager implements Model {
     public void registerAlias(String commandWord, String alias) {
         aliasRegistry.register(commandWord, alias);
     }
-
 }

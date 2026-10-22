@@ -14,6 +14,8 @@ import static seedu.address.testutil.TypicalPersons.AMY;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -97,6 +99,59 @@ public class LogicManagerTest {
     public void execute_storageThrowsAdException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_AD_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage()));
+    }
+
+    @Test
+    public void execute_exportSuccess_savesExportOnly() throws Exception {
+        model.addPerson(AMY);
+        List<ReadOnlyAddressBook> exportedAddressBooks = new ArrayList<>();
+        List<Path> exportedFilePaths = new ArrayList<>();
+        int[] regularSaveCount = {0};
+
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("exportAddressBook.json"));
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("exportUserPrefs.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
+                exportedAddressBooks.add(addressBook);
+                exportedFilePaths.add(path);
+            }
+
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
+                regularSaveCount[0]++;
+            }
+        };
+        logic = new LogicManager(model, storage);
+
+        CommandResult result = logic.execute("export -f samplefile");
+
+        assertEquals("Contact(s) exported to samplefile.json", result.getFeedbackToUser());
+        assertEquals(List.of(model.getAddressBook()), exportedAddressBooks);
+        assertEquals(List.of(Path.of("data", "exports", "samplefile.json")), exportedFilePaths);
+        assertEquals(0, regularSaveCount[0]);
+    }
+
+    @Test
+    public void execute_exportStorageThrowsIoException_throwsCommandException() {
+        model.addPerson(AMY);
+        IOException exception = new IOException("dummy export IO exception");
+        setUpLogicWithExportStorageException(exception);
+
+        assertCommandFailure("export -f samplefile", CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, exception.getMessage()));
+    }
+
+    @Test
+    public void execute_exportStorageThrowsAccessDeniedException_throwsCommandException() {
+        model.addPerson(AMY);
+        AccessDeniedException exception = new AccessDeniedException("dummy export access denied exception");
+        setUpLogicWithExportStorageException(exception);
+
+        assertCommandFailure("export -f samplefile", CommandException.class,
+                String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, exception.getMessage()));
     }
 
     @Test
@@ -187,5 +242,27 @@ public class LogicManagerTest {
         ModelManager expectedModel = new ModelManager(BUILT_IN_COMMAND_WORDS);
         expectedModel.addPerson(expectedPerson);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
+    }
+
+    /**
+     * Replaces the logic's storage with one that fails when saving an exported address book.
+     */
+    private void setUpLogicWithExportStorageException(IOException exception) {
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("exportExceptionAddressBook.json"));
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("exportExceptionUserPrefs.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException {
+                throw exception;
+            }
+
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
+                // The export save fails before the regular address book save is reached.
+            }
+        };
+        logic = new LogicManager(model, storage);
     }
 }

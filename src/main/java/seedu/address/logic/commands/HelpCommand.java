@@ -56,6 +56,10 @@ public class HelpCommand extends Command {
                     ExitCommand.COMMAND_WORD,
                     ExitCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
+                    ExportCommand.COMMAND_SYNTAX,
+                    ExportCommand.COMMAND_DESCRIPTION,
+                    ExportCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     "User Guide Link: " + AppConstants.USERGUIDE_URL));
 
     @Override

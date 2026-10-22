@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import seedu.address.commons.util.ToStringBuilder;
 public class CommandResult {
 
     private final String feedbackToUser;
+    private final Optional<ExportRequest> exportRequest;
 
     /** The application should exit. */
     private final boolean exit;
@@ -25,7 +27,10 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean exit, Theme theme) {
-        this.feedbackToUser = requireNonNull(feedbackToUser);
+
+        requireNonNull(feedbackToUser);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.empty();
         this.exit = exit;
         this.theme = theme;
     }
@@ -45,8 +50,27 @@ public class CommandResult {
         this(feedbackToUser, false);
     }
 
+    /**
+     * Constructs a {@code CommandResult} with the specified feedback message and export request,
+     * with other fields set to their default values.
+     *
+     * @param feedbackToUser the feedback message to display to the user
+     * @param exportRequest the export request associated with this result
+     */
+    public CommandResult(String feedbackToUser, ExportRequest exportRequest) {
+        requireAllNonNull(feedbackToUser, exportRequest);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.of(exportRequest);
+        this.exit = false;
+        this.theme = null;
+    }
+
     public String getFeedbackToUser() {
         return feedbackToUser;
+    }
+
+    public Optional<ExportRequest> getExportRequest() {
+        return this.exportRequest;
     }
 
     public boolean isExit() {
@@ -70,12 +94,13 @@ public class CommandResult {
 
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && exit == otherCommandResult.exit
-                && theme == otherCommandResult.theme;
+                && theme == otherCommandResult.theme
+                && exportRequest.equals(otherCommandResult.exportRequest);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, exit, theme);
+        return Objects.hash(feedbackToUser, exit, theme, exportRequest);
     }
 
     @Override

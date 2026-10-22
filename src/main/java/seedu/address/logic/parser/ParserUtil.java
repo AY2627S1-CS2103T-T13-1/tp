@@ -16,6 +16,7 @@ import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
 import seedu.address.model.tag.Tag;
 import seedu.address.model.tag.TagFactory;
+import seedu.address.storage.Filename;
 
 /**
  * Contains utility methods used for parsing strings in the various *Parser classes.
@@ -36,6 +37,33 @@ public class ParserUtil {
             throw new ParseException(MESSAGE_INVALID_INDEX);
         }
         return Index.fromOneBased(Integer.parseInt(trimmedIndex));
+    }
+
+    /**
+     * Parses the given filename and returns a validated {@link Filename}.
+     *
+     * Leading and trailing whitespace is removed before validation.
+     * A {@code ParseException} is thrown if the filename exceeds the maximum
+     * allowed length or contains invalid characters.
+     *
+     * @param fileName the filename to parse
+     * @return a validated {@code Filename}
+     * @throws NullPointerException if {@code fileName} is null
+     * @throws ParseException if the filename is too long or contains invalid characters
+     */
+    public static Filename parseFilename(String fileName) throws ParseException {
+        requireNonNull(fileName);
+        String trimmedFileName = fileName.trim();
+
+        if (!Filename.isValidLength(trimmedFileName)) {
+            throw new ParseException(Filename.MESSAGE_EXCEED_MAX_LENGTH);
+        }
+
+        if (!Filename.isValidName(trimmedFileName)) {
+            throw new ParseException(Filename.MESSAGE_CONSTRAINTS);
+        }
+
+        return new Filename(trimmedFileName);
     }
 
     /**
