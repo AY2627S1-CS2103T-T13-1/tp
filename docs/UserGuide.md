@@ -145,13 +145,13 @@ Deletes either the specified person (based on list index), or people matching th
 
 Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
-<u>__Index-based deletion:__</u>
+<ins>__Index-based deletion:__</ins>
 
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, ...
 
-<u>__Tag-based deletion:__</u>
+<ins>__Tag-based deletion:__</ins>
 
 * Deletes people whose __complete set of tags exactly matches the supplied tags__. 
 * One or more tags can be specified.
