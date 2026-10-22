@@ -21,8 +21,8 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String COMMAND_DESCRIPTION = "Finds contacts that match the supplied search"
-            + " criteria (i.e. name, tag, phone number, email address and/or address) and displays"
-            + " them as a list with index numbers.";
+            + " criteria (i.e. name, tag, phone number, email address and/or address)\n"
+            + "and displays them as a list with index numbers.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
             + "[" + PREFIX_NAME + " NAME] "
