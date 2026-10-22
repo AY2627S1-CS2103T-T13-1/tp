@@ -69,11 +69,12 @@ public class SearchCriteriaParserTest {
     }
 
     @Test
-    public void parse_invalidEmail_throwsParseException() {
+    public void parse_partialEmail_throwsParseException() throws ParseException {
         String args = " -e example.com";
 
-        assertThrows(ParseException.class, ()
-                -> SearchCriteriaParser.parse(tokenize(args)));
+        SearchCriteria criteria = SearchCriteriaParser.parse(tokenize(args));
+
+        assertEquals(Optional.of("example.com"), criteria.getEmail());
     }
 
     @Test

@@ -28,7 +28,7 @@ public class CommandResult {
      */
     public CommandResult(String feedbackToUser, boolean exit, Theme theme) {
 
-        requireAllNonNull(feedbackToUser, exit, theme);
+        requireNonNull(feedbackToUser);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.exit = exit;
@@ -39,12 +39,7 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields and no theme change.
      */
     public CommandResult(String feedbackToUser, boolean exit) {
-        requireAllNonNull(feedbackToUser, exit);
-        this.feedbackToUser = feedbackToUser;
-        this.exportRequest = Optional.empty();
-        this.exit = exit;
-        this.theme = null;
-
+        this(feedbackToUser, exit, null);
     }
 
     /**
@@ -103,12 +98,13 @@ public class CommandResult {
 
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && exit == otherCommandResult.exit
-                && theme == otherCommandResult.theme;
+                && theme == otherCommandResult.theme
+                && exportRequest.equals(otherCommandResult.exportRequest);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, exit, theme);
+        return Objects.hash(feedbackToUser, exit, theme, exportRequest);
     }
 
     @Override

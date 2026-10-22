@@ -102,7 +102,7 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_exportSuccess_savesExportAndAddressBook() throws Exception {
+    public void execute_exportSuccess_savesExportOnly() throws Exception {
         model.addPerson(AMY);
         List<ReadOnlyAddressBook> exportedAddressBooks = new ArrayList<>();
         List<Path> exportedFilePaths = new ArrayList<>();
@@ -117,6 +117,11 @@ public class LogicManagerTest {
             public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
                 exportedAddressBooks.add(addressBook);
                 exportedFilePaths.add(path);
+            }
+
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
+                regularSaveCount[0]++;
             }
         };
         logic = new LogicManager(model, storage);
