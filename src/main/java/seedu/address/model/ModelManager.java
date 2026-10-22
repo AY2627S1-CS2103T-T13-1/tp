@@ -26,6 +26,7 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final AliasRegistry aliasRegistry;
+    private Comparator<Person> previousComparator;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -40,6 +41,7 @@ public class ModelManager implements Model {
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
+        this.previousComparator = PersonComparatorFactory.createDefaultComparator();
     }
 
     public ModelManager(Set<String> builtInCommandWords) {
@@ -69,7 +71,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(previousComparator);
     }
 
     @Override
@@ -86,13 +88,13 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(previousComparator);
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(previousComparator);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
@@ -101,7 +103,7 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(previousComparator);
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -141,6 +143,7 @@ public class ModelManager implements Model {
     @Override
     public void sortAddressBook(Comparator<Person> comp) {
         addressBook.sortPersons(comp);
+        previousComparator = comp;
     }
 
     /**
