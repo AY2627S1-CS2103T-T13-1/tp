@@ -6,6 +6,7 @@ import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -79,5 +80,30 @@ public class AliasRegistry {
     public static boolean isValidAlias(String alias) {
         requireNonNull(alias);
         return alias.matches("[a-zA-Z]+");
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+
+        if (!(other instanceof AliasRegistry otherRegistry)) {
+            return false;
+        }
+
+        return aliases.equals(otherRegistry.aliases)
+                && builtInCommandWords.equals(otherRegistry.builtInCommandWords);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(aliases, builtInCommandWords);
     }
 }
