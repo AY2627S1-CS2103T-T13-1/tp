@@ -98,6 +98,21 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void undo_unsortedInitialData_keepsRedoHistory() {
+        AddressBook addressBook =
+                new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON.pinPerson()).build();
+        modelManager = new ModelManager(addressBook, new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+        modelManager.addPerson(CARL);
+        modelManager.commit();
+
+        modelManager.undo();
+        // LogicManager commits after every command, including undo
+        modelManager.commit();
+
+        assertTrue(modelManager.canRedo());
+    }
+
+    @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
     }
