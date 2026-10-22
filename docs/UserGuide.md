@@ -203,6 +203,22 @@ Clears all entries from the address book.
 
 Format: `clear`
 
+### Undoing a change: `undo`
+
+Reverses the most recent command that changed your contact list.
+
+Format: `undo`
+
+* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin` and `unpin`.
+* Other commands, such as `list`, `find`, `theme` and `alias`, are skipped. `undo` reverses the most recent command that changed your contact list.
+* You can use `undo` several times in a row to reverse earlier changes one at a time.
+* After an undo, all contacts are shown, with pinned contacts at the top.
+* The undo history is cleared when you close coNnectUS.
+
+Examples:
+* `delete 2` followed by `undo` brings back the deleted contact.
+* `pin 1`, `edit 3 -n John Doe`, then `undo` twice reverses the edit and then the pin.
+
 ### Changing the theme: `theme`
 
 Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
@@ -275,4 +291,5 @@ Action     | Format, Examples
 **Unpin**  | `unpin INDEX`
 **List**   | `list`
 **Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
+**Undo**   | `undo`
 **Help**   | `help`
