@@ -414,7 +414,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Extensions:**
 
 * 1a. coNnectUS detects that the currently displayed contact list is empty (i.e. nothing to delete).
-    * 1c1. coNnectUS displays an error message informing the user about the empty contact list.
+    * 1a1. coNnectUS displays an error message informing the user about the empty contact list.
 
         Use case ends.
   
