@@ -69,7 +69,7 @@ public class SearchCriteriaParserTest {
     }
 
     @Test
-    public void parse_partialEmail_throwsParseException() throws ParseException {
+    public void parse_partialEmail_returnsParsedCriteria() throws ParseException {
         String args = " -e example.com";
 
         SearchCriteria criteria = SearchCriteriaParser.parse(tokenize(args));

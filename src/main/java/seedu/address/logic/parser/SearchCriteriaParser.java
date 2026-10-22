@@ -35,7 +35,7 @@ public class SearchCriteriaParser {
      * @param arguments the tokenized command arguments containing the search
      *                  criteria
      * @return the parsed and validated search criteria
-     * @throws ParseException if any supplied name, phone number, email address,
+     * @throws ParseException if any supplied name, phone number,
      *         address, or tag is invalid
      */
     public static SearchCriteria parse(ArgumentMultimap arguments)

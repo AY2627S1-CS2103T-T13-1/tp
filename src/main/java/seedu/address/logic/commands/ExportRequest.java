@@ -1,5 +1,7 @@
 package seedu.address.logic.commands;
 
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+
 import java.nio.file.Path;
 import java.util.Objects;
 
@@ -19,6 +21,7 @@ public class ExportRequest {
      * @param filePath the path of the target file to export to
      */
     public ExportRequest(ReadOnlyAddressBook addressBook, Path filePath) {
+        requireAllNonNull(addressBook, filePath);
         this.addressBook = addressBook;
         this.filePath = filePath;
     }

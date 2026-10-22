@@ -36,7 +36,7 @@ public class ExportCommand extends Command {
     public static final String EXPORT_FAILED_NONE_MATCH = "No contacts with the specified field(s) found!";
     private static final Path EXPORT_DIRECTORY = Paths.get("data", "exports");
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " "
-            + PREFIX_FILENAME + " FILENAME"
+            + PREFIX_FILENAME + " FILENAME "
             + "[" + PREFIX_NAME + " NAME] "
             + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + " EMAIL] "

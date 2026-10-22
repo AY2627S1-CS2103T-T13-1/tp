@@ -1,6 +1,7 @@
 package seedu.address.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static seedu.address.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 
@@ -19,5 +20,17 @@ public class ExportRequestTest {
 
         assertSame(addressBook, exportRequest.getAddressBook());
         assertSame(filePath, exportRequest.getFilePath());
+    }
+
+    @Test
+    public void constructor_nullAddressBook_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, ()
+                -> new ExportRequest(null, Path.of("contacts.json")));
+    }
+
+    @Test
+    public void constructor_nullFilePath_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, ()
+                -> new ExportRequest(new AddressBook(), null));
     }
 }
