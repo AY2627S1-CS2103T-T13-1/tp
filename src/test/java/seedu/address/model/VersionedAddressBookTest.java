@@ -1,0 +1,107 @@
+package seedu.address.model;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.CARL;
+
+import org.junit.jupiter.api.Test;
+
+import seedu.address.testutil.AddressBookBuilder;
+
+public class VersionedAddressBookTest {
+
+    private final AddressBook addressBookWithAlice = new AddressBookBuilder().withPerson(ALICE).build();
+    private final AddressBook addressBookWithAliceAndBenson =
+            new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON).build();
+
+    @Test
+    public void constructor_copiesInitialState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+        assertFalse(versionedAddressBook.canUndo());
+    }
+
+    @Test
+    public void commit_dataChanged_savesState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+
+        assertTrue(versionedAddressBook.commit());
+        assertTrue(versionedAddressBook.canUndo());
+    }
+
+    @Test
+    public void commit_dataUnchanged_doesNotSaveState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+
+        assertFalse(versionedAddressBook.commit());
+        assertFalse(versionedAddressBook.canUndo());
+    }
+
+    @Test
+    public void undo_previousStateExists_restoresPreviousState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+
+        versionedAddressBook.undo();
+
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+        assertFalse(versionedAddressBook.canUndo());
+    }
+
+    @Test
+    public void undo_multipleStates_restoresStatesInReverseOrder() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(new AddressBook());
+        versionedAddressBook.addPerson(ALICE);
+        versionedAddressBook.commit();
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+
+        versionedAddressBook.undo();
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+
+        versionedAddressBook.undo();
+        assertEquals(new AddressBook(), versionedAddressBook);
+    }
+
+    @Test
+    public void undo_noPreviousState_throwsIllegalStateException() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        assertThrows(IllegalStateException.class, versionedAddressBook::undo);
+    }
+
+    @Test
+    public void commit_afterUndo_discardsUndoneState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+
+        versionedAddressBook.addPerson(CARL);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+
+        // goes back to the state before CARL was added, not the undone state with BENSON
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+        assertFalse(versionedAddressBook.canUndo());
+    }
+
+    @Test
+    public void commit_savesCopyOfData() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+
+        // changes made after a commit should not affect the saved state
+        versionedAddressBook.addPerson(CARL);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+
+        assertEquals(addressBookWithAliceAndBenson, versionedAddressBook);
+    }
+}
