@@ -29,9 +29,9 @@ public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
-    public static final String COMMAND_DESCRIPTION = "Deletes a contact identified either by their"
-            + " index number used in the displayed person list, or at least one tag supplied.\n"
-            + " If all supplied tags match, the person is deleted.";
+    public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index,"
+            + " or all contacts whose complete tag set matches the supplied tags (case-insensitive).\n"
+            + "Tag-based deletion includes contacts hidden by the current filter.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
             + "OR [-t TAG_CATEGORY TAG_NAME]...";
