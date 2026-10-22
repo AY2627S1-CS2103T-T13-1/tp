@@ -1,0 +1,78 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":AliasCommandParser" as AliasCommandParser LOGIC_COLOR
+participant "a:AliasCommand" as AliasCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+participant ":AliasRegistry" as AliasRegistry MODEL_COLOR
+end box
+
+[-> LogicManager : execute("alias find f")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("alias find f")
+activate AddressBookParser
+
+create AliasCommandParser
+AddressBookParser -> AliasCommandParser
+activate AliasCommandParser
+
+AliasCommandParser --> AddressBookParser
+deactivate AliasCommandParser
+
+AddressBookParser -> AliasCommandParser : parse("find f")
+activate AliasCommandParser
+
+create AliasCommand
+AliasCommandParser -> AliasCommand : AliasCommand("find", "f")
+activate AliasCommand
+
+AliasCommand --> AliasCommandParser :
+deactivate AliasCommand
+
+AliasCommandParser --> AddressBookParser: a
+deactivate AliasCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.
+AliasCommandParser -[hidden]-> AddressBookParser
+destroy AliasCommandParser
+
+AddressBookParser --> LogicManager : a
+deactivate AddressBookParser
+
+LogicManager -> AliasCommand : execute(m)
+activate AliasCommand
+
+AliasCommand -> Model : registerAlias("find", "f")
+activate Model
+
+Model -> AliasRegistry : register("find", "f")
+activate AliasRegistry
+
+AliasRegistry --> Model
+deactivate AliasRegistry
+
+Model --> AliasCommand
+deactivate Model
+
+create CommandResult
+AliasCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> AliasCommand
+deactivate CommandResult
+
+AliasCommand --> LogicManager: r
+deactivate AliasCommand
+
+[<-- LogicManager
+deactivate LogicManager
+
+@enduml
