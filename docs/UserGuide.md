@@ -141,26 +141,27 @@ Examples:
 
 ### Deleting a person or multiple people: `delete`
 
-Deletes either the specified person from the address book, or people matching tag set supplied.
+Deletes either the specified person (based on list index) from the address book, or people matching tag set supplied.
 
 Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
-Index-based Deletion:
+<u>__Index-based Deletion:__</u>
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, ...
 
-Tag-based Deletion:
-* Deletes people with a complete matching tag set with the one specified. 
+<u>__Tag-based Deletion:__</u>
+* Deletes people with a __complete matching tag set__ with the one specified. 
 * One or more tags can be specified.
-* Tag categories and names are case-insensitive.
+* Matching people not displayed in the active filter will still be deleted.
+* Tag categories and tag names are compared case-insensitively. 
 * If there are no matches, no deletion will occur.
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 * `delete -t faculty Science` deletes all people with only the faculty tag `Science`.
-* `delete -t module TJ3000 -t others Badminton` deletes all people with only the module tag `TJ3000` and others tag `Badminton`.
+* `delete -t module TJ3000 -t others Badminton` deletes all people with only the module tag `TJ3000` and others tag `Badminton`. (Persons missing any of the exact tags OR having extra tags will __not__ be matched)
 
 ### Pinning and unpinning a person
 
