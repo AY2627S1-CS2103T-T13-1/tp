@@ -36,8 +36,26 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_unknownParameterAfterTag_throwsParseException() {
-        assertUnknownParameterFailure(" -t others coder -y value");
+    public void parse_unknownParameterBeforeTag_throwsParseException() {
+        assertUnknownParameterFailure(" -y -t others coder");
+    }
+
+    @Test
+    public void parse_hyphenLeadingWordInTagName_returnsDeleteCommand() {
+        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("coder -y value")));
+        assertParseSuccess(parser, " -t others coder -y value", expected);
+    }
+
+    @Test
+    public void parse_hyphenLeadingTagName_returnsDeleteCommand() {
+        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("-archived")));
+        assertParseSuccess(parser, " -t others -archived", expected);
+    }
+
+    @Test
+    public void parse_hyphenLeadingTagNameWithInvalidCharacter_throwsParseException() {
+        assertParseFailure(parser, " -t others -archived!",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + DeleteCommand.MESSAGE_USAGE);
     }
 
     @Test
