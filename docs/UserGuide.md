@@ -146,11 +146,13 @@ Deletes either the specified person (based on list index) from the address book,
 Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
 <u>__Index-based Deletion:__</u>
+
 * Deletes the person at the specified `INDEX`.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, ...
 
 <u>__Tag-based Deletion:__</u>
+
 * Deletes people with a __complete matching tag set__ with the one specified. 
 * One or more tags can be specified.
 * Matching people not displayed in the active filter will still be deleted.
