@@ -13,11 +13,20 @@ activate Model
 Model -> VersionedAddressBook : undo()
 activate VersionedAddressBook
 
-VersionedAddressBook -> VersionedAddressBook :resetData(ReadOnlyAddressBook)
-VersionedAddressBook --> Model :
+VersionedAddressBook -> VersionedAddressBook : canUndo()
+VersionedAddressBook -> VersionedAddressBook : resetData(ReadOnlyAddressBook)
+VersionedAddressBook --> Model
 deactivate VersionedAddressBook
 
 Model -> Model : sortAddressBook(Comparator)
+activate Model
+
+Model -> VersionedAddressBook : sortPersons(Comparator)
+activate VersionedAddressBook
+
+VersionedAddressBook --> Model
+deactivate VersionedAddressBook
+deactivate Model
 
 [<-- Model
 deactivate Model

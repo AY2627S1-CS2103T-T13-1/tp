@@ -4,16 +4,21 @@ skinparam ActivityFontSize 15
 skinparam ArrowFontSize 12
 start
 :User executes command;
-:LogicManager calls Model#commit();
 
 'Since the beta syntax does not support placing the condition outside the
 'diamond we place it as the true branch instead.
 
-if () then ([AddressBook differs from
-current state])
-    :Purge redundant states;
-    :Save AddressBook to
-    addressBookStateList;
+if () then ([command executes
+successfully])
+    :LogicManager calls
+    Model#commit();
+    if () then ([AddressBook differs from
+    current state])
+        :Purge redundant states;
+        :Save AddressBook to
+        addressBookStateList;
+    else ([else])
+    endif
 else ([else])
 endif
 stop
