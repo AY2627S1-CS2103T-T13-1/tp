@@ -196,9 +196,15 @@ Users are able to set aliases for commands, enabling a more customized experienc
 
 The `alias` feature:
 * stores mappings from aliases to built-in commands offered by coNnectUS in a map in `AliasRegistry`.
-* requires `alias` to contain one or more ASCII lower- and upper-case letters (i.e. `a-z` or `A-Z`). Aliases are case-sensitive and _cannot conflict_ with existing built-in command words (e.g. `alias find delete` is **not allowed**) or existing aliases.
+* requires `alias` to contain one or more ASCII lower- and upper-case letters (i.e. `a-z` or `A-Z`). Aliases are case-sensitive, _should not conflict_ with existing built-in command words (e.g. `alias find delete` is **not allowed**) and existing aliases.
 * resolves aliases to their corresponding built-in commands before parsing of commands.
 * 🚧 (WIP) will support storing created aliases across sessions to enable easy import/export by users.
+
+<box type="warning" header="**Important Note**" seamless>
+
+When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
+</box>
+
 
 ### \[Proposed\] Undo/redo feature
 
