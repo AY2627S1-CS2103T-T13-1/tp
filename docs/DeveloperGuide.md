@@ -188,6 +188,18 @@ The pin feature makes use of sorting to ensure pinned contacts are displayed on 
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
 
+### Setting an `alias` for a command
+
+Users are able to set aliases for commands, enabling a more customized experience when using coNnectUS.
+
+<puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
+
+The `alias` feature:
+* stores mappings from aliases to built-in commands offered by coNnectUS in a map in `AliasRegistry`.
+* requires `alias` to contain one or more ASCII lower- and upper-case letters (i.e. `a-z` or `A-Z`). Aliases are case-sensitive and _cannot conflict_ with existing built-in command words (e.g. `alias find delete` is **not allowed**) or existing aliases.
+* resolves aliases to their corresponding built-in commands before parsing of commands.
+* 🚧 (WIP) will support storing created aliases across sessions to enable easy import/export by users.
+
 ### \[Proposed\] Undo/redo feature
 
 #### Proposed Implementation
