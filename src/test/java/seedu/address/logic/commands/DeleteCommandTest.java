@@ -111,8 +111,7 @@ public class DeleteCommandTest {
         Model emptyModel = modelWithPersons();
         DeleteCommand command = new DeleteCommand(Set.of(new OthersTag("coder")));
 
-        assertCommandSuccess(command, emptyModel, "No matching persons were found to be deleted.",
-                modelWithPersons());
+        assertCommandSuccess(command, emptyModel, DeleteCommand.MESSAGE_NO_MATCHING_PERSONS, modelWithPersons());
     }
 
     @Test
@@ -120,8 +119,7 @@ public class DeleteCommandTest {
         Model tagModel = modelWithPersons(CARL);
         DeleteCommand command = new DeleteCommand(Set.of(new OthersTag("coder")));
 
-        assertCommandSuccess(command, tagModel, "No matching persons were found to be deleted.",
-                modelWithPersons(CARL));
+        assertCommandSuccess(command, tagModel, DeleteCommand.MESSAGE_NO_MATCHING_PERSONS, modelWithPersons(CARL));
     }
 
     @Test
@@ -132,8 +130,7 @@ public class DeleteCommandTest {
         DeleteCommand command = new DeleteCommand(Set.of(new OthersTag("coder")));
 
         assertCommandSuccess(command, tagModel,
-                "Successfully removed 2 matching contact(s) from your address book.",
-                modelWithPersons(CARL));
+                String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 2), modelWithPersons(CARL));
     }
 
     @Test
@@ -277,7 +274,7 @@ public class DeleteCommandTest {
     public void toStringMethod() {
         Index targetIndex = Index.fromOneBased(1);
         DeleteCommand deleteCommand = new DeleteCommand(targetIndex);
-        String expected = DeleteCommand.class.getCanonicalName() + "{targetIndex=" + targetIndex + ", tagList=null}";
+        String expected = DeleteCommand.class.getCanonicalName() + "{targetIndex=" + targetIndex + ", targetTags=null}";
         assertEquals(expected, deleteCommand.toString());
     }
 
@@ -285,7 +282,7 @@ public class DeleteCommandTest {
     public void toStringMethod_tags() {
         Set<Tag> tags = Set.of(new OthersTag("coder"));
         DeleteCommand deleteCommand = new DeleteCommand(tags);
-        String expected = DeleteCommand.class.getCanonicalName() + "{targetIndex=null, tagList=" + tags + "}";
+        String expected = DeleteCommand.class.getCanonicalName() + "{targetIndex=null, targetTags=" + tags + "}";
         assertEquals(expected, deleteCommand.toString());
     }
 

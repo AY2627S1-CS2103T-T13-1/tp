@@ -34,7 +34,7 @@ public class DeleteCommand extends Command {
             + " If all supplied tags match, the person is deleted.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
-            + "OR [-t TAG-CATEGORY TAG_NAME]...";
+            + "OR [-t TAG_CATEGORY TAG_NAME]...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1, "
             + COMMAND_WORD + " -t others Friend";
@@ -46,6 +46,11 @@ public class DeleteCommand extends Command {
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed %1$s from your address book.";
 
+    public static final String MESSAGE_DELETE_TAGS_SUCCESS =
+            "Successfully removed %d matching contact(s) from your address book.";
+
+    public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons were found to be deleted.";
+
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
         + "Please check again with list.";
 
@@ -53,7 +58,7 @@ public class DeleteCommand extends Command {
 
     private final Index targetIndex;
 
-    private final Set<Tag> tagList;
+    private final Set<Tag> targetTags;
 
     /**
      * Constructs a command to delete the person at the given index in the displayed list.
@@ -63,28 +68,28 @@ public class DeleteCommand extends Command {
      */
     public DeleteCommand(Index targetIndex) {
         this.targetIndex = requireNonNull(targetIndex);
-        this.tagList = null;
+        this.targetTags = null;
     }
 
     /**
      * Constructs a command to delete all persons in the entire address book whose complete tag sets
      * match the supplied tags by category and case-insensitive name.
      *
-     * @param tagList Nonempty set of tags to match against the entire address book.
-     * @throws NullPointerException if {@code tagList} or any of its elements is null.
-     * @throws IllegalArgumentException if {@code tagList} is empty.
+     * @param targetTags Nonempty set of tags to match against the entire address book.
+     * @throws NullPointerException if {@code targetTags} or any of its elements is null.
+     * @throws IllegalArgumentException if {@code targetTags} is empty.
      */
-    public DeleteCommand(Set<Tag> tagList) {
-        requireAllNonNull(tagList);
-        checkArgument(!tagList.isEmpty(), "At least one tag must be supplied.");
-        this.tagList = Set.copyOf(tagList);
+    public DeleteCommand(Set<Tag> targetTags) {
+        requireAllNonNull(targetTags);
+        checkArgument(!targetTags.isEmpty(), "At least one tag must be supplied.");
+        this.targetTags = Set.copyOf(targetTags);
         this.targetIndex = null;
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        assert (targetIndex != null) ^ (tagList != null)
+        assert (targetIndex != null) ^ (targetTags != null)
                 : "DeleteCommand must have exactly one deletion mode";
 
         if (targetIndex != null) {
@@ -94,10 +99,9 @@ public class DeleteCommand extends Command {
 
         List<Person> personsToDelete = deletePeopleWithTags(model);
         if (personsToDelete.isEmpty()) {
-            return new CommandResult("No matching persons were found to be deleted.");
+            return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
         }
-        return new CommandResult(String.format("Successfully removed %d matching contact(s) from your address book.",
-                personsToDelete.size()));
+        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, personsToDelete.size()));
     }
 
     /**
@@ -107,7 +111,7 @@ public class DeleteCommand extends Command {
      */
     private List<Person> deletePeopleWithTags(Model model) {
         int originalSize = model.getAddressBook().getPersonList().size();
-        Set<String> normalizedTargetTags = normalizeTags(tagList);
+        Set<String> normalizedTargetTags = normalizeTags(targetTags);
         List<Person> personsToDelete = model.getAddressBook().getPersonList().stream()
                 .filter(person -> normalizeTags(person.getTags()).equals(normalizedTargetTags))
                 .toList();
@@ -175,14 +179,14 @@ public class DeleteCommand extends Command {
         }
 
         return Objects.equals(targetIndex, otherDeleteCommand.targetIndex)
-                && Objects.equals(tagList, otherDeleteCommand.tagList);
+                && Objects.equals(targetTags, otherDeleteCommand.targetTags);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetIndex", targetIndex)
-                .add("tagList", tagList)
+                .add("targetTags", targetTags)
                 .toString();
     }
 }
