@@ -4,12 +4,14 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
 import java.util.Locale;
 
-import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.person.SortCriteria;
 import seedu.address.model.person.SortOrder;
 
+/**
+ * Parses input arguments and creates a new SortCommand object.
+ */
 public class SortCommandParser implements Parser<SortCommand> {
 
     @Override

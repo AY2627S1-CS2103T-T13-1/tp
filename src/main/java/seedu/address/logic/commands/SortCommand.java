@@ -11,6 +11,9 @@ import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.model.person.SortCriteria;
 import seedu.address.model.person.SortOrder;
 
+/**
+ * Sorts persons within the address book
+ */
 public class SortCommand extends Command {
 
     public static final String COMMAND_WORD = "sort";
@@ -31,11 +34,15 @@ public class SortCommand extends Command {
     private final SortCriteria sortCriteria;
     private final SortOrder sortOrder;
 
+    /**
+     * Creates a SortCommand to sort the address book according to {@code sortCriteria} and {@code sortOrder}
+     */
     public SortCommand(SortCriteria sortCriteria, SortOrder sortOrder) {
         this.sortCriteria = sortCriteria;
         this.sortOrder = sortOrder;
     }
 
+    @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
         Comparator<Person> comparator = PersonComparatorFactory.createComparator(sortCriteria, sortOrder);

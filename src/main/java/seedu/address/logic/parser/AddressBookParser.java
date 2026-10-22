@@ -23,7 +23,6 @@ import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UnpinCommand;
-
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.alias.AliasRegistry;
 
