@@ -13,7 +13,8 @@ public class UndoCommand extends Command {
 
     public static final String COMMAND_WORD = "undo";
 
-    public static final String COMMAND_DESCRIPTION = "Reverses the most recent command that changed the contact list.";
+    public static final String COMMAND_DESCRIPTION =
+            "Reverses the most recent command that changed the contact list.";
 
     public static final String MESSAGE_SUCCESS = "Undid the most recent change to your contact list.";
 
