@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
@@ -29,9 +30,15 @@ public class ListAliasCommand extends Command {
             return new CommandResult(MESSAGE_FAILURE_EMPTY);
         }
 
-        String mappings = aliases.entrySet().stream()
-                // alias is the key and command word is the value
-                .map(entry -> entry.getValue() + " : " + entry.getKey())
+        Map<String, String> groupedAliases = aliases.entrySet().stream()
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getValue,
+                        Collectors.mapping(
+                                Map.Entry::getKey,
+                                Collectors.joining(", "))));
+
+        String mappings = groupedAliases.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
                 .reduce((x, y) -> x + "\n" + y)
                 .orElse("");
 
