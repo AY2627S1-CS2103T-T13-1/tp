@@ -113,6 +113,7 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_listAlias() throws Exception {
         assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD) instanceof ListAliasCommand);
+        assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD + " extra") instanceof ListAliasCommand);
     }
 
     @Test
