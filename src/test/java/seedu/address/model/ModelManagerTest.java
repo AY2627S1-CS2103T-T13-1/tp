@@ -9,6 +9,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,6 +74,17 @@ public class ModelManagerTest {
     @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
+    }
+
+    @Test
+    public void getAliases_aliasesRegisteredThroughModel_returnsCurrentMappings() {
+        // Boundary: the model has no registered aliases.
+        assertEquals(Map.of(), modelManager.getAliases());
+
+        // Non-empty state: registrations are exposed through the model.
+        modelManager.registerAlias("find", "f");
+        modelManager.registerAlias("list", "l");
+        assertEquals(Map.of("f", "find", "l", "list"), modelManager.getAliases());
     }
 
     @Test
