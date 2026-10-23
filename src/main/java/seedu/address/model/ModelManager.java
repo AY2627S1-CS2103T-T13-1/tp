@@ -26,7 +26,7 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final AliasRegistry aliasRegistry;
-    private Comparator<Person> previousComparator;
+    private Comparator<Person> activeComparator;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -41,7 +41,7 @@ public class ModelManager implements Model {
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
-        this.previousComparator = PersonComparatorFactory.createDefaultComparator();
+        this.activeComparator = PersonComparatorFactory.createDefaultComparator();
     }
 
     public ModelManager(Set<String> builtInCommandWords) {
@@ -71,7 +71,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
-        sortAddressBook(previousComparator);
+        sortAddressBook(activeComparator);
     }
 
     @Override
@@ -88,13 +88,13 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
-        sortAddressBook(previousComparator);
+        sortAddressBook(activeComparator);
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
-        sortAddressBook(previousComparator);
+        sortAddressBook(activeComparator);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
@@ -103,7 +103,7 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
-        sortAddressBook(previousComparator);
+        sortAddressBook(activeComparator);
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -142,8 +142,9 @@ public class ModelManager implements Model {
 
     @Override
     public void sortAddressBook(Comparator<Person> comp) {
+        requireNonNull(comp);
         addressBook.sortPersons(comp);
-        previousComparator = comp;
+        activeComparator = comp;
     }
 
     /**
