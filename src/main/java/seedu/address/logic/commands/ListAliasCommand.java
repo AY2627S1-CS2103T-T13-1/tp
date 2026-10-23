@@ -39,8 +39,7 @@ public class ListAliasCommand extends Command {
 
         String mappings = groupedAliases.entrySet().stream()
                 .map(entry -> entry.getKey() + ": " + entry.getValue())
-                .reduce((x, y) -> x + "\n" + y)
-                .orElse("");
+                .collect(Collectors.joining("\n"));
 
         return new CommandResult(MESSAGE_SUCCESS_PREFIX + "\n" + mappings);
     }
