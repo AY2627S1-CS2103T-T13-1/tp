@@ -23,7 +23,7 @@ public class ListAliasCommandTest {
 
     @Test
     public void execute_noAliases_returnsEmptyMessage() throws CommandException {
-        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_FAILURE_EMPTY), command.execute(model));
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES), command.execute(model));
     }
 
     @Test

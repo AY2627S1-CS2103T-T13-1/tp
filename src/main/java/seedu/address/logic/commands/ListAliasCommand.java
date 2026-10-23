@@ -19,7 +19,7 @@ public class ListAliasCommand extends Command {
 
     public static final String MESSAGE_SUCCESS_PREFIX = "Registered alias(es): ";
 
-    public static final String MESSAGE_FAILURE_EMPTY = "There are no aliases currently registered.";
+    public static final String MESSAGE_NO_ALIASES = "There are no aliases currently registered.";
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
@@ -27,7 +27,7 @@ public class ListAliasCommand extends Command {
         Map<String, String> aliases = model.getAliases();
 
         if (aliases.isEmpty()) {
-            return new CommandResult(MESSAGE_FAILURE_EMPTY);
+            return new CommandResult(MESSAGE_NO_ALIASES);
         }
 
         Map<String, String> groupedAliases = aliases.entrySet().stream()
