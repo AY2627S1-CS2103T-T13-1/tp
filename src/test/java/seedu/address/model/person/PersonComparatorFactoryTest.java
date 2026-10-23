@@ -48,6 +48,66 @@ public class PersonComparatorFactoryTest {
     }
 
     @Test
+    public void createComparator_mixedCaseNamesAndEmails_sortsIgnoringCaseWithinPinGroups() {
+        Person alice = new PersonBuilder().withName("alice").withEmail("Zoe@EXAMPLE.com").build();
+        Person bob = new PersonBuilder().withName("Bob").withEmail("alice@example.COM").build();
+        Person charlie = new PersonBuilder().withName("cHaRlIe").withEmail("Bob@Example.com").build();
+
+        for (SortCriteria criteria : List.of(SortCriteria.NAME, SortCriteria.EMAIL)) {
+            List<Person> ascending = criteria == SortCriteria.NAME
+                    ? List.of(alice, bob, charlie) : List.of(bob, charlie, alice);
+            for (SortOrder order : SortOrder.values()) {
+                List<Person> ordered = new ArrayList<>(ascending);
+                if (order == SortOrder.DESC) {
+                    Collections.reverse(ordered);
+                }
+                List<Person> expected = new ArrayList<>();
+                ordered.forEach(person -> expected.add(person.pinPerson()));
+                expected.addAll(ordered);
+                List<Person> actual = new ArrayList<>(List.of(charlie, bob.pinPerson(), alice,
+                        charlie.pinPerson(), bob, alice.pinPerson()));
+
+                actual.sort(PersonComparatorFactory.createComparator(criteria, order));
+
+                assertEquals(expected, actual, criteria + " " + order);
+            }
+        }
+    }
+
+    @Test
+    public void createComparator_keysDifferOnlyInCase_comparesAsEqual() {
+        Person lowerCase = new PersonBuilder().withName("alice tan").withEmail("alice@example.com").build();
+        Person upperCase = new PersonBuilder().withName("ALICE TAN").withEmail("ALICE@EXAMPLE.COM").build();
+
+        for (SortCriteria criteria : List.of(SortCriteria.NAME, SortCriteria.EMAIL)) {
+            for (SortOrder order : SortOrder.values()) {
+                Comparator<Person> comparator = PersonComparatorFactory.createComparator(criteria, order);
+                assertEquals(0, comparator.compare(lowerCase, upperCase), criteria + " " + order);
+                assertEquals(0, comparator.compare(upperCase, lowerCase), criteria + " " + order);
+                assertEquals(0, comparator.compare(lowerCase.pinPerson(), upperCase.pinPerson()),
+                        criteria + " " + order);
+            }
+        }
+    }
+
+    @Test
+    public void createComparator_caseInsensitiveTies_preservesOriginalOrder() {
+        Person lowerCase = new PersonBuilder().withName("alice").withEmail("alice@example.com").build();
+        Person upperCase = new PersonBuilder().withName("ALICE").withEmail("ALICE@EXAMPLE.COM").build();
+
+        for (SortCriteria criteria : List.of(SortCriteria.NAME, SortCriteria.EMAIL)) {
+            for (SortOrder order : SortOrder.values()) {
+                Comparator<Person> comparator = PersonComparatorFactory.createComparator(criteria, order);
+                for (List<Person> original : List.of(List.of(lowerCase, upperCase), List.of(upperCase, lowerCase))) {
+                    List<Person> actual = new ArrayList<>(original);
+                    actual.sort(comparator);
+                    assertEquals(original, actual, criteria + " " + order);
+                }
+            }
+        }
+    }
+
+    @Test
     public void createComparator_equalKeys_returnsZero() {
         Person first = new PersonBuilder().withAddress("First address").build();
         Person second = new PersonBuilder(first).withAddress("Second address").build();
