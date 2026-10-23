@@ -23,6 +23,7 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.ThemeCommand;
@@ -107,6 +108,11 @@ public class AddressBookParserTest {
     public void parseCommand_alias() throws Exception {
         assertTrue(parser.parseCommand(AliasCommand.COMMAND_WORD + " find f")
                 instanceof AliasCommand);
+    }
+
+    @Test
+    public void parseCommand_listAlias() throws Exception {
+        assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD) instanceof ListAliasCommand);
     }
 
     @Test
