@@ -77,7 +77,7 @@ class JsonAdaptedPerson {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName()));
         }
-        if (!Name.isValidName(name)) {
+        if (!Name.isValidName(name) || !Name.isValidLength(name)) {
             throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS);
         }
         final Name modelName = new Name(name);
@@ -85,7 +85,7 @@ class JsonAdaptedPerson {
         if (phone == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
         }
-        if (!Phone.isValidPhone(phone)) {
+        if (!Phone.isValidPhone(phone) || !Phone.isValidLength(phone)) {
             throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
         }
         final Phone modelPhone = new Phone(phone);
@@ -93,7 +93,7 @@ class JsonAdaptedPerson {
         if (email == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
         }
-        if (!Email.isValidEmail(email)) {
+        if (!Email.isValidEmail(email) || !Email.isValidLength(email)) {
             throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
         }
         final Email modelEmail = new Email(email);
@@ -101,7 +101,7 @@ class JsonAdaptedPerson {
         final Address modelAddress;
         if (address == null || address.isEmpty()) {
             modelAddress = Address.EMPTY;
-        } else if (!Address.isValidAddress(address)) {
+        } else if (!Address.isValidAddress(address) || !Address.isValidLength(address)) {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
         } else {
             modelAddress = new Address(address);
