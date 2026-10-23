@@ -10,7 +10,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public class Name {
     public static final int MAXIMUM_NAME_LENGTH = 70;
     public static final String MESSAGE_CONSTRAINTS =
-            "Names should only contain alphanumeric characters and spaces, and should not be blank";
+            "Names should only contain alphabets and spaces, and should not be blank";
 
     public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered name is too long (Should be at most 70 characters)";
 
@@ -18,7 +18,7 @@ public class Name {
      * The first character of the name must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
      */
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} ]*";
+    public static final String VALIDATION_REGEX = "^(?=.*[a-zA-Z])[ a-zA-Z]{1,70}$";
 
     public final String fullName;
 
