@@ -103,6 +103,8 @@ class JsonAdaptedPerson {
             modelAddress = Address.EMPTY;
         } else if (!Address.isValidAddress(address)) {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
+        } else if (!Address.isValidLength(address)) {
+            throw new IllegalValueException(Address.MESSAGE_EXCEED_MAX_LENGTH);
         } else {
             modelAddress = new Address(address);
         }
