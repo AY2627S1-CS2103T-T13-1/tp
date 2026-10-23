@@ -83,6 +83,16 @@ public class AliasRegistry {
     }
 
     /**
+     * Returns a read-only map of built-in command words and their
+     * corresponding aliases.
+     *
+     * @return a map whose keys are aliases and values are command words.
+     */
+    public Map<String, String> getAliases() {
+        return Map.copyOf(aliases);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
