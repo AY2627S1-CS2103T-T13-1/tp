@@ -36,7 +36,7 @@ AddressBookParser -> ThemeCommandParser : parse(" light")
 activate ThemeCommandParser
 
 create ThemeCommand
-ThemeCommandParser -> ThemeCommand : new ThemeCommand(LIGHT)
+ThemeCommandParser -> ThemeCommand
 activate ThemeCommand
 
 ThemeCommand --> ThemeCommandParser
@@ -55,7 +55,7 @@ LogicManager -> ThemeCommand : execute(model)
 activate ThemeCommand
 
 create CommandResult
-ThemeCommand -> CommandResult : new CommandResult(msg, false, LIGHT)
+ThemeCommand -> CommandResult
 activate CommandResult
 
 CommandResult --> ThemeCommand
@@ -82,13 +82,12 @@ activate UserGuideAccessWindow
 UserGuideAccessWindow -> ThemeStylesheet : apply(scene, LIGHT)
 activate ThemeStylesheet
 
-ThemeStylesheet --> UserGuideAccessWindow : true
+ThemeStylesheet --> UserGuideAccessWindow
 deactivate ThemeStylesheet
 
 UserGuideAccessWindow --> MainWindow
 deactivate UserGuideAccessWindow
 
-MainWindow --> MainWindow : true
 deactivate MainWindow
 
 [<-- MainWindow : r
