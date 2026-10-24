@@ -40,12 +40,12 @@ public class ModelManager implements Model {
 
         // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
         AddressBook sortedAddressBook = new AddressBook(addressBook);
-        sortedAddressBook.sortPersons(PersonComparatorFactory.getPreviousComparator());
         this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
         this.activeComparator = PersonComparatorFactory.createDefaultComparator();
+        sortedAddressBook.sortPersons(this.activeComparator);
     }
 
     public ModelManager(Set<String> builtInCommandWords) {
@@ -127,7 +127,7 @@ public class ModelManager implements Model {
     @Override
     public void undo() {
         addressBook.undo();
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(this.activeComparator);
         logger.info("Restored the previous address book state");
     }
 
