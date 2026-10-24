@@ -42,10 +42,10 @@ public class FindCommandParserTest {
 
     @Test
     public void parse_unknownCriteria_throwsParseException() {
-        assertParseFailure(parser, " -x Wolf Alice",
-                "Unknown find parameter: '-x'.\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -n Wolf Alice -x unknown",
-                "Unknown find parameter: '-x'.\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -f contacts",
+                "Unknown find parameter: '-f'.\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -f contacts -n Wolf Alice",
+                "Unknown find parameter: '-f'.\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
