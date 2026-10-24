@@ -20,6 +20,8 @@ public class CommandCatalog {
             ThemeCommand.COMMAND_WORD,
             AliasCommand.COMMAND_WORD,
             ListAliasCommand.COMMAND_WORD,
-            ExportCommand.COMMAND_WORD
+            ExportCommand.COMMAND_WORD,
+            UndoCommand.COMMAND_WORD,
+            RedoCommand.COMMAND_WORD
     );
 }

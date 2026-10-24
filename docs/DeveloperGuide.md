@@ -126,6 +126,7 @@ The `Model` component,
 
 * stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* keeps a history of address book states in a `VersionedAddressBook`, so that changes can be undone and redone (see [Undo/redo feature](#undo-redo-feature)).
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
@@ -206,45 +207,47 @@ When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BU
 </box>
 
 
-### \[Proposed\] Undo/redo feature
+### Undo/redo feature
 
-#### Proposed Implementation
+#### Implementation
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+The undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
 
-* `VersionedAddressBook#commit()` -- Saves the current address book state in its history.
+* `VersionedAddressBook#commit()` -- Saves a copy of the current address book state in its history, if it differs from the current saved state.
 * `VersionedAddressBook#undo()` -- Restores the previous address book state from its history.
 * `VersionedAddressBook#redo()` -- Restores a previously undone address book state from its history.
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+These operations are exposed in the `Model` interface as `Model#commit()`, `Model#undo()` and `Model#redo()` respectively, together with `Model#canUndo()` and `Model#canRedo()`. The method names do not mention the address book, so that other data (e.g. aliases) can be added to the saved state in the future.
+
+`LogicManager` calls `Model#commit()` after every command that executes successfully. Individual commands do not need to commit, and a command that does not change the contact list (e.g. `list`, `find`, `theme` or `alias`) does not save a new state.
 
 Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+Step 1. The user launches the application. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
 
 <puml src="diagrams/UndoRedoState0.puml" alt="UndoRedoState0" />
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete 5` command to delete the 5th person in the address book. After the command executes, `LogicManager` calls `Model#commit()`. Since the address book has changed, its new state is saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 <puml src="diagrams/UndoRedoState1.puml" alt="UndoRedoState1" />
 
-Step 3. The user executes `add -n David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add -n David …​` to add a new person. `LogicManager` calls `Model#commit()` again, causing another modified address book state to be saved into the `addressBookStateList`.
 
 <puml src="diagrams/UndoRedoState2.puml" alt="UndoRedoState2" />
 
 <box type="info" seamless>
 
-**Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+**Note:** If a command fails its execution, `LogicManager` will not call `Model#commit()`, so the address book state will not be saved into the `addressBookStateList`.
 </box>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undo()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state. The contacts are then sorted again so that pinned contacts stay on top, and all contacts are shown.
 
 <puml src="diagrams/UndoRedoState3.puml" alt="UndoRedoState3" />
 
 
 <box type="info" seamless>
 
-**Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
+**Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndo()` to check if this is the case. If so, it will return an error to the user rather
 than attempting to perform the undo.
 </box>
 
@@ -257,22 +260,24 @@ The following sequence diagram shows how an undo operation goes through the `Log
 **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </box>
 
+The `Model#commit()` call made after the `undo` command does not save a new state, since the address book is the same as the restored state.
+
 Similarly, how an undo operation goes through the `Model` component is shown below:
 
 <puml src="diagrams/UndoSequenceDiagram-Model.puml" alt="UndoSequenceDiagram-Model" />
 
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+The `redo` command does the opposite — it calls `Model#redo()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
 
 <box type="info" seamless>
 
-**Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
+**Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedo()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
 </box>
 
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+Step 5. The user then decides to execute the command `list`. `LogicManager` still calls `Model#commit()`, but since `list` does not change the address book, no state is saved. Thus, the `addressBookStateList` remains unchanged.
 
 <puml src="diagrams/UndoRedoState4.puml" alt="UndoRedoState4" />
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add -n David …` command. This is the behavior that most modern desktop applications follow.
+Step 6. The user executes `clear`, after which `LogicManager` calls `Model#commit()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add -n David …` command. This is the behavior that most modern desktop applications follow.
 
 <puml src="diagrams/UndoRedoState5.puml" alt="UndoRedoState5" />
 
@@ -293,7 +298,15 @@ The following activity diagram summarizes what happens when a user executes a ne
   * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
   * Cons: We must ensure that the implementation of each individual command is correct.
 
-_{more aspects and alternatives to be added}_
+**Aspect: Where the address book state is saved:**
+
+* **Alternative 1 (current choice):** `LogicManager` calls `Model#commit()` after every command, and a state is only saved if the address book has changed.
+  * Pros: New commands that change the contact list can be undone without extra code.
+  * Cons: The address book is compared with the current saved state after every command.
+
+* **Alternative 2:** Each command that changes the contact list calls `Model#commit()` itself.
+  * Pros: No comparison is needed after each command.
+  * Cons: A developer may forget to call `Model#commit()` in a new command, which then cannot be undone.
 
 ### \[Proposed\] Data archiving
 
@@ -339,6 +352,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* *` | Beginner user | See friendly error messages | I can understand what I did wrong and correct them. |
 | `* *` | Forgetful user | Search for my contacts using any of their contexts | I can find my friend without remembering their name |
 | `* *` | Regular User | Update certain fields in contacts | I can reflect changes in contact information or correct mistakes |
+| `* *` | Regular user | Undo or redo my most recent changes | I can quickly recover from a mistake, such as deleting the wrong contact |
 | `* *` | Regular user | Group my contacts | I can find easily find friends with the same context |
 | `* *` | Regular user | Have added contacts automatically be saved | I don't have to worry about contacts not being saved |
 | `*` | Beginner user | Have sample contact information | I can explore features without having to add contacts |
@@ -590,6 +604,29 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases … }_
+
+### Undoing and redoing changes
+
+1. Undoing and redoing a change
+
+   1. Prerequisites: Launch the app with multiple persons in the list.
+
+   1. Test case: `delete 1`, then `undo`<br>
+      Expected: The deleted contact is back in the list. All contacts are shown, with pinned contacts at the top.
+
+   1. Test case: `delete 1`, `undo`, then `redo`<br>
+      Expected: The contact is deleted again.
+
+   1. Test case: `delete 1`, `list`, then `undo`<br>
+      Expected: `list` is skipped, and the deleted contact is back in the list.
+
+1. Nothing to undo or redo
+
+   1. Test case: Relaunch the app, then `undo`<br>
+      Expected: The contact list does not change. The status message shows that there are no changes to undo.
+
+   1. Test case: `delete 1`, `undo`, `delete 2`, then `redo`<br>
+      Expected: The contact list does not change, since `delete 2` cleared the redo history. The status message shows that there are no undone changes to redo.
 
 ### Saving data
 

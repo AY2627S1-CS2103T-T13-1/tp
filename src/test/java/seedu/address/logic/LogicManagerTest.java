@@ -24,7 +24,10 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
@@ -87,6 +90,33 @@ public class LogicManagerTest {
     public void execute_emptyList_throwsCommandException() {
         String listCommand = ListCommand.COMMAND_WORD;
         assertCommandException(listCommand, MESSAGE_EMPTY_LIST);
+    }
+
+    @Test
+    public void execute_undoAfterAdd_removesAddedPerson() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        logic.execute(ListCommand.COMMAND_WORD);
+
+        // list does not change the contact list, so undo reverses the add command instead
+        assertCommandSuccess(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_SUCCESS,
+                new ModelManager(BUILT_IN_COMMAND_WORDS));
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_redoAfterUndo_restoresAddedPerson() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        logic.execute(UndoCommand.COMMAND_WORD);
+
+        // find does not change the contact list, so it does not clear the redo history
+        logic.execute(FindCommand.COMMAND_WORD + NAME_DESC_AMY);
+
+        ModelManager expectedModel = new ModelManager(BUILT_IN_COMMAND_WORDS);
+        expectedModel.addPerson(new PersonBuilder(AMY).withTags().build());
+        assertCommandSuccess(RedoCommand.COMMAND_WORD, RedoCommand.MESSAGE_SUCCESS, expectedModel);
+        assertCommandException(RedoCommand.COMMAND_WORD, RedoCommand.MESSAGE_NOTHING_TO_REDO);
     }
 
     @Test

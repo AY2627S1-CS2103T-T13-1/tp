@@ -78,6 +78,33 @@ public interface Model {
     void sortAddressBook(Comparator<Person> comparator);
 
     /**
+     * Saves the current address book state to the history, if it has changed since the last saved state.
+     */
+    void commit();
+
+    /**
+     * Returns true if there is a previous address book state to undo to.
+     */
+    boolean canUndo();
+
+    /**
+     * Restores the address book to its previous saved state.
+     * There must be a previous state to undo to.
+     */
+    void undo();
+
+    /**
+     * Returns true if there is an undone address book state to redo to.
+     */
+    boolean canRedo();
+
+    /**
+     * Restores the address book to its most recently undone state.
+     * There must be an undone state to redo to.
+     */
+    void redo();
+
+    /**
      * Returns the alias registry of the current application session.
      */
     AliasRegistry getAliasRegistry();

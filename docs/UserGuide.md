@@ -203,6 +203,37 @@ Clears all entries from the address book.
 
 Format: `clear`
 
+### Undoing a change: `undo`
+
+Reverses the most recent command that changed your contact list.
+
+Format: `undo`
+
+* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin` and `unpin`.
+* Other commands, such as `list`, `find`, `theme` and `alias`, are skipped. `undo` reverses the most recent command that changed your contact list.
+* You can use `undo` several times in a row to reverse earlier changes one at a time.
+* After an undo, all contacts are shown, with pinned contacts at the top.
+* The undo history is cleared when you close coNnectUS.
+
+Examples:
+* `delete 2` followed by `undo` brings back the deleted contact.
+* `pin 1`, `edit 3 -n John Doe`, then `undo` twice reverses the edit and then the pin.
+
+### Redoing an undone change: `redo`
+
+Reapplies the most recent change that was reversed by `undo`.
+
+Format: `redo`
+
+* You can use `redo` several times in a row to reapply undone changes one at a time, in the order they were made.
+* Making a new change after an `undo` (e.g. `add`, `edit` or `delete`) clears the redo history, so the undone changes can no longer be redone.
+* Commands that do not change your contact list, such as `list` and `find`, do not clear the redo history.
+* After a redo, all contacts are shown, with pinned contacts at the top.
+
+Examples:
+* `delete 2`, `undo`, then `redo` deletes the contact again.
+* `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
+
 ### Changing the theme: `theme`
 
 Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
@@ -275,4 +306,6 @@ Action     | Format, Examples
 **Unpin**  | `unpin INDEX`
 **List**   | `list`
 **Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
+**Undo**   | `undo`
+**Redo**   | `redo`
 **Help**   | `help`

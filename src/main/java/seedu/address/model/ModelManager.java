@@ -23,7 +23,7 @@ import seedu.address.model.person.PersonComparatorFactory;
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
-    private final AddressBook addressBook;
+    private final VersionedAddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final AliasRegistry aliasRegistry;
@@ -37,7 +37,10 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
-        this.addressBook = new AddressBook(addressBook);
+        // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
+        AddressBook sortedAddressBook = new AddressBook(addressBook);
+        sortedAddressBook.sortPersons(PersonComparatorFactory.getPreviousComparator());
+        this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
@@ -103,6 +106,39 @@ public class ModelManager implements Model {
 
         addressBook.setPerson(target, editedPerson);
         sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+    }
+
+    //=========== Undo and redo ==============================================================================
+
+    @Override
+    public void commit() {
+        if (addressBook.commit()) {
+            logger.fine("Saved a new address book state");
+        }
+    }
+
+    @Override
+    public boolean canUndo() {
+        return addressBook.canUndo();
+    }
+
+    @Override
+    public void undo() {
+        addressBook.undo();
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        logger.info("Restored the previous address book state");
+    }
+
+    @Override
+    public boolean canRedo() {
+        return addressBook.canRedo();
+    }
+
+    @Override
+    public void redo() {
+        addressBook.redo();
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        logger.info("Restored the most recently undone address book state");
     }
 
     //=========== Filtered Person List Accessors =============================================================
