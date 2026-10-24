@@ -75,12 +75,12 @@ public class ParserUtil {
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
         String trimmedName = name.trim();
+
+        if (!Name.isValidLength(trimmedName)) {
+            throw new ParseException(Name.MESSAGE_EXCEED_MAX_LENGTH);
+        }
         if (!Name.isValidName(trimmedName)) {
-            if (!Name.isValidLength(trimmedName)) {
-                throw new ParseException(Name.MESSAGE_EXCEED_MAX_LENGTH);
-            } else {
                 throw new ParseException(Name.MESSAGE_CONSTRAINTS);
-            }
         }
 
         return new Name(trimmedName);
