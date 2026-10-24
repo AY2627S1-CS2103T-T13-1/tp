@@ -40,7 +40,7 @@ public class AliasRegistry {
      *                                  the alias conflicts with a built-in command or
      *                                  the alias conflicts with another alias previously defined.
      */
-    public void register(String commandWord, String alias) throws IllegalArgumentException {
+    public void register(String commandWord, String alias) {
         requireAllNonNull(commandWord, alias);
 
         checkArgument(builtInCommandWords.contains(commandWord),
@@ -90,6 +90,25 @@ public class AliasRegistry {
      */
     public Map<String, String> getAliases() {
         return Map.copyOf(aliases);
+    }
+
+    /**
+     * Removes or de-registers a registered alias.
+     *
+     * @param alias the alias to remove.
+     * @throws IllegalArgumentException if the alias has an invalid format or is not registered.
+     */
+    public void deleteAlias(String alias) {
+        requireNonNull(alias);
+
+        // check 1: invalid alias
+        checkArgument(isValidAlias(alias), MESSAGE_REGEX_MISMATCH);
+
+        // check 2: alias does not exist
+        checkArgument(aliases.containsKey(alias), "Alias " + alias
+                + " was not previously registered!");
+
+        aliases.remove(alias);
     }
 
     /**
