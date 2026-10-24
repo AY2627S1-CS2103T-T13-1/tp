@@ -53,7 +53,9 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_DELETE_TAGS_SUCCESS =
             "Successfully removed %d matching contact(s) from your address book.";
 
-    public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons were found to be deleted.";
+    public static final String MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS = "All instances of tag(s) (%s) have been removed.";
+
+    public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons found!";
 
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
         + "Please check again with list.";
@@ -101,30 +103,36 @@ public class DeleteCommand extends Command {
             return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
         }
 
-        List<Person> personsToDelete = deletePeopleWithTags(model);
-        if (personsToDelete.isEmpty()) {
-            return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
-        }
-        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, personsToDelete.size()));
+        return deletePeopleWithTags(model);
     }
 
     /**
      * Removes matching tags from a snapshot of the entire address book, matching by category and
      * case-insensitive name. Deletes persons whose nonempty tag sets are fully covered by the supplied
-     * tags and leaves untagged persons unchanged. Returns only the deleted persons for result reporting.
+     * tags and leaves untagged persons unchanged. Reports the deleted count and matched tag names.
      */
-    private List<Person> deletePeopleWithTags(Model model) {
+    private CommandResult deletePeopleWithTags(Model model) throws CommandException {
         int originalSize = model.getAddressBook().getPersonList().size();
         Set<String> normalizedTargetTags = normalizeTags(targetTags);
         List<Person> snapshotOfPersonlist = new ArrayList<>(model.getAddressBook().getPersonList());
         List<Person> personsToDelete = new ArrayList<>();
+        Set<String> matchedTags = new HashSet<>();
+
+        if (snapshotOfPersonlist.isEmpty()) {
+            throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
+        }
 
         for (Person person : snapshotOfPersonlist) {
             if (person.getTags().isEmpty()) {
                 continue;
             }
 
-            if (normalizedTargetTags.containsAll(normalizeTags(person.getTags()))) {
+            Set<String> personTags = normalizeTags(person.getTags());
+            personTags.stream()
+                    .filter(normalizedTargetTags::contains)
+                    .forEach(matchedTags::add);
+
+            if (normalizedTargetTags.containsAll(personTags)) {
                 model.deletePerson(person);
                 personsToDelete.add(person);
                 continue;
@@ -150,7 +158,23 @@ public class DeleteCommand extends Command {
         logger.info(() -> "Bulk delete removed " + personsToDelete.size()
                 + " contacts from the address book");
 
-        return personsToDelete;
+        if (matchedTags.isEmpty()) {
+            return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
+        }
+
+        String matchedTagNames = targetTags.stream()
+                .filter(tag -> matchedTags.contains(normalizeTag(tag)))
+                .map(tag -> tag.tagName)
+                .distinct()
+                .sorted()
+                .collect(Collectors.joining(", "));
+        String tagInstanceRemovalMessage = String.format(MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS, matchedTagNames);
+
+        if (personsToDelete.isEmpty()) {
+            return new CommandResult(tagInstanceRemovalMessage);
+        }
+        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, personsToDelete.size())
+                + "\n" + tagInstanceRemovalMessage);
     }
 
     /**
