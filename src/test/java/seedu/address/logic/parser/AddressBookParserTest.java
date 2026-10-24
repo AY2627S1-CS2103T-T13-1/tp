@@ -8,6 +8,8 @@ import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,6 +28,7 @@ import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
+import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.UnpinCommand;
@@ -34,6 +37,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.person.SortCriteria;
+import seedu.address.model.person.SortOrder;
 import seedu.address.model.tag.OthersTag;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
@@ -131,6 +136,27 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unpin() throws Exception {
         assertTrue(parser.parseCommand(UnpinCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
+    }
+
+    @Test
+    public void parseCommand_sortValidArguments_returnsSortCommand() throws Exception {
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                String input = SortCommand.COMMAND_WORD + " " + criteria.name().toLowerCase(Locale.ROOT)
+                        + " " + order.name().toLowerCase(Locale.ROOT);
+                assertEquals(new SortCommand(criteria, order), parser.parseCommand(input));
+            }
+        }
+    }
+
+    @Test
+    public void parseCommand_sortInvalidArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SortCommand.MESSAGE_USAGE);
+        for (String arguments : List.of("", "   ", "name", "asc", "address asc", "name ascending",
+                "asc name", "name asc extra")) {
+            assertThrows(ParseException.class, expectedMessage, () ->
+                    parser.parseCommand(SortCommand.COMMAND_WORD + " " + arguments));
+        }
     }
 
     @Test
