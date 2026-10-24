@@ -32,20 +32,21 @@ public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
-    public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index,"
-            + " or removes all instances of the supplied tags (case-insensitive).\n"
-            + "Contacts whose tags are all included in the supplied tags are removed.\n"
-            + "Tag-based deletion includes contacts hidden by the current filter.";
+    public static final String COMMAND_DESCRIPTION =
+            "Deletes a contact either by its displayed index, " +
+                    "or removes the specified tags (case-insensitive) from all contacts.\n"
+                    + "Contacts with no remaining tags are deleted. Contacts initially without tags are not deleted.\n"
+                    + "Tag removal also applies to contacts hidden by the current filter.";
 
-    public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
-            + "OR [-t TAG_CATEGORY TAG_NAME]...";
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
+            + "OR -t TAG_CATEGORY TAG_NAME...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1, "
             + COMMAND_WORD + " -t others Friend";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": " + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: [LIST_INDEX] (must be a positive integer) OR [-t TAG_CATEGORY TAG_NAME]...\n"
+            + "Parameters: LIST_INDEX (must be a positive integer) OR -t TAG_CATEGORY TAG_NAME...\n"
             + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed %1$s from your address book.";
