@@ -83,6 +83,16 @@ public class AliasRegistry {
     }
 
     /**
+     * Returns an immutable snapshot mapping registered aliases to
+     * their corresponding command words.
+     *
+     * @return a map whose keys are aliases and values are command words.
+     */
+    public Map<String, String> getAliases() {
+        return Map.copyOf(aliases);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

@@ -1,6 +1,7 @@
 package seedu.address.model;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -85,4 +86,9 @@ public interface Model {
      * Registers an alias for the given command word.
      */
     void registerAlias(String commandWord, String alias);
+
+    /**
+     * Returns a mapping of aliases to command words.
+     */
+    Map<String, String> getAliases();
 }
