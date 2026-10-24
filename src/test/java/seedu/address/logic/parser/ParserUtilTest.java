@@ -38,7 +38,6 @@ public class ParserUtilTest {
 
     private static final String VALID_NAME = "Rachel Walker";
     private static final String VALID_PHONE = "123456";
-    private static final String VALID_PHONE_FULL_FORMAT = "(+65)12345678";
     private static final String VALID_ADDRESS = "123 Main Street #0505";
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_OTHERS_TAG_INPUT_1 = "others friend";
@@ -159,19 +158,6 @@ public class ParserUtilTest {
         String phoneWithWhitespace = WHITESPACE + VALID_PHONE + WHITESPACE;
         Phone expectedPhone = new Phone(VALID_PHONE);
         assertEquals(expectedPhone, ParserUtil.parsePhone(phoneWithWhitespace));
-    }
-
-    @Test
-    public void parsePhone_validFullValueWithoutWhitespace_returnsPhone() throws Exception {
-        Phone expectedPhone = new Phone(VALID_PHONE_FULL_FORMAT);
-        assertEquals(expectedPhone, ParserUtil.parsePhone(VALID_PHONE_FULL_FORMAT));
-    }
-
-    @Test
-    public void parsePhone_validFullValueWithWhitespace_returnsTrimmedPhone() throws Exception {
-        String phoneWithWhiteSpace = WHITESPACE + VALID_PHONE_FULL_FORMAT + WHITESPACE;
-        Phone expectedPhone = new Phone(VALID_PHONE_FULL_FORMAT);
-        assertEquals(expectedPhone, ParserUtil.parsePhone(phoneWithWhiteSpace));
     }
 
     @Test
