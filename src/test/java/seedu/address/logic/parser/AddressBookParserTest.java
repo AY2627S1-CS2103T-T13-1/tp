@@ -107,8 +107,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_alias() throws Exception {
-        assertTrue(parser.parseCommand(AliasCommand.COMMAND_WORD + " find f")
-                instanceof AliasCommand);
+        assertEquals(new AliasCommand("find", "f"),
+                parser.parseCommand(AliasCommand.COMMAND_WORD + " find f"));
     }
 
     @Test
@@ -119,7 +119,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_deleteAlias() throws Exception {
-        assertTrue(parser.parseCommand(DeleteAliasCommand.COMMAND_WORD + " f") instanceof DeleteAliasCommand);
+        assertEquals(new DeleteAliasCommand("f"),
+                parser.parseCommand(DeleteAliasCommand.COMMAND_WORD + " f"));
     }
 
     @Test
