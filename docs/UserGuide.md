@@ -232,7 +232,7 @@ Format: `redo`
 
 Examples:
 * `delete 2`, `undo`, then `redo` deletes the contact again.
-* `delete 2`, `undo`, `add -n Alex Yeoh -p 87438807 -e alexyeoh@example.com`, then `redo` shows an error, because adding Alex Yeoh cleared the redo history.
+* `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
 
 ### Changing the theme: `theme`
 

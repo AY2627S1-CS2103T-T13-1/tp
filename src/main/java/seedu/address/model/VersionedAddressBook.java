@@ -22,7 +22,7 @@ public class VersionedAddressBook extends AddressBook {
 
     /**
      * Saves a copy of the current data as a new state, unless it is the same as the current saved state.
-     * Saved states after the current state are discarded.
+     * When a new state is saved, states after the current state are discarded.
      *
      * @return true if a new state was saved.
      */
