@@ -47,6 +47,47 @@ public class ArgumentStructureValidatorTest {
     }
 
     @Test
+    public void validate_hyphenLeadingWordsInTagValue_doesNotThrow() {
+        String args = " -t others -archived -t others coder -x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        assertDoesNotThrow(() -> validate(args, arguments));
+    }
+
+    @Test
+    public void validate_unknownParameterAfterTagAndAnotherPrefix_throwsParseException() {
+        String args = " -t others -archived -n Alice -x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(args, arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
+    public void validate_unknownParameterBeforeTag_throwsParseException() {
+        String args = " -x value -t others -archived";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(args, arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
+    public void validate_knownParameterAfterTag_throwsParseException() {
+        String args = " -t others -p";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(args, arguments));
+
+        assertEquals("The value for '-p' cannot be empty.", exception.getMessage());
+    }
+
+    @Test
     public void validate_unexpectedPreamble_throwsParseException() {
         String args = "Alice -n Alice";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
