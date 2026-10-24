@@ -10,7 +10,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * Validates the common structural rules for command arguments.
  * This validator checks that arguments do not contain unknown parameters,
  * unexpected text before the first prefix, empty parameter values, or repeated
- * parameters. The tag prefix is allowed to occur multiple times.
+ * parameters. The tag prefix is allowed to occur multiple times. Hyphen-leading
+ * words within tag values are validated as tag content rather than parameters.
  */
 public class ArgumentStructureValidator {
     /**
@@ -34,11 +35,19 @@ public class ArgumentStructureValidator {
             Prefix[] supportedPrefixes,
             String commandName) throws ParseException {
 
-        for (String token : args.trim().split("\\s+")) {
+        boolean isTagValue = false;
+
+        String[] tokens = args.trim().split("\\s+");
+        for (String token : tokens) {
+            if (Stream.of(supportedPrefixes)
+                    .anyMatch(prefix -> prefix.getPrefix().equals(token))) {
+                isTagValue = token.equals(PREFIX_TAG.getPrefix());
+                continue;
+            }
+
             if (token.startsWith("-")
                     && token.length() > 1
-                    && Stream.of(supportedPrefixes)
-                    .noneMatch(prefix -> prefix.getPrefix().equals(token))) {
+                    && !isTagValue) {
                 throw new ParseException(
                         "Unknown " + commandName + " parameter: '" + token + "'.");
             }
