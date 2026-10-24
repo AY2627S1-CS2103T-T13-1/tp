@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
+import static seedu.address.model.alias.AliasRegistry.MESSAGE_REGEX_MISMATCH;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,12 @@ public class DeleteAliasCommandParserTest {
     public void parse_validAlias_returnsDeleteAliasCommand() {
         assertParseSuccess(parser, "f", new DeleteAliasCommand("f"));
         assertParseSuccess(parser, " \tSearch\n ", new DeleteAliasCommand("Search"));
+    }
+
+    @Test
+    public void parse_invalidAlias_throwsParseException() {
+        assertParseFailure(parser, "f123", MESSAGE_REGEX_MISMATCH);
+        assertParseFailure(parser, "搜索", MESSAGE_REGEX_MISMATCH);
     }
 
     @Test
