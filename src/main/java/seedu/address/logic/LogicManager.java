@@ -48,6 +48,7 @@ public class LogicManager implements Logic {
         CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
         commandResult = command.execute(model);
+        model.commit();
 
         try {
             if (commandResult.getExportRequest().isPresent()) {

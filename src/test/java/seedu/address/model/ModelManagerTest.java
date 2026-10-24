@@ -8,7 +8,9 @@ import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.CARL;
 
+import java.util.Map;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -151,8 +153,45 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void constructor_pinnedPersonAfterUnpinnedPerson_sortsPinnedPersonFirst() {
+        AddressBook addressBook =
+                new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON.pinPerson()).build();
+        modelManager = new ModelManager(addressBook, new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+
+        AddressBook expectedAddressBook =
+                new AddressBookBuilder().withPerson(BENSON.pinPerson()).withPerson(ALICE).build();
+        assertEquals(expectedAddressBook, modelManager.getAddressBook());
+    }
+
+    @Test
+    public void undo_unsortedInitialData_doesNotSaveNewState() {
+        AddressBook addressBook =
+                new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON.pinPerson()).build();
+        modelManager = new ModelManager(addressBook, new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+        modelManager.addPerson(CARL);
+        modelManager.commit();
+
+        modelManager.undo();
+        // LogicManager commits after every command, including undo
+        modelManager.commit();
+
+        assertFalse(modelManager.canUndo());
+    }
+
+    @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
+    }
+
+    @Test
+    public void getAliases_aliasesRegisteredThroughModel_returnsCurrentMappings() {
+        // Boundary: the model has no registered aliases.
+        assertEquals(Map.of(), modelManager.getAliases());
+
+        // Non-empty state: registrations are exposed through the model.
+        modelManager.registerAlias("find", "f");
+        modelManager.registerAlias("list", "l");
+        assertEquals(Map.of("f", "find", "l", "list"), modelManager.getAliases());
     }
 
     @Test

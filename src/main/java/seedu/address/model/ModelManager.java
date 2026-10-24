@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -22,7 +23,7 @@ import seedu.address.model.person.PersonComparatorFactory;
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
-    private final AddressBook addressBook;
+    private final VersionedAddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final AliasRegistry aliasRegistry;
@@ -37,7 +38,10 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
-        this.addressBook = new AddressBook(addressBook);
+        // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
+        AddressBook sortedAddressBook = new AddressBook(addressBook);
+        sortedAddressBook.sortPersons(PersonComparatorFactory.getPreviousComparator());
+        this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
@@ -106,6 +110,27 @@ public class ModelManager implements Model {
         sortAddressBook(activeComparator);
     }
 
+    //=========== Undo =====================================================================================
+
+    @Override
+    public void commit() {
+        if (addressBook.commit()) {
+            logger.fine("Saved a new address book state");
+        }
+    }
+
+    @Override
+    public boolean canUndo() {
+        return addressBook.canUndo();
+    }
+
+    @Override
+    public void undo() {
+        addressBook.undo();
+        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        logger.info("Restored the previous address book state");
+    }
+
     //=========== Filtered Person List Accessors =============================================================
 
     /**
@@ -147,9 +172,6 @@ public class ModelManager implements Model {
         activeComparator = comp;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AliasRegistry getAliasRegistry() {
         return aliasRegistry;
@@ -158,5 +180,10 @@ public class ModelManager implements Model {
     @Override
     public void registerAlias(String commandWord, String alias) {
         aliasRegistry.register(commandWord, alias);
+    }
+
+    @Override
+    public Map<String, String> getAliases() {
+        return aliasRegistry.getAliases();
     }
 }

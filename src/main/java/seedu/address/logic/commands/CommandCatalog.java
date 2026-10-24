@@ -19,7 +19,9 @@ public class CommandCatalog {
             UnpinCommand.COMMAND_WORD,
             ThemeCommand.COMMAND_WORD,
             AliasCommand.COMMAND_WORD,
+            ListAliasCommand.COMMAND_WORD,
             ExportCommand.COMMAND_WORD,
+            UndoCommand.COMMAND_WORD,
             SortCommand.COMMAND_WORD
     );
 }
