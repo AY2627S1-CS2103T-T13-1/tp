@@ -121,7 +121,9 @@ public class AliasCommandTest {
         assertTrue(command.equals(command));
 
         // same field values
-        assertTrue(command.equals(new AliasCommand("find", "f")));
+        AliasCommand otherCommand = new AliasCommand("find", "f");
+        assertTrue(command.equals(otherCommand));
+        assertEquals(command.hashCode(), otherCommand.hashCode());
 
         // different type and null
         assertFalse(command.equals(1));

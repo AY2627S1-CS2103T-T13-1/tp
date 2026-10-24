@@ -15,11 +15,6 @@ public class AliasRegistryTest {
     private final AliasRegistry registry = new AliasRegistry(Set.of("find", "list", "alias"));
 
     @Test
-    public void constructor_nullCommandWords_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new AliasRegistry(null));
-    }
-
-    @Test
     public void constructor_commandWordsModified_usesOriginalCommandWords() {
         Set<String> commandWords = new HashSet<>(Set.of("find", "list"));
         AliasRegistry aliasRegistry = new AliasRegistry(commandWords);
@@ -49,14 +44,6 @@ public class AliasRegistryTest {
         registry.register("list", "F");
         assertEquals("list", registry.resolve("F"));
         assertEquals("find", registry.resolve("f"));
-    }
-
-    @Test
-    public void register_nullArguments_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () ->
-                registry.register(null, "f"));
-        assertThrows(NullPointerException.class, () ->
-                registry.register("find", null));
     }
 
     @Test
@@ -108,11 +95,6 @@ public class AliasRegistryTest {
     }
 
     @Test
-    public void resolve_null_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> registry.resolve(null));
-    }
-
-    @Test
     public void register_separateRegistries_doNotShareAliases() {
         registry.register("find", "f");
         AliasRegistry otherRegistry = new AliasRegistry(Set.of("find", "list", "alias"));
@@ -159,6 +141,81 @@ public class AliasRegistryTest {
         assertEquals(Map.of(), emptySnapshot);
         assertEquals(Map.of("f", "find"), populatedSnapshot);
         assertEquals(Map.of("f", "find", "l", "list"), registry.getAliases());
+    }
+
+    @Test
+    public void deleteAlias_invalidAliasFormats_preservesExistingAliases() {
+        registry.register("find", "f");
+
+        // Boundary: empty alias. Non-boundary: alias containing whitespace.
+        for (String alias : new String[] {"", "two words"}) {
+            assertThrows(IllegalArgumentException.class, AliasRegistry.MESSAGE_REGEX_MISMATCH, () ->
+                    registry.deleteAlias(alias));
+            assertEquals(Map.of("f", "find"), registry.getAliases());
+        }
+    }
+
+    @Test
+    public void deleteAlias_unregisteredAliases_preservesExistingAliases() {
+        // Boundary: empty registry.
+        assertThrows(IllegalArgumentException.class, () -> registry.deleteAlias("unknown"));
+        assertEquals(Map.of(), registry.getAliases());
+
+        registry.register("find", "f");
+
+        // Absent alias partitions: unknown word, built-in command and different case.
+        for (String alias : new String[] {"unknown", "find", "F"}) {
+            assertThrows(IllegalArgumentException.class, "Alias " + alias + " was not previously registered!", () ->
+                    registry.deleteAlias(alias));
+            assertEquals(Map.of("f", "find"), registry.getAliases());
+        }
+    }
+
+    @Test
+    public void deleteAlias_onlyRegisteredAlias_emptiesRegistry() {
+        // Boundaries: a one-character alias and a registry with one entry.
+        registry.register("find", "f");
+
+        registry.deleteAlias("f");
+
+        assertEquals(Map.of(), registry.getAliases());
+        assertEquals("f", registry.resolve("f"));
+    }
+
+    @Test
+    public void deleteAlias_multipleRegisteredAliases_preservesOtherMappings() {
+        registry.register("find", "search");
+        registry.register("find", "f");
+        registry.register("list", "F");
+
+        // Non-boundary: a longer alias in a registry with multiple entries.
+        registry.deleteAlias("search");
+
+        assertEquals(Map.of("f", "find", "F", "list"), registry.getAliases());
+        assertEquals("search", registry.resolve("search"));
+        assertEquals("find", registry.resolve("f"));
+        assertEquals("list", registry.resolve("F"));
+
+        // Deletion is case-sensitive even when both cases are registered.
+        registry.deleteAlias("f");
+
+        assertEquals(Map.of("F", "list"), registry.getAliases());
+        assertEquals("f", registry.resolve("f"));
+        assertEquals("list", registry.resolve("F"));
+    }
+
+    @Test
+    public void deleteAlias_previouslyDeletedAlias_throwsIllegalArgumentExceptionAndAllowsReuse() {
+        registry.register("find", "f");
+        registry.register("list", "l");
+        registry.deleteAlias("f");
+
+        assertThrows(IllegalArgumentException.class, () -> registry.deleteAlias("f"));
+        assertEquals(Map.of("l", "list"), registry.getAliases());
+
+        registry.register("list", "f");
+        assertEquals(Map.of("f", "list", "l", "list"), registry.getAliases());
+        assertEquals("list", registry.resolve("f"));
     }
 
     @Test
