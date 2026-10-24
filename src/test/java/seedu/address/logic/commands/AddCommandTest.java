@@ -164,6 +164,11 @@ public class AddCommandTest {
         public Map<String, String> getAliases() {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public void deleteAlias(String alias) {
+            throw new AssertionError("This method should not be called.");
+        }
     }
 
     /**

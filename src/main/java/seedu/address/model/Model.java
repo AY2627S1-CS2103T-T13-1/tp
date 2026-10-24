@@ -91,4 +91,9 @@ public interface Model {
      * Returns a mapping of aliases to command words.
      */
     Map<String, String> getAliases();
+
+    /**
+     * Removes a registered alias.
+     */
+    void deleteAlias(String alias);
 }
