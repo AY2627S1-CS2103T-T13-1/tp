@@ -27,10 +27,10 @@ public class NameTest {
         // invalid name
         assertFalse(Name.isValidName("")); // empty string
         assertFalse(Name.isValidName(" ")); // spaces only
-        assertFalse(Name.isValidName("^")); // only non-alphabets characters
-        assertFalse(Name.isValidName("peter*")); // contains non-alphabets characters
+        assertFalse(Name.isValidName("^")); // only non-alphabetic characters
+        assertFalse(Name.isValidName("peter*")); // contains non-alphabetic characters
         assertFalse(Name.isValidName("David Roger Jackson Ray Jr 2nd")); // contains numbers
-
+        assertFalse(Name.isValidName(" Dave")); // leading space
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
