@@ -139,7 +139,7 @@ public class AddressBookParserTest {
     }
 
     @Test
-    public void parseCommand_sort_validArguments_returnsSortCommand() throws Exception {
+    public void parseCommand_sortValidArguments_returnsSortCommand() throws Exception {
         for (SortCriteria criteria : SortCriteria.values()) {
             for (SortOrder order : SortOrder.values()) {
                 String input = SortCommand.COMMAND_WORD + " " + criteria.name().toLowerCase(Locale.ROOT)
@@ -150,12 +150,12 @@ public class AddressBookParserTest {
     }
 
     @Test
-    public void parseCommand_sort_invalidArguments_throwsParseException() {
+    public void parseCommand_sortInvalidArguments_throwsParseException() {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SortCommand.MESSAGE_USAGE);
         for (String arguments : List.of("", "   ", "name", "asc", "address asc", "name ascending",
                 "asc name", "name asc extra")) {
-            assertThrows(ParseException.class, expectedMessage,
-                    () -> parser.parseCommand(SortCommand.COMMAND_WORD + " " + arguments));
+            assertThrows(ParseException.class, expectedMessage, () ->
+                    parser.parseCommand(SortCommand.COMMAND_WORD + " " + arguments));
         }
     }
 
