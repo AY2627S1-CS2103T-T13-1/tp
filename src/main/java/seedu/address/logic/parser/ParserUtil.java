@@ -80,7 +80,7 @@ public class ParserUtil {
             throw new ParseException(Name.MESSAGE_EXCEED_MAX_LENGTH);
         }
         if (!Name.isValidName(trimmedName)) {
-                throw new ParseException(Name.MESSAGE_CONSTRAINTS);
+            throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
 
         return new Name(trimmedName);
