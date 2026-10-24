@@ -21,6 +21,7 @@ public class CommandCatalog {
             AliasCommand.COMMAND_WORD,
             DeleteAliasCommand.COMMAND_WORD,
             ListAliasCommand.COMMAND_WORD,
-            ExportCommand.COMMAND_WORD
+            ExportCommand.COMMAND_WORD,
+            UndoCommand.COMMAND_WORD
     );
 }

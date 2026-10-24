@@ -49,6 +49,7 @@ public class LogicManager implements Logic {
         Command command = addressBookParser.parseCommand(commandText);
         AddressBook beforeChange = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
+        model.commit();
 
         boolean contactsChanged = !beforeChange.equals(model.getAddressBook());
 
