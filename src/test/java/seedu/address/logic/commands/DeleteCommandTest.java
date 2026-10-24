@@ -72,7 +72,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_personHasExtraTag_personRetained() throws Exception {
+    public void execute_personHasExtraTag_matchingTagsRemoved() throws Exception {
         Person person = new PersonBuilder()
                 .withTags(new OthersTag("coder"),
                         new FacultyTag("Science"),
@@ -81,29 +81,35 @@ public class DeleteCommandTest {
 
         new DeleteCommand(Set.of(new OthersTag("coder"), new FacultyTag("Science"))).execute(tagModel);
 
-        assertEquals(List.of(person), tagModel.getAddressBook().getPersonList());
+        Person expectedPerson = new PersonBuilder(person).withTags(new OthersTag("Friend")).build();
+        assertEquals(List.of(expectedPerson), tagModel.getAddressBook().getPersonList());
     }
 
     @Test
-    public void execute_personHasDifferentTagCategory_personRetained() throws Exception {
+    public void execute_personHasDifferentTagCategory_onlyMatchingCategoryRemoved() throws Exception {
         Person person = new PersonBuilder()
-                .withTags(new FacultyTag("coder"), new FacultyTag("Science")).build();
+                .withTags(new FacultyTag("coder"),
+                        new FacultyTag("Science")).build();
         Model tagModel = modelWithPersons(person);
 
-        new DeleteCommand(Set.of(new OthersTag("coder"), new FacultyTag("Science"))).execute(tagModel);
+        new DeleteCommand(Set.of(
+                new OthersTag("coder"),
+                new FacultyTag("Science"))).execute(tagModel);
 
-        assertEquals(List.of(person), tagModel.getAddressBook().getPersonList());
+        Person expectedPerson = new PersonBuilder(person).withTags(new FacultyTag("coder")).build();
+        assertEquals(List.of(expectedPerson), tagModel.getAddressBook().getPersonList());
     }
 
     @Test
-    public void execute_personMissingTag_personRetained() throws Exception {
+    public void execute_suppliedTagsContainAllPersonTags_personDeleted() throws Exception {
         Person person = new PersonBuilder().withTags(new OthersTag("Coder")).build();
         Model tagModel = modelWithPersons(person);
 
-        new DeleteCommand(
-                Set.of(new OthersTag("coder"), new FacultyTag("Science"))).execute(tagModel);
+        new DeleteCommand(Set.of(
+                        new OthersTag("coder"),
+                        new FacultyTag("Science"))).execute(tagModel);
 
-        assertEquals(List.of(person), tagModel.getAddressBook().getPersonList());
+        assertTrue(tagModel.getAddressBook().getPersonList().isEmpty());
     }
 
     @Test
