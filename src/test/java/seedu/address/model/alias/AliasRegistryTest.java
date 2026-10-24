@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -120,6 +121,44 @@ public class AliasRegistryTest {
         otherRegistry.register("list", "f");
         assertEquals("list", otherRegistry.resolve("f"));
         assertEquals("find", registry.resolve("f"));
+    }
+
+    @Test
+    public void getAliases_emptyAndPopulatedRegistry_returnsAllMappings() {
+        // Boundary: an empty registry.
+        assertEquals(Map.of(), registry.getAliases());
+
+        // Boundary: the first alias registered.
+        registry.register("find", "f");
+        assertEquals(Map.of("f", "find"), registry.getAliases());
+
+        // Non-boundary: multiple aliases, including distinct cases and a shared command.
+        registry.register("list", "F");
+        registry.register("find", "search");
+        assertEquals(Map.of("f", "find", "F", "list", "search", "find"), registry.getAliases());
+    }
+
+    @Test
+    public void getAliases_modifySnapshot_throwsUnsupportedOperationException() {
+        registry.register("find", "f");
+        Map<String, String> snapshot = registry.getAliases();
+
+        assertThrows(UnsupportedOperationException.class, () -> snapshot.put("l", "list"));
+        assertEquals(Map.of("f", "find"), snapshot);
+        assertEquals(Map.of("f", "find"), registry.getAliases());
+    }
+
+    @Test
+    public void getAliases_registryUpdated_preservesEarlierSnapshots() {
+        Map<String, String> emptySnapshot = registry.getAliases();
+        registry.register("find", "f");
+        Map<String, String> populatedSnapshot = registry.getAliases();
+
+        registry.register("list", "l");
+
+        assertEquals(Map.of(), emptySnapshot);
+        assertEquals(Map.of("f", "find"), populatedSnapshot);
+        assertEquals(Map.of("f", "find", "l", "list"), registry.getAliases());
     }
 
     @Test
