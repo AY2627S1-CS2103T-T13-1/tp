@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -21,16 +23,18 @@ import seedu.address.model.person.Person;
 import seedu.address.model.tag.Tag;
 
 /**
- * Deletes a person by their currently displayed list index or all persons whose complete tag sets match
- * the supplied tags by category and case-insensitive name. Tag-based deletion searches
- * the entire address book, including persons hidden by the current filter.
+ * Deletes a person by their currently displayed list index or removes supplied tag instances.
+ * Tag-based deletion deletes persons whose nonempty tag sets are fully covered by the supplied tags,
+ * and removes matching tags from other persons. Matching uses category and case-insensitive name
+ * across the entire address book, including persons hidden by the current filter.
  */
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
     public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index,"
-            + " or all contacts whose complete tag set matches the supplied tags (case-insensitive).\n"
+            + " or removes all instances of the supplied tags (case-insensitive).\n"
+            + "Contacts whose tags are all included in the supplied tags are removed.\n"
             + "Tag-based deletion includes contacts hidden by the current filter.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
@@ -72,8 +76,8 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Constructs a command to delete all persons in the entire address book whose complete tag sets
-     * match the supplied tags by category and case-insensitive name.
+     * Constructs a command to remove matching tag instances throughout the entire address book,
+     * deleting persons whose nonempty tag sets are fully covered by the supplied tags.
      *
      * @param targetTags Nonempty set of tags to match against the entire address book.
      * @throws NullPointerException if {@code targetTags} or any of its elements is null.
@@ -105,23 +109,39 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Collects and deletes all persons in the entire address book with exactly the supplied tags,
-     * matching by category and case-insensitive name.
-     * Returns the deleted persons, or an empty list if no persons match.
+     * Removes matching tags from a snapshot of the entire address book, matching by category and
+     * case-insensitive name. Deletes persons whose nonempty tag sets are fully covered by the supplied
+     * tags and leaves untagged persons unchanged. Returns only the deleted persons for result reporting.
      */
     private List<Person> deletePeopleWithTags(Model model) {
         int originalSize = model.getAddressBook().getPersonList().size();
         Set<String> normalizedTargetTags = normalizeTags(targetTags);
-        List<Person> personsToDelete = model.getAddressBook().getPersonList().stream()
-                .filter(person -> normalizeTags(person.getTags()).equals(normalizedTargetTags))
-                .toList();
+        List<Person> snapshotOfPersonlist = new ArrayList<>(model.getAddressBook().getPersonList());
+        List<Person> personsToDelete = new ArrayList<>();
 
-        logger.fine(() -> "Bulk delete matched " + personsToDelete.size()
-                + " of " + originalSize
-                + " contacts using exact, case-insensitive tag-set matching");
+        for (Person person : snapshotOfPersonlist) {
+            if (person.getTags().isEmpty()) {
+                continue;
+            }
 
-        for (Person person : personsToDelete) {
-            model.deletePerson(person);
+            if (normalizedTargetTags.containsAll(normalizeTags(person.getTags()))) {
+                model.deletePerson(person);
+                personsToDelete.add(person);
+                continue;
+            }
+
+            Set<Tag> remainingTags = new HashSet<>(person.getTags());
+            boolean changed = remainingTags.removeIf(tag -> normalizedTargetTags.contains(normalizeTag(tag)));
+            if (changed) {
+                Person editedPerson = new Person(
+                        person.getName(),
+                        person.getPhone(),
+                        person.getEmail(),
+                        person.getAddress(),
+                        remainingTags,
+                        person.isPinned());
+                model.setPerson(person, editedPerson);
+            }
         }
 
         assert model.getAddressBook().getPersonList().size() == originalSize - personsToDelete.size()
@@ -138,9 +158,15 @@ public class DeleteCommand extends Command {
      */
     private Set<String> normalizeTags(Set<Tag> tags) {
         return tags.stream()
-                .map(tag -> (tag.getTagCategory() + ":" + tag.tagName)
-                        .toLowerCase(Locale.ROOT))
+                .map(this::normalizeTag)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a lowercase category-and-name string for matching a tag.
+     */
+    private String normalizeTag(Tag tag) {
+        return (tag.getTagCategory() + ":" + tag.tagName).toLowerCase(Locale.ROOT);
     }
 
     /**
