@@ -1,5 +1,6 @@
 package seedu.address.logic.parser;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -21,6 +22,7 @@ import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.tag.Tag;
 import seedu.address.storage.Filename;
 
 public class ExportCommandParserTest {
@@ -50,6 +52,17 @@ public class ExportCommandParserTest {
         AddressBook expectedAddressBook = new AddressBook();
         expectedAddressBook.setPersons(List.of(BENSON, DANIEL));
         assertEquals(expectedAddressBook, exportRequest.getAddressBook());
+    }
+
+    @Test
+    public void parse_hyphenLeadingTagName_returnsExportCommand() {
+        assertDoesNotThrow(() -> parser.parse(" -f contacts -t others -archived"));
+    }
+
+    @Test
+    public void parse_invalidHyphenLeadingTag_throwsParseException() {
+        assertParseFailure(" -f contacts -t -archived", Tag.MESSAGE_MISSING_TAG_FIELD);
+        assertParseFailure(" -f contacts -t others -archived!", Tag.MESSAGE_CONSTRAINTS);
     }
 
     @Test

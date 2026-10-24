@@ -70,6 +70,8 @@ public class FindCommandParserTest {
                 Tag.MESSAGE_UNKNOWN_TAG_CATEGORY + "\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -t others bad@tag -t others owesMoney",
                 Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t others -archived! -t others owesMoney",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -84,6 +86,17 @@ public class FindCommandParserTest {
     public void parse_tagWithoutName_throwsParseException() {
         assertParseFailure(parser, " -t others",
                 Tag.MESSAGE_MISSING_TAG_FIELD + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t -archived",
+                Tag.MESSAGE_MISSING_TAG_FIELD + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_hyphenLeadingTagName_returnsFindCommand() {
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
+                Set.of(new OthersTag("-x")));
+
+        assertParseSuccess(parser, " -t others -x", new FindCommand(predicate));
     }
 
     @Test
