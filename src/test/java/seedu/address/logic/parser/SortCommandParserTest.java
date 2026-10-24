@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
+import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,29 @@ public class SortCommandParserTest {
                         criteria.getDisplayName(), order.getDisplayName()), feedback);
             }
         }
+    }
+
+    @Test
+    public void parse_lowerAndUpperCaseArguments_returnsExpectedCommand() {
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                SortCommand expectedCommand = new SortCommand(criteria, order);
+                String input = criteria.name() + " " + order.name();
+
+                assertParseSuccess(parser, input.toLowerCase(Locale.ROOT), expectedCommand);
+                assertParseSuccess(parser, input.toUpperCase(Locale.ROOT), expectedCommand);
+            }
+        }
+    }
+
+    @Test
+    public void parse_mixedCaseArguments_returnsExpectedCommand() {
+        assertParseSuccess(parser, "NaMe aSc", new SortCommand(SortCriteria.NAME, SortOrder.ASC));
+        assertParseSuccess(parser, "nAmE DeSc", new SortCommand(SortCriteria.NAME, SortOrder.DESC));
+        assertParseSuccess(parser, "EmAiL AsC", new SortCommand(SortCriteria.EMAIL, SortOrder.ASC));
+        assertParseSuccess(parser, "eMaIl dEsC", new SortCommand(SortCriteria.EMAIL, SortOrder.DESC));
+        assertParseSuccess(parser, "PhOnE aSc", new SortCommand(SortCriteria.PHONE, SortOrder.ASC));
+        assertParseSuccess(parser, "pHoNe DeSc", new SortCommand(SortCriteria.PHONE, SortOrder.DESC));
     }
 
     @Test
