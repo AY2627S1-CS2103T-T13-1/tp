@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -167,9 +168,6 @@ public class ModelManager implements Model {
         addressBook.sortPersons(comp);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public AliasRegistry getAliasRegistry() {
         return aliasRegistry;
@@ -178,5 +176,10 @@ public class ModelManager implements Model {
     @Override
     public void registerAlias(String commandWord, String alias) {
         aliasRegistry.register(commandWord, alias);
+    }
+
+    @Override
+    public Map<String, String> getAliases() {
+        return aliasRegistry.getAliases();
     }
 }

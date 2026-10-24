@@ -18,6 +18,7 @@ import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.ExportCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
+import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.ThemeCommand;
@@ -85,6 +86,7 @@ public class AddressBookParser {
             case UnpinCommand.COMMAND_WORD -> new UnpinCommandParser().parse(arguments);
             case ThemeCommand.COMMAND_WORD -> new ThemeCommandParser().parse(arguments);
             case AliasCommand.COMMAND_WORD -> new AliasCommandParser().parse(arguments);
+            case ListAliasCommand.COMMAND_WORD -> new ListAliasCommand();
             case ExportCommand.COMMAND_WORD -> new ExportCommandParser().parse(arguments);
             case UndoCommand.COMMAND_WORD -> new UndoCommand();
             default -> {

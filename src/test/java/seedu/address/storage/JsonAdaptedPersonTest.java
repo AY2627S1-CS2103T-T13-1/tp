@@ -163,6 +163,15 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_addressTooLong_throwsIllegalValueException() {
+        String longAddress = "a".repeat(Address.MAXIMUM_ADDRESS_LENGTH + 1);
+        JsonAdaptedPerson person =
+                new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, longAddress, VALID_TAGS, UNPINNED);
+        String expectedMessage = Address.MESSAGE_EXCEED_MAX_LENGTH;
+        assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
+    }
+
+    @Test
     public void toModelType_nullAddress_returnsPersonWithEmptyAddress() throws Exception {
         JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
                 null, VALID_TAGS, UNPINNED);
