@@ -9,8 +9,13 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Name {
     public static final int MAXIMUM_NAME_LENGTH = 70;
+    /**
+     * The first character of a name must be a letter, otherwise " " (a single space) is
+     * evaluated as a valid input. The remaining parts of the name should only contain letters and spaces, up
+     * to {@link MAXIMUM_NAME_LENGTH} characters in total.
+     */
     public static final String MESSAGE_CONSTRAINTS =
-            "Names should only contain alphabets and spaces, and should not be blank";
+            "Names should only contain letters and spaces, should not be blank and should start with a letter";
 
     public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered name is too long (Should be at most 70 characters)";
 
