@@ -101,10 +101,7 @@ public class AliasRegistry {
     public void deleteAlias(String alias) {
         requireNonNull(alias);
 
-        // check 1: invalid alias
         checkArgument(isValidAlias(alias), MESSAGE_REGEX_MISMATCH);
-
-        // check 2: alias does not exist
         checkArgument(aliases.containsKey(alias), "Alias " + alias
                 + " was not previously registered!");
 
