@@ -135,12 +135,14 @@ public class JsonAdaptedPersonTest {
 
     @Test
     public void toModelType_nameOutsideLengthBoundaries_throwsIllegalValueException() {
-        for (int length : new int[] {0, Name.MAXIMUM_NAME_LENGTH + 1, Name.MAXIMUM_NAME_LENGTH + 2}) {
+        JsonAdaptedPerson personWithEmptyName = new JsonAdaptedPerson("", VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, UNPINNED);
+        assertThrows(IllegalValueException.class, Name.MESSAGE_CONSTRAINTS, personWithEmptyName::toModelType);
+        for (int length : new int[] {Name.MAXIMUM_NAME_LENGTH + 1, Name.MAXIMUM_NAME_LENGTH + 2}) {
             String name = "A".repeat(length);
             JsonAdaptedPerson person = new JsonAdaptedPerson(name, VALID_PHONE, VALID_EMAIL,
                     VALID_ADDRESS, VALID_TAGS, UNPINNED);
-
-            assertThrows(IllegalValueException.class, person::toModelType);
+            assertThrows(IllegalValueException.class, Name.MESSAGE_EXCEED_MAX_LENGTH, person::toModelType);
         }
     }
 
@@ -178,7 +180,7 @@ public class JsonAdaptedPersonTest {
             JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, phone, VALID_EMAIL,
                     VALID_ADDRESS, VALID_TAGS, UNPINNED);
 
-            assertThrows(IllegalValueException.class, person::toModelType);
+            assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, person::toModelType);
         }
     }
 
@@ -214,12 +216,12 @@ public class JsonAdaptedPersonTest {
     public void toModelType_emailAboveMaximumLength_throwsIllegalValueException() {
         String domain = "@example.com";
         for (int length : new int[] {Email.MAXIMUM_EMAIL_LENGTH + 1, Email.MAXIMUM_EMAIL_LENGTH + 2}) {
-            // Preserve a valid email format so only the length constraint is violated (issue #132).
+            // Preserve a valid email format so only the length constraint is violated.
             String email = "a".repeat(length - domain.length()) + domain;
             JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, email,
                     VALID_ADDRESS, VALID_TAGS, UNPINNED);
 
-            assertThrows(IllegalValueException.class, person::toModelType);
+            assertThrows(IllegalValueException.class, Email.MESSAGE_EXCEED_MAX_LENGTH, person::toModelType);
         }
     }
 
