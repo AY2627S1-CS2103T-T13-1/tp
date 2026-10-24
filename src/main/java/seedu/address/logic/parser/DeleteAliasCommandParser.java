@@ -14,7 +14,6 @@ public class DeleteAliasCommandParser implements Parser<DeleteAliasCommand> {
     public DeleteAliasCommand parse(String args) throws ParseException {
         requireNonNull(args);
         String alias = parseAlias(args);
-
         return new DeleteAliasCommand(alias);
     }
 
