@@ -50,6 +50,7 @@ import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.AddressBookBuilder;
 import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.PersonUtil;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -144,6 +145,67 @@ public class LogicManagerTest {
         assertUndoSuccess(editedAmy, bob);
         assertUndoSuccess(amy, bob);
         assertUndoSuccess(amy);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_undoAfterSort_reachesCommandsBeforeSort() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        assertEquals(List.of(AMY, BOB), model.getFilteredPersonList());
+
+        // Undo must restore the exact pre-sort order, without committing the sorted state again.
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+
+        assertEquals(new AddressBook(),
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                        .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_undoAfterMultipleSorts_restoresComparatorAndReachesEarlierCommands() throws Exception {
+        Person aaron = new PersonBuilder().withName("Aaron").build();
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("sort name desc");
+        logic.execute("delete 1");
+
+        assertUndoSuccess(BOB, AMY); // Undo delete while retaining descending sort.
+        assertUndoSuccess(AMY, BOB); // Undo descending sort, restoring ascending sort.
+
+        // A non-mutating command must not create a new history entry after undo.
+        logic.execute(ListCommand.COMMAND_WORD);
+        logic.execute(PersonUtil.getAddCommand(aaron));
+        assertEquals(List.of(aaron, AMY, BOB), model.getFilteredPersonList());
+
+        // A new command after undo must branch from the restored state.
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_undoAfterSortWithUnchangedOrder_restoresDefaultComparator() throws Exception {
+        Person aaron = new PersonBuilder().withName("Aaron").build();
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute("sort name asc");
+
+        // Changing the sort rule is undoable even when the visible order stays the same.
+        assertUndoSuccess(AMY, BOB);
+        logic.execute(PersonUtil.getAddCommand(aaron));
+        assertEquals(List.of(AMY, BOB, aaron), model.getFilteredPersonList());
+
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(AMY);
         assertUndoSuccess();
         assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }

@@ -8,11 +8,17 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.CARL;
 
+import java.util.Comparator;
+
 import org.junit.jupiter.api.Test;
 
+import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.testutil.AddressBookBuilder;
 
 public class VersionedAddressBookTest {
+
+    private static final Comparator<Person> DEFAULT_COMPARATOR = PersonComparatorFactory.createDefaultComparator();
 
     private final AddressBook addressBookWithAlice = new AddressBookBuilder().withPerson(ALICE).build();
     private final AddressBook addressBookWithAliceAndBenson =
@@ -30,7 +36,7 @@ public class VersionedAddressBookTest {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
 
-        assertTrue(versionedAddressBook.commit());
+        assertTrue(versionedAddressBook.commit(DEFAULT_COMPARATOR));
         assertTrue(versionedAddressBook.canUndo());
     }
 
@@ -38,7 +44,7 @@ public class VersionedAddressBookTest {
     public void commit_dataUnchanged_doesNotSaveState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
 
-        assertFalse(versionedAddressBook.commit());
+        assertFalse(versionedAddressBook.commit(DEFAULT_COMPARATOR));
         assertFalse(versionedAddressBook.canUndo());
     }
 
@@ -46,7 +52,7 @@ public class VersionedAddressBookTest {
     public void undo_previousStateExists_restoresPreviousState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
 
         versionedAddressBook.undo();
 
@@ -58,9 +64,9 @@ public class VersionedAddressBookTest {
     public void undo_multipleStates_restoresStatesInReverseOrder() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(new AddressBook());
         versionedAddressBook.addPerson(ALICE);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
 
         versionedAddressBook.undo();
         assertEquals(addressBookWithAlice, versionedAddressBook);
@@ -79,11 +85,11 @@ public class VersionedAddressBookTest {
     public void commit_afterUndo_discardsUndoneState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
 
         versionedAddressBook.addPerson(CARL);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
 
         // goes back to the state before CARL was added, not the undone state with BENSON
@@ -95,11 +101,11 @@ public class VersionedAddressBookTest {
     public void commit_dataChangedAfterCommit_keepsSavedStateUnchanged() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
 
         // changes made after a commit should not affect the saved state
         versionedAddressBook.addPerson(CARL);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
 
         assertEquals(addressBookWithAliceAndBenson, versionedAddressBook);
