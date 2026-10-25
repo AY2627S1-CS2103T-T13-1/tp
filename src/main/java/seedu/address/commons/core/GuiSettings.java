@@ -1,5 +1,7 @@
 package seedu.address.commons.core;
 
+import static java.util.Objects.requireNonNull;
+
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.Objects;
@@ -42,7 +44,7 @@ public class GuiSettings implements Serializable {
      * Constructs a {@code GuiSettings} with the specified height, width, position and theme.
      */
     public GuiSettings(double windowWidth, double windowHeight, int xPosition, int yPosition, Theme theme) {
-        Objects.requireNonNull(theme);
+        requireNonNull(theme);
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
         windowCoordinates = new Point(xPosition, yPosition);

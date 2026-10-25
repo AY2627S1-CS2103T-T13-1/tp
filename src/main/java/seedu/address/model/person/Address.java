@@ -10,9 +10,9 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Address {
 
-    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank";
-    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered address is too long"
-            + "(Should be within 105 characters)";
+    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank.";
+    public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered address is too long "
+            + "(Should be at most 105 characters).";
     /*
      * The first character of the address must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
@@ -52,9 +52,13 @@ public class Address {
         return test.matches(VALIDATION_REGEX);
     }
 
+    /**
+     * Returns true if a given string is within the maximum address length.
+     */
     public static boolean isValidLength(String test) {
         return test.length() <= MAXIMUM_ADDRESS_LENGTH;
     }
+
     /**
      * Returns true if this address was not provided.
      */

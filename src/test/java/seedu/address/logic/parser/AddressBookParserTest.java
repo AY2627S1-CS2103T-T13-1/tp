@@ -8,6 +8,8 @@ import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,6 +19,7 @@ import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -27,6 +30,7 @@ import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.SortCommand;
 import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.UnpinCommand;
@@ -35,6 +39,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.person.SortCriteria;
+import seedu.address.model.person.SortOrder;
 import seedu.address.model.tag.OthersTag;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
@@ -120,14 +126,20 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_alias() throws Exception {
-        assertTrue(parser.parseCommand(AliasCommand.COMMAND_WORD + " find f")
-                instanceof AliasCommand);
+        assertEquals(new AliasCommand("find", "f"),
+                parser.parseCommand(AliasCommand.COMMAND_WORD + " find f"));
     }
 
     @Test
     public void parseCommand_listAlias() throws Exception {
         assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD) instanceof ListAliasCommand);
         assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD + " extra") instanceof ListAliasCommand);
+    }
+
+    @Test
+    public void parseCommand_deleteAlias() throws Exception {
+        assertEquals(new DeleteAliasCommand("f"),
+                parser.parseCommand(DeleteAliasCommand.COMMAND_WORD + " f"));
     }
 
     @Test
@@ -138,6 +150,27 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unpin() throws Exception {
         assertTrue(parser.parseCommand(UnpinCommand.COMMAND_WORD + " 3") instanceof UnpinCommand);
+    }
+
+    @Test
+    public void parseCommand_sortValidArguments_returnsSortCommand() throws Exception {
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                String input = SortCommand.COMMAND_WORD + " " + criteria.name().toLowerCase(Locale.ROOT)
+                        + " " + order.name().toLowerCase(Locale.ROOT);
+                assertEquals(new SortCommand(criteria, order), parser.parseCommand(input));
+            }
+        }
+    }
+
+    @Test
+    public void parseCommand_sortInvalidArguments_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, SortCommand.MESSAGE_USAGE);
+        for (String arguments : List.of("", "   ", "name", "asc", "address asc", "name ascending",
+                "asc name", "name asc extra")) {
+            assertThrows(ParseException.class, expectedMessage, () ->
+                    parser.parseCommand(SortCommand.COMMAND_WORD + " " + arguments));
+        }
     }
 
     @Test

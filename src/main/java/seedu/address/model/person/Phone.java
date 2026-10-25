@@ -13,11 +13,8 @@ public class Phone {
     public static final String MESSAGE_CONSTRAINTS =
             "Phone numbers should be of the following format:\n"
             + "1. Cannot be blank.\n"
-            + "2. Should be 3-15 digits long.\n"
-            + "3. can begin with (+<country code>).";
-    public static final String VALIDATION_REGEX = "(?:\\(\\+\\d{1,3}\\)\\d{3,15}|\\d{3,15})";
-    public static final int MINIMUM_PHONE_LENGTH = 3;
-    public static final int MAXIMUM_PHONE_LENGTH = 15;
+            + "2. Should be 3-15 digits long.";
+    public static final String VALIDATION_REGEX = "^\\d{3,15}";
 
     public final String value;
 
@@ -29,7 +26,6 @@ public class Phone {
     public Phone(String phone) {
         requireNonNull(phone);
         checkArgument(isValidPhone(phone), MESSAGE_CONSTRAINTS);
-        checkArgument(isValidLength(phone), MESSAGE_CONSTRAINTS);
         value = phone;
     }
 
@@ -38,10 +34,6 @@ public class Phone {
      */
     public static boolean isValidPhone(String test) {
         return test.matches(VALIDATION_REGEX);
-    }
-
-    public static boolean isValidLength(String test) {
-        return test.length() >= MINIMUM_PHONE_LENGTH && test.length() <= MAXIMUM_PHONE_LENGTH;
     }
 
     @Override
