@@ -10,6 +10,7 @@ import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -50,7 +51,9 @@ public class LogicManager implements Logic {
         Command command = addressBookParser.parseCommand(commandText);
         AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
-        model.commit();
+        if (!isHistoryNavigationCommand(command)) {
+            model.commit();
+        }
 
         boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
         hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
@@ -72,6 +75,10 @@ public class LogicManager implements Logic {
                     String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
         }
         return commandResult;
+    }
+
+    private boolean isHistoryNavigationCommand(Command command) {
+        return command instanceof UndoCommand;
     }
 
     @Override
