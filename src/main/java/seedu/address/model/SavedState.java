@@ -1,6 +1,11 @@
-package seedu.address.model.person;
+package seedu.address.model;
 
-import seedu.address.model.ReadOnlyAddressBook;
+import java.util.Comparator;
 
-public record SavedState(ReadOnlyAddressBook readOnlyAddressBook, SortSettings sortSettings) {
+import seedu.address.model.person.Person;
+
+/**
+ * A saved address book state and the comparator used to maintain its sort order.
+ */
+public record SavedState(ReadOnlyAddressBook readOnlyAddressBook, Comparator<Person> comparator) {
 }
