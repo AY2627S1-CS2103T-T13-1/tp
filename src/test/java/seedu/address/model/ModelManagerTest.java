@@ -18,6 +18,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.logic.commands.ImportSummary;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
@@ -76,6 +77,79 @@ public class ModelManagerTest {
     public void hasPerson_personInAddressBook_returnsTrue() {
         modelManager.addPerson(ALICE);
         assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void mergeAddressBook_uniqueContacts_importsContacts() {
+        Person importedPerson = new PersonBuilder().withName("Zara Tan")
+                .withPhone("11111111").withEmail("zara@example.com").build();
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(importedPerson).build();
+
+        ImportSummary summary = modelManager.mergeAddressBook(importedAddressBook);
+
+        assertEquals(1, summary.getImportedCount());
+        assertEquals(0, summary.getSkippedCount());
+        assertTrue(modelManager.hasPerson(importedPerson));
+        assertEquals(1, modelManager.getAddressBook().getPersonList().size());
+    }
+
+    @Test
+    public void mergeAddressBook_duplicatePhone_skipsContact() {
+        modelManager.addPerson(ALICE);
+        Person duplicatePhone = new PersonBuilder().withName("Different Person")
+                .withPhone(ALICE.getPhone().value).withEmail("different@example.com").build();
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(duplicatePhone).build();
+
+        ImportSummary summary = modelManager.mergeAddressBook(importedAddressBook);
+
+        assertEquals(0, summary.getImportedCount());
+        assertEquals(1, summary.getSkippedCount());
+        assertEquals(1, modelManager.getAddressBook().getPersonList().size());
+        assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void mergeAddressBook_duplicateEmail_skipsContact() {
+        modelManager.addPerson(BENSON);
+        Person duplicateEmail = new PersonBuilder().withName("Different Person")
+                .withPhone("11111111").withEmail(BENSON.getEmail().value).build();
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(duplicateEmail).build();
+
+        ImportSummary summary = modelManager.mergeAddressBook(importedAddressBook);
+
+        assertEquals(0, summary.getImportedCount());
+        assertEquals(1, summary.getSkippedCount());
+        assertEquals(1, modelManager.getAddressBook().getPersonList().size());
+        assertTrue(modelManager.hasPerson(BENSON));
+    }
+
+    @Test
+    public void mergeAddressBook_mixedContacts_importsUniqueAndSkipsDuplicates() {
+        modelManager.addPerson(ALICE);
+        Person uniquePerson = new PersonBuilder().withName("Zara Tan")
+                .withPhone("11111111").withEmail("zara@example.com").build();
+        Person duplicatePhone = new PersonBuilder().withName("Duplicate Phone")
+                .withPhone(ALICE.getPhone().value).withEmail("duplicate@example.com").build();
+
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(uniquePerson)
+                .withPerson(duplicatePhone)
+                .build();
+
+        ImportSummary summary = modelManager.mergeAddressBook(importedAddressBook);
+
+        assertEquals(1, summary.getImportedCount());
+        assertEquals(1, summary.getSkippedCount());
+        assertTrue(modelManager.hasPerson(uniquePerson));
+        assertEquals(2, modelManager.getAddressBook().getPersonList().size());
+    }
+
+    @Test
+    public void mergeAddressBook_nullAddressBook_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> modelManager.mergeAddressBook(null));
     }
 
     @Test

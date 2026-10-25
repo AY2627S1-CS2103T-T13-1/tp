@@ -7,13 +7,17 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
+import seedu.address.logic.commands.ImportRequest;
+import seedu.address.logic.commands.ImportSummary;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
 import seedu.address.storage.Storage;
 
@@ -25,6 +29,9 @@ public class LogicManager implements Logic {
 
     public static final String FILE_OPS_PERMISSION_ERROR_FORMAT =
             "Could not save data to file %s due to insufficient permissions to write to the file or the folder.";
+
+    public static final String FILE_IMPORT_ERROR_FORMAT =
+            "Could not import data from file %s: %s";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -45,26 +52,62 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
-        model.commit();
+        CommandResult commandResult = command.execute(model);
 
         try {
+            if (commandResult.getImportRequest().isPresent()) {
+                ImportRequest importRequest =
+                        commandResult.getImportRequest().get();
+
+                ReadOnlyAddressBook importedAddressBook = storage
+                        .readAddressBook(importRequest.getFilePath())
+                        .orElseThrow(() -> new CommandException(
+                                String.format(
+                                        FILE_IMPORT_ERROR_FORMAT,
+                                        importRequest.getFilePath(),
+                                        "file was not found")));
+
+                ImportSummary summary =
+                        model.mergeAddressBook(importedAddressBook);
+
+                commandResult = new CommandResult(summary.getMessage());
+            }
+
+            model.commit();
+
             if (commandResult.getExportRequest().isPresent()) {
-                ExportRequest exportRequest = commandResult.getExportRequest().get();
+                ExportRequest exportRequest =
+                        commandResult.getExportRequest().get();
+
                 storage.saveAddressBook(
-                        exportRequest.getAddressBook(), exportRequest.getFilePath());
+                        exportRequest.getAddressBook(),
+                        exportRequest.getFilePath());
             } else {
                 storage.saveAddressBook(model.getAddressBook());
             }
+
+        } catch (DataLoadingException e) {
+            throw new CommandException(
+                    String.format(
+                            FILE_IMPORT_ERROR_FORMAT,
+                            commandText,
+                            e.getCause().getMessage()),
+                    e);
         } catch (AccessDeniedException e) {
             throw new CommandException(
-                    String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
+                    String.format(
+                            FILE_OPS_PERMISSION_ERROR_FORMAT,
+                            e.getMessage()),
+                    e);
         } catch (IOException e) {
             throw new CommandException(
-                    String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
+                    String.format(
+                            FILE_OPS_ERROR_FORMAT,
+                            e.getMessage()),
+                    e);
         }
+
         return commandResult;
     }
 

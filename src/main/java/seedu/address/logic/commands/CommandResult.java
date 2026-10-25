@@ -9,6 +9,8 @@ import java.util.Optional;
 import seedu.address.commons.core.Theme;
 import seedu.address.commons.util.ToStringBuilder;
 
+import javax.swing.text.html.Option;
+
 /**
  * Represents the result of a command execution.
  */
@@ -16,6 +18,7 @@ public class CommandResult {
 
     private final String feedbackToUser;
     private final Optional<ExportRequest> exportRequest;
+    private final Optional<ImportRequest> importRequest;
 
     /** The application should exit. */
     private final boolean exit;
@@ -31,6 +34,7 @@ public class CommandResult {
         requireNonNull(feedbackToUser);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
+        this.importRequest = Optional.empty();
         this.exit = exit;
         this.theme = theme;
     }
@@ -61,6 +65,16 @@ public class CommandResult {
         requireAllNonNull(feedbackToUser, exportRequest);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.of(exportRequest);
+        this.importRequest = Optional.empty();
+        this.exit = false;
+        this.theme = null;
+    }
+
+    public CommandResult(String feedbackToUser, ImportRequest importRequest) {
+        requireAllNonNull(feedbackToUser);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.empty();
+        this.importRequest = Optional.of(importRequest);
         this.exit = false;
         this.theme = null;
     }
@@ -72,6 +86,8 @@ public class CommandResult {
     public Optional<ExportRequest> getExportRequest() {
         return this.exportRequest;
     }
+
+    public Optional<ImportRequest> getImportRequest() { return this.importRequest; }
 
     public boolean isExit() {
         return exit;
@@ -95,12 +111,13 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && exit == otherCommandResult.exit
                 && theme == otherCommandResult.theme
-                && exportRequest.equals(otherCommandResult.exportRequest);
+                && exportRequest.equals(otherCommandResult.exportRequest)
+                && importRequest.equals(otherCommandResult.importRequest);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, exit, theme, exportRequest);
+        return Objects.hash(feedbackToUser, exit, theme, exportRequest, importRequest);
     }
 
     @Override

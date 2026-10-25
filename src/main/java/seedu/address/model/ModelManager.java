@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.commands.ImportSummary;
 import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonComparatorFactory;
@@ -185,5 +186,29 @@ public class ModelManager implements Model {
     @Override
     public Map<String, String> getAliases() {
         return aliasRegistry.getAliases();
+    }
+
+    @Override
+    public ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook) {
+        requireNonNull(importedAddressBook);
+
+        AddressBook mergedAddressBook = new AddressBook(addressBook);
+
+        int importedCount = 0;
+        int skippedCount = 0;
+
+        for (Person importedPerson : importedAddressBook.getPersonList()) {
+            if (mergedAddressBook.hasPerson(importedPerson)) {
+                skippedCount++;
+            } else {
+                mergedAddressBook.addPerson(importedPerson);
+                importedCount++;
+            }
+        }
+
+        setAddressBook(mergedAddressBook);
+        updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+
+        return new ImportSummary(importedCount, skippedCount);
     }
 }

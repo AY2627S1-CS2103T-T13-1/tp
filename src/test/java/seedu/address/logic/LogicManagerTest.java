@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_EMPTY_LIST;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -37,6 +38,7 @@ import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -202,6 +204,78 @@ public class LogicManagerTest {
 
         assertCommandFailure("export -f samplefile", CommandException.class,
                 String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, exception.getMessage()));
+    }
+
+    @Test
+    public void execute_importSuccess_mergesContactsAndSavesAddressBook() throws Exception {
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(AMY)
+                .withPerson(BOB)
+                .build();
+        Path importFilePath = temporaryFolder.resolve("contactsToImport.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        CommandResult result = logic.execute("import -f " + importFilePath);
+
+        assertEquals("Imported 2 contact(s). Skipped 0 duplicate(s).", result.getFeedbackToUser());
+        assertEquals(importedAddressBook, new AddressBook(model.getAddressBook()));
+
+        Path savedFilePath = temporaryFolder.resolve("addressBook.json");
+        ReadOnlyAddressBook savedAddressBook =
+                new JsonAddressBookStorage(savedFilePath).readAddressBook().orElseThrow();
+        assertEquals(importedAddressBook, new AddressBook(savedAddressBook));
+    }
+
+    @Test
+    public void execute_importWithDuplicates_skipsDuplicates() throws Exception {
+        model.addPerson(AMY);
+        Person duplicatePerson = new PersonBuilder(AMY)
+                .withName("Different Person")
+                .build();
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(duplicatePerson)
+                .withPerson(BOB)
+                .build();
+        Path importFilePath = temporaryFolder.resolve("contactsWithDuplicates.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        CommandResult result = logic.execute("import -f " + importFilePath);
+
+        assertEquals("Imported 1 contact(s). Skipped 1 duplicate(s).", result.getFeedbackToUser());
+        assertEquals(2, model.getAddressBook().getPersonList().size());
+        assertEquals(AMY, model.getAddressBook().getPersonList().stream()
+                .filter(person -> person.isSamePerson(AMY))
+                .findFirst()
+                .orElseThrow());
+        assertTrue(model.hasPerson(BOB));
+    }
+
+    @Test
+    public void execute_importThenUndo_restoresPreviousAddressBook() throws Exception {
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(AMY)
+                .build();
+        Path importFilePath = temporaryFolder.resolve("contactsToUndo.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        logic.execute("import -f " + importFilePath);
+        logic.execute(UndoCommand.COMMAND_WORD);
+
+        assertEquals(new AddressBook(), new AddressBook(model.getAddressBook()));
+    }
+
+    @Test
+    public void execute_importMissingFile_throwsCommandExceptionAndLeavesModelUnchanged() {
+        Path missingFilePath = temporaryFolder.resolve("missingContacts.json");
+        Model expectedModel = new ModelManager(BUILT_IN_COMMAND_WORDS);
+
+        assertCommandFailure(
+                "import -f " + missingFilePath,
+                CommandException.class,
+                String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                        missingFilePath,
+                        "file was not found"),
+                expectedModel);
     }
 
     @Test

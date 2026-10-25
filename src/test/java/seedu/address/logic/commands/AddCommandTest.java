@@ -179,6 +179,9 @@ public class AddCommandTest {
         public Map<String, String> getAliases() {
             throw new AssertionError("This method should not be called.");
         }
+
+        @Override
+        public ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook) { throw new AssertionError("This method should not be called."); }
     }
 
     /**

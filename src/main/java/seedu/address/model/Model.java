@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.logic.commands.ImportSummary;
 import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 
@@ -107,4 +108,9 @@ public interface Model {
      * Returns a mapping of aliases to command words.
      */
     Map<String, String> getAliases();
+
+    /**
+     * Merges address book with the current Model AddressBook
+     */
+    ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook);
 }
