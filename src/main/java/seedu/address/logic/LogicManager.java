@@ -32,6 +32,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final AddressBookParser addressBookParser;
+    private boolean hasUnsavedContactChanges;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -52,14 +53,16 @@ public class LogicManager implements Logic {
         model.commit();
 
         boolean contactsChanged = !beforeChange.equals(model.getAddressBook());
+        hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
 
         try {
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
                 storage.saveAddressBook(
                         exportRequest.getAddressBook(), exportRequest.getFilePath());
-            } else if (contactsChanged) {
+            } else if (hasUnsavedContactChanges) {
                 storage.saveAddressBook(model.getAddressBook());
+                hasUnsavedContactChanges = false;
             }
         } catch (AccessDeniedException e) {
             throw new CommandException(
