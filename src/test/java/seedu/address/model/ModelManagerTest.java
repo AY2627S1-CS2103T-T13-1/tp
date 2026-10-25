@@ -18,7 +18,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
-import seedu.address.logic.commands.ImportSummary;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;

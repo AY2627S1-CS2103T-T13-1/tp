@@ -12,10 +12,10 @@ import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
 import seedu.address.logic.commands.ImportRequest;
-import seedu.address.logic.commands.ImportSummary;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.ImportSummary;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
@@ -31,7 +31,7 @@ public class LogicManager implements Logic {
             "Could not save data to file %s due to insufficient permissions to write to the file or the folder.";
 
     public static final String FILE_IMPORT_ERROR_FORMAT =
-            "Could not import data from file %s: %s";
+            "Could not import contacts: %s";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -54,7 +54,6 @@ public class LogicManager implements Logic {
 
         Command command = addressBookParser.parseCommand(commandText);
         CommandResult commandResult = command.execute(model);
-
         try {
             if (commandResult.getImportRequest().isPresent()) {
                 ImportRequest importRequest =
@@ -91,7 +90,6 @@ public class LogicManager implements Logic {
             throw new CommandException(
                     String.format(
                             FILE_IMPORT_ERROR_FORMAT,
-                            commandText,
                             e.getCause().getMessage()),
                     e);
         } catch (AccessDeniedException e) {

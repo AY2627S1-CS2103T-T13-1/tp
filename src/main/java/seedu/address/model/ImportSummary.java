@@ -1,4 +1,4 @@
-package seedu.address.logic.commands;
+package seedu.address.model;
 
 /**
  * Represents the result of merging contacts from an imported address book.
