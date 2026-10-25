@@ -127,6 +127,25 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenize_tabSeparatedPrefixes_preservesValuesAndRepeatOrder() {
+        String argsString = "\tp/ Alice\t-t others friend\t-t faculty Computing";
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash, dashT);
+
+        assertPreambleEmpty(argMultimap);
+        assertArgumentPresent(argMultimap, pSlash, "Alice");
+        assertArgumentPresent(argMultimap, dashT, "others friend", "faculty Computing");
+    }
+
+    @Test
+    public void tokenize_unicodeWhitespaceAfterPrefix_recognizesPrefixAndPreservesValue() {
+        String argsString = " p/\u2003value";
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash);
+
+        assertPreambleEmpty(argMultimap);
+        assertArgumentPresent(argMultimap, pSlash, "\u2003value");
+    }
+
+    @Test
     public void tokenize_multipleArgumentsJoined() {
         String argsString = "SomePreambleStringp/ pSlash joined-tjoined -t not joined^Qjoined";
         ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash, dashT, hatQ);
