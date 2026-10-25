@@ -10,9 +10,9 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Address {
 
-    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank";
+    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank.";
     public static final String MESSAGE_EXCEED_MAX_LENGTH = "Entered address is too long "
-            + "(Should be at most 105 characters)";
+            + "(Should be at most 105 characters).";
     /*
      * The first character of the address must not be a whitespace,
      * otherwise " " (a blank string) becomes a valid input.
