@@ -48,11 +48,11 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         Command command = addressBookParser.parseCommand(commandText);
-        AddressBook beforeChange = new AddressBook(model.getAddressBook());
+        AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
         model.commit();
 
-        boolean contactsChanged = !beforeChange.equals(model.getAddressBook());
+        boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
         hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
 
         try {
