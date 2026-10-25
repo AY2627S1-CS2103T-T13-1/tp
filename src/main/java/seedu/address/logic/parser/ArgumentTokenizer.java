@@ -66,7 +66,7 @@ public class ArgumentTokenizer {
      * whitespace or the end of {@code argsString} after it. Returns -1 if no
      * such occurrence can be found.
      *
-     * E.g if {@code argsString} = "-e hi-p 900", {@code prefix} = "-p" and
+     * E.g. if {@code argsString} = "-e hi-p 900", {@code prefix} = "-p" and
      * {@code fromIndex} = 0, this method returns -1 as there is no whitespace
      * before "-p". Similarly, if {@code argsString} = "-a Blk 5 -north",
      * {@code prefix} = "-n" and {@code fromIndex} = 0, this method returns -1
