@@ -112,6 +112,12 @@ public class LogicManagerTest {
         // list does not change the contact list, so undo reverses the add command instead
         assertCommandSuccess(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_SUCCESS,
                 new ModelManager(BUILT_IN_COMMAND_WORDS));
+
+        // verify that undo persists the restored contacts to disk
+        assertEquals(new AddressBook(),
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                        .readAddressBook().orElseThrow());
+
         assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }
 
