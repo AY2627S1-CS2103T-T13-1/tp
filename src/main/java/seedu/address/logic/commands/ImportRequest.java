@@ -11,6 +11,12 @@ import java.util.Objects;
 public class ImportRequest {
     private final Path filePath;
 
+    /**
+     * Constructs an {@code ImportRequest} for the specified file path.
+     *
+     * @param filePath the path of the address book file to import
+     * @throws NullPointerException if {@code filePath} is null
+     */
     public ImportRequest(Path filePath) {
         requireAllNonNull(filePath);
         this.filePath = filePath;

@@ -9,8 +9,6 @@ import java.util.Optional;
 import seedu.address.commons.core.Theme;
 import seedu.address.commons.util.ToStringBuilder;
 
-import javax.swing.text.html.Option;
-
 /**
  * Represents the result of a command execution.
  */
@@ -70,6 +68,13 @@ public class CommandResult {
         this.theme = null;
     }
 
+    /**
+     * Constructs a {@code CommandResult} with the specified feedback message and import request,
+     * with other fields set to their default values.
+     *
+     * @param feedbackToUser the feedback message to display to the user
+     * @param importRequest the import request associated with this result
+     */
     public CommandResult(String feedbackToUser, ImportRequest importRequest) {
         requireAllNonNull(feedbackToUser);
         this.feedbackToUser = feedbackToUser;
@@ -87,7 +92,8 @@ public class CommandResult {
         return this.exportRequest;
     }
 
-    public Optional<ImportRequest> getImportRequest() { return this.importRequest; }
+    public Optional<ImportRequest> getImportRequest() {
+        return this.importRequest; }
 
     public boolean isExit() {
         return exit;

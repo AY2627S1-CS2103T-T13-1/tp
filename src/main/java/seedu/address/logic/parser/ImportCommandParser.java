@@ -2,16 +2,19 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_FILENAME;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-
-
+/**
+ * Parses the arguments supplied to the import command.
+ *
+ * The parser accepts a file path provided with the {@code -f} prefix and
+ * creates an {@link ImportCommand} for the path.
+ */
 public class ImportCommandParser implements Parser<ImportCommand> {
     public static final String MESSAGE_MISSING_FILE_PATH =
             "Please provide a file path.";
@@ -22,6 +25,14 @@ public class ImportCommandParser implements Parser<ImportCommand> {
         PREFIX_FILENAME
     };
 
+    /**
+     * Parses the supplied arguments and creates an import command.
+     *
+     * @param args the command arguments to parse
+     * @return an import command containing the specified file path
+     * @throws ParseException if the file path is missing, empty, or invalid,
+     *         or if the argument structure is invalid
+     */
     @Override
     public ImportCommand parse(String args) throws ParseException {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(
