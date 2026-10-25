@@ -1,24 +1,34 @@
 package seedu.address.model.person;
 
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
+
 import java.util.Comparator;
 
 /**
- * Creates comparators to sort Person objects in the Address Book
+ * Creates comparators to sort Person objects in the Address Book.
  */
 public class PersonComparatorFactory {
-    private static Comparator<Person> previousComparator;
 
     /**
-     * Returns the previously created comparator if any.
-     * Otherwise, returns the default comparator that prioritizes pinned persons.
+     * Creates a {@link Comparator} that compares {@link Person} based on {@link SortCriteria}.
+     *
+     * @param sortCriteria value in {@link Person} to compare by.
+     * @param sortOrder order of sorting (ascending/descending).
      */
-    public static Comparator<Person> getPreviousComparator() {
-        if (previousComparator != null) {
-            return previousComparator;
+    public static Comparator<Person> createComparator(SortCriteria sortCriteria, SortOrder sortOrder) {
+        requireAllNonNull(sortCriteria, sortOrder);
+
+        Comparator<Person> criteriaComparator = switch (sortCriteria) {
+            case NAME -> Comparator.comparing(person -> person.getName().fullName, String.CASE_INSENSITIVE_ORDER);
+            case EMAIL -> Comparator.comparing(person -> person.getEmail().value, String.CASE_INSENSITIVE_ORDER);
+            case PHONE -> Comparator.comparing(person -> person.getPhone().value);
+        };
+
+        if (sortOrder == SortOrder.DESC) {
+            criteriaComparator = criteriaComparator.reversed();
         }
-        Comparator<Person> defaultComparator = createDefaultComparator();
-        previousComparator = defaultComparator;
-        return defaultComparator;
+
+        return createDefaultComparator().thenComparing(criteriaComparator);
     }
 
     /**

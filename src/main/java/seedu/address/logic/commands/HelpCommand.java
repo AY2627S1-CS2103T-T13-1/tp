@@ -47,8 +47,15 @@ public class HelpCommand extends Command {
                     AliasCommand.COMMAND_DESCRIPTION,
                     AliasCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
+                    DeleteAliasCommand.COMMAND_SYNTAX,
+                    DeleteAliasCommand.COMMAND_DESCRIPTION,
+                    DeleteAliasCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     ListAliasCommand.COMMAND_WORD,
                     ListAliasCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
+                    UndoCommand.COMMAND_WORD,
+                    UndoCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
                     ClearCommand.COMMAND_WORD,
                     ClearCommand.COMMAND_DESCRIPTION),
@@ -62,6 +69,10 @@ public class HelpCommand extends Command {
                     ExportCommand.COMMAND_SYNTAX,
                     ExportCommand.COMMAND_DESCRIPTION,
                     ExportCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
+                    SortCommand.COMMAND_SYNTAX,
+                    SortCommand.COMMAND_DESCRIPTION,
+                    SortCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
                     "User Guide Link: " + AppConstants.USERGUIDE_URL));
 

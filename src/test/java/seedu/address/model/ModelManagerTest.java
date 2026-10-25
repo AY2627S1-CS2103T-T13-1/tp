@@ -8,7 +8,9 @@ import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.CARL;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -16,8 +18,13 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.person.Person;
+import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
+import seedu.address.model.person.SortCriteria;
+import seedu.address.model.person.SortOrder;
 import seedu.address.testutil.AddressBookBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 public class ModelManagerTest {
 
@@ -72,6 +79,108 @@ public class ModelManagerTest {
     }
 
     @Test
+    public void addPerson_existingSort_retainsOrderForAllCriteriaAndOrders() {
+        Person first = new PersonBuilder().withName("alice").withEmail("alice@example.com")
+                .withPhone("100").build();
+        Person middle = new PersonBuilder().withName("Bob").withEmail("Bob@example.com")
+                .withPhone("200").build();
+        Person last = new PersonBuilder().withName("charlie").withEmail("charlie@example.com")
+                .withPhone("300").build();
+
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                ModelManager model = new ModelManager(BUILT_IN_COMMAND_WORDS);
+                model.addPerson(last);
+                model.addPerson(first);
+                model.sortAddressBook(PersonComparatorFactory.createComparator(criteria, order));
+
+                model.addPerson(middle);
+
+                List<Person> expected = order == SortOrder.ASC
+                        ? List.of(first, middle, last) : List.of(last, middle, first);
+                assertEquals(expected, model.getAddressBook().getPersonList(), criteria + " " + order);
+                assertEquals(expected, model.getFilteredPersonList(), criteria + " " + order);
+
+                Person pinnedMiddle = new PersonBuilder().withName("Pinned contact")
+                        .withEmail("pinned@example.com").withPhone("250").build().pinPerson();
+                model.addPerson(pinnedMiddle);
+                List<Person> expectedWithPinned = order == SortOrder.ASC
+                        ? List.of(pinnedMiddle, first, middle, last) : List.of(pinnedMiddle, last, middle, first);
+                assertEquals(expectedWithPinned, model.getFilteredPersonList(), criteria + " " + order);
+            }
+        }
+    }
+
+    @Test
+    public void setPerson_existingSort_repositionsEditedPersonForAllCriteriaAndOrders() {
+        Person first = new PersonBuilder().withName("alice").withEmail("alice@example.com")
+                .withPhone("100").build();
+        Person middle = new PersonBuilder().withName("Bob").withEmail("Bob@example.com")
+                .withPhone("200").build();
+        Person last = new PersonBuilder().withName("charlie").withEmail("charlie@example.com")
+                .withPhone("300").build();
+
+        for (SortCriteria criteria : SortCriteria.values()) {
+            Person editedFirst = switch (criteria) {
+                case NAME -> new PersonBuilder(first).withName("Zoe").build();
+                case EMAIL -> new PersonBuilder(first).withEmail("Zoe@example.com").build();
+                case PHONE -> new PersonBuilder(first).withPhone("900").build();
+            };
+            for (SortOrder order : SortOrder.values()) {
+                ModelManager model = new ModelManager(BUILT_IN_COMMAND_WORDS);
+                model.addPerson(first);
+                model.addPerson(middle);
+                model.addPerson(last);
+                model.sortAddressBook(PersonComparatorFactory.createComparator(criteria, order));
+
+                model.setPerson(first, editedFirst);
+
+                List<Person> expected = order == SortOrder.ASC
+                        ? List.of(middle, last, editedFirst) : List.of(editedFirst, last, middle);
+                assertEquals(expected, model.getAddressBook().getPersonList(), criteria + " " + order);
+                assertEquals(expected, model.getFilteredPersonList(), criteria + " " + order);
+
+                model.setPerson(middle, middle.pinPerson());
+                List<Person> expectedWithPinned = order == SortOrder.ASC
+                        ? List.of(middle.pinPerson(), last, editedFirst)
+                        : List.of(middle.pinPerson(), editedFirst, last);
+                assertEquals(expectedWithPinned, model.getFilteredPersonList(), criteria + " " + order);
+
+                model.setPerson(middle.pinPerson(), middle);
+                assertEquals(expected, model.getFilteredPersonList(), criteria + " " + order);
+            }
+        }
+    }
+
+    @Test
+    public void constructor_pinnedPersonAfterUnpinnedPerson_sortsPinnedPersonFirst() {
+        AddressBook addressBook =
+                new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON.pinPerson()).build();
+        addressBook.sortPersons(PersonComparatorFactory.createDefaultComparator());
+        modelManager = new ModelManager(addressBook, new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+
+        AddressBook expectedAddressBook =
+                new AddressBookBuilder().withPerson(BENSON.pinPerson()).withPerson(ALICE).build();
+        assertEquals(expectedAddressBook, modelManager.getAddressBook());
+    }
+
+    @Test
+    public void undo_sortedByPinnedInitialData_doesNotSaveNewState() {
+        AddressBook addressBook =
+                new AddressBookBuilder().withPerson(ALICE).withPerson(BENSON.pinPerson()).build();
+        addressBook.sortPersons(PersonComparatorFactory.createDefaultComparator());
+        modelManager = new ModelManager(addressBook, new UserPrefs(), BUILT_IN_COMMAND_WORDS);
+        modelManager.addPerson(CARL);
+        modelManager.commit();
+
+        modelManager.undo();
+        // LogicManager commits after every command, including undo
+        modelManager.commit();
+
+        assertFalse(modelManager.canUndo());
+    }
+
+    @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> modelManager.getFilteredPersonList().remove(0));
     }
@@ -88,17 +197,11 @@ public class ModelManagerTest {
     }
 
     @Test
-    public void equals_aliasMappingsComparedByValue() {
-        ModelManager modelManagerCopy = new ModelManager(BUILT_IN_COMMAND_WORDS);
-        assertTrue(modelManager.equals(modelManagerCopy));
-
+    public void deleteAlias_registeredAlias_removesOnlySpecifiedAlias() {
         modelManager.registerAlias("find", "f");
-        assertFalse(modelManager.equals(modelManagerCopy));
-        assertFalse(modelManagerCopy.equals(modelManager));
-
-        modelManagerCopy.registerAlias("find", "f");
-        assertTrue(modelManager.equals(modelManagerCopy));
-        assertTrue(modelManagerCopy.equals(modelManager));
+        modelManager.registerAlias("list", "l");
+        modelManager.deleteAlias("f");
+        assertEquals(Map.of("l", "list"), modelManager.getAliases());
     }
 
     @Test
@@ -136,5 +239,13 @@ public class ModelManagerTest {
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setGuiSettings(new GuiSettings(1, 2, 3, 4));
         assertFalse(modelManager.equals(new ModelManager(addressBook, differentUserPrefs, BUILT_IN_COMMAND_WORDS)));
+
+        // different alias mappings -> returns false
+        modelManager.registerAlias("find", "f");
+        assertFalse(modelManager.equals(modelManagerCopy));
+
+        // same alias mappings in separate registries -> returns true
+        modelManagerCopy.registerAlias("find", "f");
+        assertTrue(modelManager.equals(modelManagerCopy));
     }
 }

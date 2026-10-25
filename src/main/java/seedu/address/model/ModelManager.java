@@ -23,10 +23,11 @@ import seedu.address.model.person.PersonComparatorFactory;
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
-    private final AddressBook addressBook;
+    private final VersionedAddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
     private final AliasRegistry aliasRegistry;
+    private Comparator<Person> activeComparator;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -37,10 +38,14 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
-        this.addressBook = new AddressBook(addressBook);
+        // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
+        AddressBook sortedAddressBook = new AddressBook(addressBook);
+        this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
+        this.activeComparator = PersonComparatorFactory.createDefaultComparator();
+        sortedAddressBook.sortPersons(this.activeComparator);
     }
 
     public ModelManager(Set<String> builtInCommandWords) {
@@ -70,7 +75,7 @@ public class ModelManager implements Model {
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
         this.addressBook.resetData(addressBook);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(activeComparator);
     }
 
     @Override
@@ -87,13 +92,13 @@ public class ModelManager implements Model {
     @Override
     public void deletePerson(Person target) {
         addressBook.removePerson(target);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(activeComparator);
     }
 
     @Override
     public void addPerson(Person person) {
         addressBook.addPerson(person);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(activeComparator);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
@@ -102,7 +107,28 @@ public class ModelManager implements Model {
         requireAllNonNull(target, editedPerson);
 
         addressBook.setPerson(target, editedPerson);
-        sortAddressBook(PersonComparatorFactory.getPreviousComparator());
+        sortAddressBook(activeComparator);
+    }
+
+    //=========== Undo =====================================================================================
+
+    @Override
+    public void commit() {
+        if (addressBook.commit()) {
+            logger.fine("Saved a new address book state");
+        }
+    }
+
+    @Override
+    public boolean canUndo() {
+        return addressBook.canUndo();
+    }
+
+    @Override
+    public void undo() {
+        addressBook.undo();
+        sortAddressBook(this.activeComparator);
+        logger.info("Restored the previous address book state");
     }
 
     //=========== Filtered Person List Accessors =============================================================
@@ -141,7 +167,9 @@ public class ModelManager implements Model {
 
     @Override
     public void sortAddressBook(Comparator<Person> comp) {
+        requireNonNull(comp);
         addressBook.sortPersons(comp);
+        activeComparator = comp;
     }
 
     @Override
@@ -157,5 +185,10 @@ public class ModelManager implements Model {
     @Override
     public Map<String, String> getAliases() {
         return aliasRegistry.getAliases();
+    }
+
+    @Override
+    public void deleteAlias(String alias) {
+        aliasRegistry.deleteAlias(alias);
     }
 }
