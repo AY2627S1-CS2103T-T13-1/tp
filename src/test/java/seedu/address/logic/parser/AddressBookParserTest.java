@@ -19,6 +19,7 @@ import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -118,14 +119,20 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_alias() throws Exception {
-        assertTrue(parser.parseCommand(AliasCommand.COMMAND_WORD + " find f")
-                instanceof AliasCommand);
+        assertEquals(new AliasCommand("find", "f"),
+                parser.parseCommand(AliasCommand.COMMAND_WORD + " find f"));
     }
 
     @Test
     public void parseCommand_listAlias() throws Exception {
         assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD) instanceof ListAliasCommand);
         assertTrue(parser.parseCommand(ListAliasCommand.COMMAND_WORD + " extra") instanceof ListAliasCommand);
+    }
+
+    @Test
+    public void parseCommand_deleteAlias() throws Exception {
+        assertEquals(new DeleteAliasCommand("f"),
+                parser.parseCommand(DeleteAliasCommand.COMMAND_WORD + " f"));
     }
 
     @Test

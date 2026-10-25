@@ -186,4 +186,9 @@ public class ModelManager implements Model {
     public Map<String, String> getAliases() {
         return aliasRegistry.getAliases();
     }
+
+    @Override
+    public void deleteAlias(String alias) {
+        aliasRegistry.deleteAlias(alias);
+    }
 }

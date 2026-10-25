@@ -22,6 +22,7 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ListCommand;
@@ -37,6 +39,7 @@ import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -109,6 +112,12 @@ public class LogicManagerTest {
         // list does not change the contact list, so undo reverses the add command instead
         assertCommandSuccess(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_SUCCESS,
                 new ModelManager(BUILT_IN_COMMAND_WORDS));
+
+        // verify that undo persists the restored contacts to disk
+        assertEquals(new AddressBook(),
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                        .readAddressBook().orElseThrow());
+
         assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }
 
@@ -149,6 +158,71 @@ public class LogicManagerTest {
     public void execute_storageThrowsAdException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_AD_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage()));
+    }
+
+    @Test
+    public void execute_clearAfterSaveFailure_retriesSavingUnchangedContacts() throws Exception {
+        model.addPerson(AMY);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        addressBookStorage.saveAddressBook(originalContacts);
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
+        boolean[] storageUnwritable = {true};
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                if (storageUnwritable[0]) {
+                    throw DUMMY_AD_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, storage);
+
+        assertThrows(CommandException.class, () -> logic.execute(ClearCommand.COMMAND_WORD));
+        assertEquals(new AddressBook(), model.getAddressBook());
+        assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
+
+        storageUnwritable[0] = false;
+        CommandResult result = logic.execute(ClearCommand.COMMAND_WORD);
+
+        assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(new AddressBook(), addressBookStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteAlias_deletesAliasWithoutSavingContacts() throws Exception {
+        model.addPerson(AMY);
+        model.registerAlias("find", "f");
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
+
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
+                throw new AssertionError("Deleting an alias must not save contacts.");
+            }
+
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
+                throw new AssertionError("Deleting an alias must not export contacts.");
+            }
+        };
+        logic = new LogicManager(model, storage);
+
+        CommandResult result = logic.execute("delete_alias f");
+
+        assertEquals(
+                new CommandResult(String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f")),
+                result);
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(originalContacts, model.getAddressBook());
     }
 
     @Test

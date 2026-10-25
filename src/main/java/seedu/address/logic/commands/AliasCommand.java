@@ -3,6 +3,8 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Objects;
+
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 
@@ -64,5 +66,10 @@ public class AliasCommand extends Command {
 
         return commandWord.equals(otherAliasCommand.commandWord)
                 && alias.equals(otherAliasCommand.alias);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(commandWord, alias);
     }
 }
