@@ -2,8 +2,6 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
-import java.util.stream.Stream;
-
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -22,7 +20,6 @@ public class ArgumentStructureValidator {
     /**
      * Validates the structure of the supplied command arguments.
      *
-     * @param args the original command arguments as entered by the user
      * @param arguments the tokenized arguments and their associated values
      * @param supportedPrefixes the prefixes supported by the command
      * @param commandName the name of the command being validated
@@ -30,26 +27,18 @@ public class ArgumentStructureValidator {
      *         empty value, or duplicate non-tag parameter is found
      */
     public static void validate(
-            String args,
             ArgumentMultimap arguments,
             Prefix[] supportedPrefixes,
             String commandName) throws ParseException {
 
-        boolean isTagValue = false;
-
-        String[] tokens = args.trim().split("\\s+");
-        for (String token : tokens) {
-            if (Stream.of(supportedPrefixes)
-                    .anyMatch(prefix -> prefix.getPrefix().equals(token))) {
-                isTagValue = token.equals(PREFIX_TAG.getPrefix());
+        validateUnknownParameters(arguments.getPreamble(), commandName);
+        for (Prefix prefix : supportedPrefixes) {
+            if (prefix.equals(PREFIX_TAG)) {
                 continue;
             }
 
-            if (token.startsWith("-")
-                    && token.length() > 1
-                    && !isTagValue) {
-                throw new ParseException(
-                        "Unknown " + commandName + " parameter: '" + token + "'.");
+            for (String value : arguments.getAllValues(prefix)) {
+                validateUnknownParameters(value, commandName);
             }
         }
 
@@ -72,6 +61,20 @@ public class ArgumentStructureValidator {
                 throw new ParseException(
                         "The " + prefix
                                 + " parameter may only be specified once.");
+            }
+        }
+    }
+
+    /**
+     * Rejects parameter-like tokens in text outside tokenized tag values.
+     * Supported parameter prefixes have already been removed by the tokenizer.
+     *
+     * @throws ParseException if the text contains an unknown parameter
+     */
+    private static void validateUnknownParameters(String text, String commandName) throws ParseException {
+        for (String token : text.trim().split("\\s+")) {
+            if (token.startsWith("-") && token.length() > 1) {
+                throw new ParseException("Unknown " + commandName + " parameter: '" + token + "'.");
             }
         }
     }

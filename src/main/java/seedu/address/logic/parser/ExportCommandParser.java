@@ -61,7 +61,7 @@ public class ExportCommandParser implements Parser<ExportCommand> {
      */
     private ArgumentMultimap extractArguments(String args) throws ParseException {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, EXPORT_PREFIXES);
-        ArgumentStructureValidator.validate(args, arguments, EXPORT_PREFIXES, ExportCommand.COMMAND_WORD);
+        ArgumentStructureValidator.validate(arguments, EXPORT_PREFIXES, ExportCommand.COMMAND_WORD);
         return arguments;
     }
 }

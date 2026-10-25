@@ -29,7 +29,6 @@ public class FindCommandParser implements Parser<FindCommand> {
         try {
             ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, FIND_PREFIXES);
             ArgumentStructureValidator.validate(
-                    args,
                     arguments,
                     FIND_PREFIXES,
                     FindCommand.COMMAND_WORD);
