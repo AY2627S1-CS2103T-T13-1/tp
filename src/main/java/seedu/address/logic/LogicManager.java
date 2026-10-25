@@ -31,7 +31,7 @@ public class LogicManager implements Logic {
             "Could not save data to file %s due to insufficient permissions to write to the file or the folder.";
 
     public static final String FILE_IMPORT_ERROR_FORMAT =
-            "Could not import contacts: %s";
+            "Could not import contacts. File was not found: %s";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -64,8 +64,7 @@ public class LogicManager implements Logic {
                         .orElseThrow(() -> new CommandException(
                                 String.format(
                                         FILE_IMPORT_ERROR_FORMAT,
-                                        importRequest.getFilePath(),
-                                        "file was not found")));
+                                        importRequest.getFilePath())));
 
                 ImportSummary summary =
                         model.mergeAddressBook(importedAddressBook);
