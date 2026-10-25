@@ -123,6 +123,30 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_nameAtLengthBoundaries_returnsPerson() throws Exception {
+        for (int length : new int[] {1, Name.MAXIMUM_NAME_LENGTH - 1, Name.MAXIMUM_NAME_LENGTH}) {
+            String name = "A".repeat(length);
+            JsonAdaptedPerson person = new JsonAdaptedPerson(name, VALID_PHONE, VALID_EMAIL,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+            assertEquals(new PersonBuilder(BENSON).withName(name).build(), person.toModelType());
+        }
+    }
+
+    @Test
+    public void toModelType_nameOutsideLengthBoundaries_throwsIllegalValueException() {
+        JsonAdaptedPerson personWithEmptyName = new JsonAdaptedPerson("", VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, UNPINNED);
+        assertThrows(IllegalValueException.class, Name.MESSAGE_CONSTRAINTS, personWithEmptyName::toModelType);
+        for (int length : new int[] {Name.MAXIMUM_NAME_LENGTH + 1, Name.MAXIMUM_NAME_LENGTH + 2}) {
+            String name = "A".repeat(length);
+            JsonAdaptedPerson person = new JsonAdaptedPerson(name, VALID_PHONE, VALID_EMAIL,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+            assertThrows(IllegalValueException.class, Name.MESSAGE_EXCEED_MAX_LENGTH, person::toModelType);
+        }
+    }
+
+    @Test
     public void toModelType_invalidPhone_throwsIllegalValueException() {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, INVALID_PHONE, VALID_EMAIL, VALID_ADDRESS, VALID_TAGS, UNPINNED);
@@ -139,6 +163,28 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_phoneAtLengthBoundaries_returnsPerson() throws Exception {
+        for (int length : new int[] {3, 4, 14, 15}) {
+            String phone = "1".repeat(length);
+            JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, phone, VALID_EMAIL,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+            assertEquals(new PersonBuilder(BENSON).withPhone(phone).build(), person.toModelType());
+        }
+    }
+
+    @Test
+    public void toModelType_phoneOutsideLengthBoundaries_throwsIllegalValueException() {
+        String[] invalidPhones = {"11", "1".repeat(16), "1".repeat(17), "(+65)123456789012345"};
+        for (String phone : invalidPhones) {
+            JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, phone, VALID_EMAIL,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+            assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, person::toModelType);
+        }
+    }
+
+    @Test
     public void toModelType_invalidEmail_throwsIllegalValueException() {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, INVALID_EMAIL, VALID_ADDRESS, VALID_TAGS, UNPINNED);
@@ -152,6 +198,31 @@ public class JsonAdaptedPersonTest {
                 VALID_ADDRESS, VALID_TAGS, UNPINNED);
         String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName());
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_emailAtMaximumLengthBoundary_returnsPerson() throws Exception {
+        String domain = "@example.com";
+        for (int length : new int[] {Email.MAXIMUM_EMAIL_LENGTH - 1, Email.MAXIMUM_EMAIL_LENGTH}) {
+            String email = "a".repeat(length - domain.length()) + domain;
+            JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, email,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+            assertEquals(new PersonBuilder(BENSON).withEmail(email).build(), person.toModelType());
+        }
+    }
+
+    @Test
+    public void toModelType_emailAboveMaximumLength_throwsIllegalValueException() {
+        String domain = "@example.com";
+        for (int length : new int[] {Email.MAXIMUM_EMAIL_LENGTH + 1, Email.MAXIMUM_EMAIL_LENGTH + 2}) {
+            // Preserve a valid email format so only the length constraint is violated.
+            String email = "a".repeat(length - domain.length()) + domain;
+            JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, email,
+                    VALID_ADDRESS, VALID_TAGS, UNPINNED);
+
+            assertThrows(IllegalValueException.class, Email.MESSAGE_EXCEED_MAX_LENGTH, person::toModelType);
+        }
     }
 
     @Test
