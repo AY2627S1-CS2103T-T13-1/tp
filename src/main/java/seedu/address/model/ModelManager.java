@@ -38,14 +38,16 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
+        this.activeComparator = PersonComparatorFactory.createDefaultComparator();
+
         // Sorts the initial data first, so that undoing back to it gives the same order that is displayed.
         AddressBook sortedAddressBook = new AddressBook(addressBook);
+        sortedAddressBook.sortPersons(this.activeComparator);
+
         this.addressBook = new VersionedAddressBook(sortedAddressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
-        this.activeComparator = PersonComparatorFactory.createDefaultComparator();
-        sortedAddressBook.sortPersons(this.activeComparator);
     }
 
     public ModelManager(Set<String> builtInCommandWords) {
@@ -114,7 +116,7 @@ public class ModelManager implements Model {
 
     @Override
     public void commit() {
-        if (addressBook.commit()) {
+        if (addressBook.commit(activeComparator)) {
             logger.fine("Saved a new address book state");
         }
     }
@@ -126,8 +128,7 @@ public class ModelManager implements Model {
 
     @Override
     public void undo() {
-        addressBook.undo();
-        sortAddressBook(this.activeComparator);
+        activeComparator = addressBook.undo();
         logger.info("Restored the previous address book state");
     }
 
