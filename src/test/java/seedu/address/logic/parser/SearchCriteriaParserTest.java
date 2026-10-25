@@ -61,14 +61,6 @@ public class SearchCriteriaParserTest {
     }
 
     @Test
-    public void parse_invalidPhone_throwsParseException() {
-        String args = " -p +651234";
-
-        assertThrows(ParseException.class, ()
-                -> SearchCriteriaParser.parse(tokenize(args)));
-    }
-
-    @Test
     public void parse_partialEmail_returnsParsedCriteria() throws ParseException {
         String args = " -e example.com";
 

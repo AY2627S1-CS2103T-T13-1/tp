@@ -54,9 +54,6 @@ public class SearchCriteriaParser {
         if (name.isPresent()) {
             ParserUtil.parseName(name.get());
         }
-        if (phone.isPresent()) {
-            ParserUtil.parsePhone(phone.get());
-        }
         if (address.isPresent()) {
             ParserUtil.parseAddress(address.get());
         }

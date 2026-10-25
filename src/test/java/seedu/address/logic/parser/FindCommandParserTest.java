@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
-import seedu.address.model.person.Phone;
 import seedu.address.model.tag.FacultyTag;
 import seedu.address.model.tag.ModuleTag;
 import seedu.address.model.tag.OthersTag;
@@ -78,8 +77,6 @@ public class FindCommandParserTest {
     public void parse_invalidFieldValue_throwsParseException() {
         assertParseFailure(parser, " -n Alice@",
                 Name.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -p abc",
-                Phone.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -136,12 +133,12 @@ public class FindCommandParserTest {
     public void parse_phoneSubstring_returnsFindCommand() {
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
                 Optional.empty(),
-                Optional.of("243"),
+                Optional.of("2"),
                 Optional.empty(),
                 Optional.empty(),
                 Set.of());
 
-        assertParseSuccess(parser, " -p 243", new FindCommand(predicate));
+        assertParseSuccess(parser, " -p 2", new FindCommand(predicate));
     }
 
     @Test
