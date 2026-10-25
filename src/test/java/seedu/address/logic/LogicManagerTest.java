@@ -155,6 +155,38 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_clearAfterSaveFailure_retriesSavingUnchangedContacts() throws Exception {
+        model.addPerson(AMY);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        addressBookStorage.saveAddressBook(originalContacts);
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
+        boolean[] storageUnwritable = {true};
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                if (storageUnwritable[0]) {
+                    throw DUMMY_AD_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, storage);
+
+        assertThrows(CommandException.class, () -> logic.execute(ClearCommand.COMMAND_WORD));
+        assertEquals(new AddressBook(), model.getAddressBook());
+        assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
+
+        storageUnwritable[0] = false;
+        CommandResult result = logic.execute(ClearCommand.COMMAND_WORD);
+
+        assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(new AddressBook(), addressBookStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
     public void execute_deleteAlias_deletesAliasWithoutSavingContacts() throws Exception {
         model.addPerson(AMY);
         model.registerAlias("find", "f");
