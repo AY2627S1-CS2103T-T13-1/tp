@@ -77,4 +77,13 @@ public class JsonAliasStorageTest {
         assertThrows(IOException.class, () ->
                 storage.saveAliases(new AliasRegistry(BUILT_IN_COMMAND_WORDS)));
     }
+
+    @Test
+    public void readAliases_trailingGarbage_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("trailingGarbage.json");
+        FileUtil.writeToFile(filePath, "{\"aliases\":{\"f\":\"find\"}} garbage");
+        JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
+
+        assertThrows(DataLoadingException.class, storage::readAliases);
+    }
 }

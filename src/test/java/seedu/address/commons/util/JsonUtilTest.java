@@ -93,6 +93,32 @@ public class JsonUtilTest {
     }
 
     @Test
+    public void readJsonFileStrict_trailingWhitespace_returnsCorrectValue() throws Exception {
+        Path filePath = testFolder.resolve("trailingWhitespace.json");
+        FileUtil.writeToFile(filePath, "\"value\" \n\r\t");
+
+        assertEquals(Optional.of("value"), JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_trailingGarbage_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("trailingGarbage.json");
+        FileUtil.writeToFile(filePath, "\"value\" garbage");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_secondRootValue_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("secondRootValue.json");
+        FileUtil.writeToFile(filePath, "\"value\" \"another\"");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
     public void readJsonFileStrict_duplicateKeys_throwsDataLoadingException() throws IOException {
         Path filePath = testFolder.resolve("duplicateKeys.json");
         FileUtil.writeToFile(filePath, "{\"find\":\"f\",\"find\":\"fd\"}");

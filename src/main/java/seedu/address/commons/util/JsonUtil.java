@@ -74,12 +74,13 @@ public class JsonUtil {
 
     /**
      * Returns the JSON object from the given file or {@code Optional.empty()} object if the
-     * file is not found. Rejects duplicate field names and null root values.
+     * file is not found. Rejects duplicate field names, null root values and trailing content
+     * after said JSON object.
      *
      * @param filePath the location of the JSON file, which cannot be null.
      * @param instanceClass the non-null type to deserialize.
      * @throws DataLoadingException if the file cannot be read or deserialized,
-     *                              contains duplicate field names or has a null root.
+     *                              contains duplicate field names, has a null root or trailing content.
      */
     public static <T> Optional<T> readJsonFileStrict(
             Path filePath, Class<T> instanceClass) throws DataLoadingException {
@@ -94,17 +95,22 @@ public class JsonUtil {
         try {
             String json = FileUtil.readFromFile(filePath);
 
-            ObjectReader reader = objectMapper.readerFor(instanceClass)
-                    .with(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+            ObjectReader reader = objectMapper.readerFor(instanceClass);
 
-            T jsonFile = reader.readValue(json);
-            if (jsonFile == null) {
-                IOException cause = new IOException("JSON root value must not be null.");
-                logger.warning("Invalid JSON in " + filePath + ": " + cause.getMessage());
-                throw new DataLoadingException(cause);
+            try (JsonParser parser = objectMapper.getFactory().createParser(json)) {
+                parser.enable(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+                T jsonFile = reader.readValue(parser);
+
+                if (parser.nextToken() != null) {
+                    throw new IOException("Unexpected content after the JSON root value.");
+                }
+
+                if (jsonFile == null) {
+                    throw new IOException("JSON root value must not be null.");
+                }
+
+                return Optional.of(jsonFile);
             }
-
-            return Optional.of(jsonFile);
         } catch (JsonProcessingException e) {
             logger.warning("Invalid JSON in " + filePath + ": " + e.getMessage());
             throw new DataLoadingException(e);
