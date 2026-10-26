@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,11 +91,13 @@ public class AliasRegistryTest {
 
     @Test
     public void register_caseVariantOfBuiltInCommand_preservesOriginalMappings() {
+        AliasRegistry registry = new AliasRegistry(Set.of("find", "list", "add"));
         registry.register("find", "f");
 
         for (String alias : new String[] {"LIST", "List", "Add"}) {
             assertThrows(IllegalArgumentException.class,
-                    "Alias conflicts with a built-in command word: list", () ->
+                    "Alias conflicts with a built-in command word: "
+                            + alias.toLowerCase(Locale.ROOT), () ->
                     registry.register("find", alias));
             assertEquals(Map.of("f", "find"), registry.getAliases());
         }
