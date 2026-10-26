@@ -24,7 +24,7 @@ public class JsonSerializableAliases {
     private final Map<String, String> aliases;
 
     /**
-     * Constructs a snapshot of the given registry for serialization.
+     * Constructs a snapshot of the given alias mappings for serialization.
      *
      * @param aliases the set of alias and command word mappings.
      */
