@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import seedu.address.commons.exceptions.DataLoadingException;
-import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.FileUtil;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.alias.AliasRegistry;
@@ -47,8 +46,7 @@ public class JsonAliasStorage {
      *
      * @return the validated alias registry or an empty optional if the file
      *         does not exist.
-     * @throws DataLoadingException if the file cannot be read, deserialized or
-     *                              any alias entry is invalid.
+     * @throws DataLoadingException if the file cannot be read or deserialized.
      */
     public Optional<AliasRegistry> readAliases() throws DataLoadingException {
         Optional<JsonSerializableAliases> jsonAliases = JsonUtil.readJsonFileStrict(

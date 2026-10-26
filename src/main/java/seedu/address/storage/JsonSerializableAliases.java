@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.core.LogsCenter;
-import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.alias.AliasRegistry;
 
 /**
@@ -40,7 +39,6 @@ public class JsonSerializableAliases {
      *
      * @param builtInCommandWords the supported built-in command words.
      * @return an {@code AliasRegistry} containing validated aliases.
-     * @throws IllegalValueException if any of the stored alias entries are invalid.
      */
     public AliasRegistry toModelType(Set<String> builtInCommandWords) {
         requireNonNull(builtInCommandWords);
