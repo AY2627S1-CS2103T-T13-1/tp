@@ -1,5 +1,7 @@
 package seedu.address;
 
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +22,7 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.util.SampleDataUtil;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonAliasStorage;
@@ -41,6 +44,9 @@ public class MainApp extends Application {
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "addressbook.json");
     private static final Path ALIAS_FILE_PATH = Paths.get("data", "aliases.json");
 
+    private static final String MESSAGE_ALIAS_LOAD_FAILED =
+            "Alias file at %s could not be loaded. Starting with empty aliases.";
+
     protected Ui ui;
     protected Logic logic;
     protected Storage storage;
@@ -54,7 +60,7 @@ public class MainApp extends Application {
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(ADDRESS_BOOK_FILE_PATH);
-        JsonAliasStorage aliasStorage = new JsonAliasStorage(ALIAS_FILE_PATH, CommandCatalog.BUILT_IN_COMMAND_WORDS);
+        JsonAliasStorage aliasStorage = new JsonAliasStorage(ALIAS_FILE_PATH, BUILT_IN_COMMAND_WORDS);
         storage = new StorageManager(addressBookStorage, userPrefsStorage, aliasStorage);
 
         model = initModelManager(storage, userPrefs);
@@ -87,7 +93,14 @@ public class MainApp extends Application {
             initialData = new AddressBook();
         }
 
-        return new ModelManager(initialData, userPrefs, CommandCatalog.BUILT_IN_COMMAND_WORDS);
+        AliasRegistry initialAliases;
+        try {
+            initialAliases = storage.readAliases().orElseGet(() -> new AliasRegistry(BUILT_IN_COMMAND_WORDS));
+        } catch (DataLoadingException exception) {
+            logger.warning(String.format(MESSAGE_ALIAS_LOAD_FAILED, storage.getAliasPath()));
+            initialAliases = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        }
+        return new ModelManager(initialData, userPrefs, BUILT_IN_COMMAND_WORDS, initialAliases);
     }
 
     /**
