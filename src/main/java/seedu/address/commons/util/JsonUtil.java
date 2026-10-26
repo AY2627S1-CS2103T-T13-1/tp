@@ -1,6 +1,7 @@
 package seedu.address.commons.util;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,9 +11,11 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import seedu.address.commons.core.LogsCenter;
@@ -67,6 +70,48 @@ public class JsonUtil {
         }
 
         return Optional.of(jsonFile);
+    }
+
+    /**
+     * Returns the JSON object from the given file or {@code Optional.empty()} object if the
+     * file is not found. Rejects duplicate field names and null root values.
+     *
+     * @param filePath the location of the JSON file, which cannot be null.
+     * @param instanceClass the non-null type to deserialize.
+     * @throws DataLoadingException if the file cannot be read or deserialized,
+     *                              contains duplicate field names or has a null root.
+     */
+    public static <T> Optional<T> readJsonFileStrict(
+            Path filePath, Class<T> instanceClass) throws DataLoadingException {
+        requireAllNonNull(filePath, instanceClass);
+
+        if (!Files.exists(filePath)) {
+            return Optional.empty();
+        }
+
+        logger.info("JSON file " + filePath + " was found.");
+
+        try {
+            String json = FileUtil.readFromFile(filePath);
+
+            ObjectReader reader = objectMapper.readerFor(instanceClass)
+                    .with(JsonParser.Feature.STRICT_DUPLICATE_DETECTION);
+
+            T jsonFile = reader.readValue(json);
+            if (jsonFile == null) {
+                IOException cause = new IOException("JSON root value must not be null.");
+                logger.warning("Invalid JSON in " + filePath + ": " + cause.getMessage());
+                throw new DataLoadingException(cause);
+            }
+
+            return Optional.of(jsonFile);
+        } catch (JsonProcessingException e) {
+            logger.warning("Invalid JSON in " + filePath + ": " + e.getMessage());
+            throw new DataLoadingException(e);
+        } catch (IOException e) {
+            logger.warning("Could not read " + filePath + ": " + e.getMessage());
+            throw new DataLoadingException(e);
+        }
     }
 
     /**

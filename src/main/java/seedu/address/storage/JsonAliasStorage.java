@@ -51,7 +51,8 @@ public class JsonAliasStorage {
      *                              any alias entry is invalid.
      */
     public Optional<AliasRegistry> readAliases() throws DataLoadingException {
-        Optional<JsonSerializableAliases> jsonAliases = JsonUtil.readJsonFile(filePath, JsonSerializableAliases.class);
+        Optional<JsonSerializableAliases> jsonAliases = JsonUtil.readJsonFileStrict(
+                filePath, JsonSerializableAliases.class);
 
         if (jsonAliases.isEmpty()) {
             return Optional.empty();
