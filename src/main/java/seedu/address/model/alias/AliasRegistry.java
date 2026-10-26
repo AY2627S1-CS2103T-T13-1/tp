@@ -5,6 +5,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class AliasRegistry {
      *                                  the alias conflicts with a built-in command or
      *                                  the alias conflicts with another alias previously defined.
      */
-    public void register(String commandWord, String alias) throws IllegalArgumentException {
+    public void register(String commandWord, String alias) {
         requireAllNonNull(commandWord, alias);
 
         checkArgument(builtInCommandWords.contains(commandWord),
@@ -48,8 +49,9 @@ public class AliasRegistry {
 
         checkArgument(isValidAlias(alias), MESSAGE_REGEX_MISMATCH);
 
-        checkArgument(!builtInCommandWords.contains(alias),
-                "Alias conflicts with a built-in command word: " + alias);
+        String lowerCaseAlias = alias.toLowerCase(Locale.ROOT);
+        checkArgument(!builtInCommandWords.contains(lowerCaseAlias),
+                "Alias conflicts with a built-in command word: " + lowerCaseAlias);
 
         checkArgument(!aliases.containsKey(alias),
                 "Alias already exists: " + alias);
@@ -90,6 +92,22 @@ public class AliasRegistry {
      */
     public Map<String, String> getAliases() {
         return Map.copyOf(aliases);
+    }
+
+    /**
+     * Removes or de-registers a registered alias.
+     *
+     * @param alias the alias to remove.
+     * @throws IllegalArgumentException if the alias has an invalid format or is not registered.
+     */
+    public void deleteAlias(String alias) {
+        requireNonNull(alias);
+
+        checkArgument(isValidAlias(alias), MESSAGE_REGEX_MISMATCH);
+        checkArgument(aliases.containsKey(alias), "Alias " + alias
+                + " was not previously registered!");
+
+        aliases.remove(alias);
     }
 
     /**

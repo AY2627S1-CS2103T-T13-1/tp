@@ -188,6 +188,11 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void deleteAlias(String alias) {
+        aliasRegistry.deleteAlias(alias);
+    }
+
+    @Override
     public ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook) {
         requireNonNull(importedAddressBook);
 

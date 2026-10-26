@@ -270,17 +270,11 @@ public class ModelManagerTest {
     }
 
     @Test
-    public void equals_aliasMappingsComparedByValue() {
-        ModelManager modelManagerCopy = new ModelManager(BUILT_IN_COMMAND_WORDS);
-        assertTrue(modelManager.equals(modelManagerCopy));
-
+    public void deleteAlias_registeredAlias_removesOnlySpecifiedAlias() {
         modelManager.registerAlias("find", "f");
-        assertFalse(modelManager.equals(modelManagerCopy));
-        assertFalse(modelManagerCopy.equals(modelManager));
-
-        modelManagerCopy.registerAlias("find", "f");
-        assertTrue(modelManager.equals(modelManagerCopy));
-        assertTrue(modelManagerCopy.equals(modelManager));
+        modelManager.registerAlias("list", "l");
+        modelManager.deleteAlias("f");
+        assertEquals(Map.of("l", "list"), modelManager.getAliases());
     }
 
     @Test
@@ -318,5 +312,13 @@ public class ModelManagerTest {
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setGuiSettings(new GuiSettings(1, 2, 3, 4));
         assertFalse(modelManager.equals(new ModelManager(addressBook, differentUserPrefs, BUILT_IN_COMMAND_WORDS)));
+
+        // different alias mappings -> returns false
+        modelManager.registerAlias("find", "f");
+        assertFalse(modelManager.equals(modelManagerCopy));
+
+        // same alias mappings in separate registries -> returns true
+        modelManagerCopy.registerAlias("find", "f");
+        assertTrue(modelManager.equals(modelManagerCopy));
     }
 }

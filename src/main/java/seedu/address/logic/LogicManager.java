@@ -16,6 +16,7 @@ import seedu.address.logic.commands.ImportRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.ImportSummary;
 import seedu.address.model.Model;
 import seedu.address.model.ReadOnlyAddressBook;
@@ -44,6 +45,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final AddressBookParser addressBookParser;
+    private boolean hasUnsavedContactChanges;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -59,16 +61,29 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         Command command = addressBookParser.parseCommand(commandText);
+        AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
 
+        boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+        hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+
         try {
-            if (commandResult.getImportRequest().isPresent()) {
+            if (commandResult.getExportRequest().isPresent()) {
+                ExportRequest exportRequest = commandResult.getExportRequest().get();
+                storage.saveAddressBook(
+                        exportRequest.getAddressBook(), exportRequest.getFilePath());
+            } else if (commandResult.getImportRequest().isPresent()) {
                 commandResult = executeImport(commandResult.getImportRequest().get());
+                model.commit();
+                executeSave(commandResult);
             }
-
-            model.commit();
-            executeSave(commandResult);
-
+            else if (hasUnsavedContactChanges) {
+                model.commit();
+                storage.saveAddressBook(model.getAddressBook());
+                hasUnsavedContactChanges = false;
+            } else {
+                model.commit();
+            }
         } catch (DataLoadingException e) {
             throw new CommandException(
                     String.format(

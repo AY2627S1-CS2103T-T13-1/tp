@@ -109,6 +109,11 @@ public interface Model {
     Map<String, String> getAliases();
 
     /**
+     * Removes a registered alias.
+     */
+    void deleteAlias(String alias);
+
+    /**
      * Merges imported address book with the current Model AddressBook
      */
     ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook);
