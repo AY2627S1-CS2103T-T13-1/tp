@@ -82,6 +82,60 @@ public class VersionedAddressBookTest {
     }
 
     @Test
+    public void redo_undoneStateExists_restoresUndoneState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+
+        versionedAddressBook.redo();
+
+        assertEquals(addressBookWithAliceAndBenson, versionedAddressBook);
+        assertTrue(versionedAddressBook.canUndo());
+        assertFalse(versionedAddressBook.canRedo());
+    }
+
+    @Test
+    public void redo_multipleUndoneStates_restoresStatesInOrder() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(new AddressBook());
+        versionedAddressBook.addPerson(ALICE);
+        versionedAddressBook.commit();
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+        versionedAddressBook.undo();
+
+        versionedAddressBook.redo();
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+
+        versionedAddressBook.redo();
+        assertEquals(addressBookWithAliceAndBenson, versionedAddressBook);
+    }
+
+    @Test
+    public void redo_noUndoneState_throwsIllegalStateException() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+
+        assertFalse(versionedAddressBook.canRedo());
+        assertThrows(IllegalStateException.class, versionedAddressBook::redo);
+    }
+
+    @Test
+    public void commit_dataUnchangedAfterUndo_keepsUndoneState() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        versionedAddressBook.addPerson(BENSON);
+        versionedAddressBook.commit();
+        versionedAddressBook.undo();
+
+        // a command that does not change the data should not clear the redo history
+        versionedAddressBook.commit();
+
+        assertTrue(versionedAddressBook.canRedo());
+    }
+
+    @Test
     public void commit_afterUndo_discardsUndoneState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
@@ -90,6 +144,8 @@ public class VersionedAddressBookTest {
 
         versionedAddressBook.addPerson(CARL);
         versionedAddressBook.commit(DEFAULT_COMPARATOR);
+        versionedAddressBook.commit();
+        assertFalse(versionedAddressBook.canRedo());
         versionedAddressBook.undo();
 
         // goes back to the state before CARL was added, not the undone state with BENSON

@@ -23,6 +23,7 @@ public class CommandCatalog {
             ListAliasCommand.COMMAND_WORD,
             ExportCommand.COMMAND_WORD,
             UndoCommand.COMMAND_WORD,
+            RedoCommand.COMMAND_WORD,
             SortCommand.COMMAND_WORD
     );
 }
