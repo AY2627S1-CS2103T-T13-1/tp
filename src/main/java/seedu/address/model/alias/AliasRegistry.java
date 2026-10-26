@@ -5,6 +5,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -48,8 +49,9 @@ public class AliasRegistry {
 
         checkArgument(isValidAlias(alias), MESSAGE_REGEX_MISMATCH);
 
-        checkArgument(!builtInCommandWords.contains(alias),
-                "Alias conflicts with a built-in command word: " + alias);
+        String lowerCaseAlias = alias.toLowerCase(Locale.ROOT);
+        checkArgument(!builtInCommandWords.contains(lowerCaseAlias),
+                "Alias conflicts with a built-in command word: " + lowerCaseAlias);
 
         checkArgument(!aliases.containsKey(alias),
                 "Alias already exists: " + alias);
