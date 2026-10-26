@@ -117,7 +117,7 @@ public class EditCommand extends Command {
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, isPinned);
     }
 
-    private boolean duplicatesAnotherPerson(Model model, Person personToEdit, Person editedPerson) {
+    private static boolean duplicatesAnotherPerson(Model model, Person personToEdit, Person editedPerson) {
         return model.getAddressBook().getPersonList().stream()
                 .filter(person -> !person.equals(personToEdit))
                 .anyMatch(person -> editedPerson.isSamePerson(person));
