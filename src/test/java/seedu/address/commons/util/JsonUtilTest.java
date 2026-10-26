@@ -1,10 +1,12 @@
 package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -68,6 +70,26 @@ public class JsonUtilTest {
         assertEquals(original.getName(), actual.getName());
         assertEquals(original.getListOfLocalDateTimes(), actual.getListOfLocalDateTimes());
         assertEquals(original.getMapOfIntegerToString(), actual.getMapOfIntegerToString());
+    }
+
+    @Test
+    public void readJsonFileStrict_missingFile_returnsEmpty() throws DataLoadingException {
+        assertFalse(JsonUtil.readJsonFileStrict(testFolder.resolve("missing.json"),
+                String.class).isPresent());
+    }
+
+    @Test
+    public void readJsonFileStrict_validString_returnsCorrectValue() throws IOException, DataLoadingException {
+        Path filePath = testFolder.resolve("valid.json");
+        FileUtil.writeToFile(filePath, "\"value\"");
+
+        assertEquals(Optional.of("value"), JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_directory_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(testFolder, SerializableTestClass.class));
     }
 
     @Test
