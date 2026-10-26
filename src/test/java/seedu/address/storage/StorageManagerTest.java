@@ -99,7 +99,6 @@ public class StorageManagerTest {
 
     @Test
     public void aliasesReadSave() throws Exception {
-        // Verifies StorageManager wiring; detailed storage behavior is tested in JsonAliasStorageTest.
         AliasRegistry original = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
         original.register("find", "f");
         original.register("list", "L");
