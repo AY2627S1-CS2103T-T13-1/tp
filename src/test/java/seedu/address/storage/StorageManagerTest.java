@@ -7,6 +7,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 
 public class StorageManagerTest {
 
@@ -83,6 +85,29 @@ public class StorageManagerTest {
     @Test
     public void getAddressBookFilePath() {
         assertNotNull(storageManager.getAddressBookFilePath());
+    }
+
+    @Test
+    public void getAliasPath() {
+        assertEquals(getTempFilePath("aliases.json"), storageManager.getAliasPath());
+    }
+
+    @Test
+    public void readAliases_missingFile_returnsEmpty() throws Exception {
+        assertEquals(Optional.empty(), storageManager.readAliases());
+    }
+
+    @Test
+    public void aliasesReadSave() throws Exception {
+        // Verifies StorageManager wiring; detailed storage behavior is tested in JsonAliasStorageTest.
+        AliasRegistry original = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        original.register("find", "f");
+        original.register("list", "L");
+
+        storageManager.saveAliases(original);
+
+        AliasRegistry retrieved = storageManager.readAliases().orElseThrow();
+        assertEquals(original, retrieved);
     }
 
 }
