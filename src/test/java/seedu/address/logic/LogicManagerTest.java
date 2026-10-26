@@ -326,7 +326,8 @@ public class LogicManagerTest {
 
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
-        assertCommandSuccess(ListCommand.COMMAND_WORD, ListCommand.MESSAGE_SUCCESS, model);
+        CommandResult listResult = logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(ListCommand.MESSAGE_SUCCESS, listResult.getFeedbackToUser());
         assertEquals(originalContacts, model.getAddressBook());
 
         Person amy = new PersonBuilder(AMY).withTags().build();
