@@ -57,6 +57,14 @@ public class ImportCommandTest {
     }
 
     @Test
+    public void getFilePath_returnsFilePath() {
+        Path filePath = Path.of("contacts.json");
+        ImportCommand command = new ImportCommand(filePath);
+
+        assertEquals(filePath, command.getFilePath());
+    }
+
+    @Test
     public void equals_sameFilePath_returnsTrue() {
         Path filePath = Path.of("contacts.json");
 
@@ -72,5 +80,24 @@ public class ImportCommandTest {
         ImportCommand secondCommand = new ImportCommand(Path.of("other-contacts.json"));
 
         assertFalse(firstCommand.equals(secondCommand));
+    }
+
+    @Test
+    public void equals_sameInstanceNullOrDifferentType_returnsExpectedResult() {
+        ImportCommand command = new ImportCommand(Path.of("contacts.json"));
+
+        assertTrue(command.equals(command));
+        assertFalse(command.equals(null));
+        assertFalse(command.equals(Path.of("contacts.json")));
+    }
+
+    @Test
+    public void hashCode_sameFilePath_returnsSameHashCode() {
+        Path filePath = Path.of("contacts.json");
+
+        ImportCommand firstCommand = new ImportCommand(filePath);
+        ImportCommand secondCommand = new ImportCommand(filePath);
+
+        assertEquals(firstCommand.hashCode(), secondCommand.hashCode());
     }
 }

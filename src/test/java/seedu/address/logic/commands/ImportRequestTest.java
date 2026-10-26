@@ -36,6 +36,13 @@ public class ImportRequestTest {
     }
 
     @Test
+    public void equals_sameInstance_returnsTrue() {
+        ImportRequest importRequest = new ImportRequest(Path.of("contacts.json"));
+
+        assertEquals(importRequest, importRequest);
+    }
+
+    @Test
     public void equals_differentFilePath_returnsFalse() {
         ImportRequest firstRequest = new ImportRequest(Path.of("contacts.json"));
         ImportRequest secondRequest = new ImportRequest(Path.of("other-contacts.json"));
