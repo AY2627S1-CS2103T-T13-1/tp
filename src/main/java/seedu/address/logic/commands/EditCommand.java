@@ -91,8 +91,7 @@ public class EditCommand extends Command {
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
-
-        if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
+        if (duplicatesAnotherPerson(model, personToEdit, editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
@@ -116,6 +115,12 @@ public class EditCommand extends Command {
         boolean isPinned = personToEdit.isPinned();
 
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags, isPinned);
+    }
+
+    private static boolean duplicatesAnotherPerson(Model model, Person personToEdit, Person editedPerson) {
+        return model.getAddressBook().getPersonList().stream()
+                .filter(person -> !person.equals(personToEdit))
+                .anyMatch(person -> editedPerson.isSamePerson(person));
     }
 
     @Override

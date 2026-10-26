@@ -111,6 +111,48 @@ public class UniquePersonListTest {
     }
 
     @Test
+    public void setPerson_editedPersonHasDuplicateEmailOnly_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withEmail(BOB.getEmail().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, editedAlice));
+        assertEquals(List.of(ALICE, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_editedPersonHasDuplicatePhoneOnly_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withPhone(BOB.getPhone().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, editedAlice));
+        assertEquals(List.of(ALICE, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_editedPersonHasUnusedEmailOnly_success() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withEmail("unused@example.com").build();
+
+        uniquePersonList.setPerson(ALICE, editedAlice);
+
+        assertEquals(List.of(editedAlice, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_editedPersonHasUnusedPhoneOnly_success() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withPhone("99999999").build();
+
+        uniquePersonList.setPerson(ALICE, editedAlice);
+
+        assertEquals(List.of(editedAlice, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
     public void remove_nullPerson_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> uniquePersonList.remove(null));
     }
