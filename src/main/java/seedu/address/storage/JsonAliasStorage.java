@@ -57,12 +57,7 @@ public class JsonAliasStorage {
         if (jsonAliases.isEmpty()) {
             return Optional.empty();
         }
-
-        try {
-            return Optional.of(jsonAliases.get().toModelType(builtInCommandWords));
-        } catch (IllegalValueException exception) {
-            throw new DataLoadingException(exception);
-        }
+        return Optional.of(jsonAliases.get().toModelType(builtInCommandWords));
     }
 
     /**

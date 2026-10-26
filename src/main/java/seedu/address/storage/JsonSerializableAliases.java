@@ -5,10 +5,12 @@ import static java.util.Objects.requireNonNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.alias.AliasRegistry;
 
@@ -18,6 +20,7 @@ import seedu.address.model.alias.AliasRegistry;
 public class JsonSerializableAliases {
 
     private static final String MESSAGE_INVALID_ALIAS_ENTRY = "Invalid alias entry '%s': %s";
+    private static final Logger logger = LogsCenter.getLogger(JsonSerializableAliases.class);
 
     private final Map<String, String> aliases;
 
@@ -39,8 +42,7 @@ public class JsonSerializableAliases {
      * @return an {@code AliasRegistry} containing validated aliases.
      * @throws IllegalValueException if any of the stored alias entries are invalid.
      */
-    public AliasRegistry toModelType(Set<String> builtInCommandWords)
-            throws IllegalValueException {
+    public AliasRegistry toModelType(Set<String> builtInCommandWords) {
         requireNonNull(builtInCommandWords);
 
         AliasRegistry aliasRegistry = new AliasRegistry(builtInCommandWords);
@@ -50,14 +52,16 @@ public class JsonSerializableAliases {
             String commandWord = entry.getValue();
 
             if (alias == null || commandWord == null) {
-                throw new IllegalValueException("Alias and command words cannot be null!");
+                logger.warning(String.format(MESSAGE_INVALID_ALIAS_ENTRY, alias,
+                        "Alias and command words cannot be null!"));
+                continue;
             }
 
             try {
                 aliasRegistry.register(commandWord, alias);
             } catch (IllegalArgumentException exception) {
-                throw new IllegalValueException(String.format(MESSAGE_INVALID_ALIAS_ENTRY,
-                        alias, exception.getMessage()), exception);
+                logger.warning(String.format(MESSAGE_INVALID_ALIAS_ENTRY, alias,
+                        exception.getMessage()));
             }
         }
         return aliasRegistry;
