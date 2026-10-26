@@ -64,26 +64,30 @@ public class LogicManager implements Logic {
         AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
 
-        boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
-        hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+        boolean isImport = commandResult.getImportRequest().isPresent();
 
         try {
+            if (isImport) {
+                commandResult = executeImport(commandResult.getImportRequest().get());
+            }
+
+            model.commit();
+
+            boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+            hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
+
                 storage.saveAddressBook(
-                        exportRequest.getAddressBook(), exportRequest.getFilePath());
-            } else if (commandResult.getImportRequest().isPresent()) {
-                commandResult = executeImport(commandResult.getImportRequest().get());
-                model.commit();
-                executeSave(commandResult);
-            }
-            else if (hasUnsavedContactChanges) {
-                model.commit();
+                        exportRequest.getAddressBook(),
+                        exportRequest.getFilePath());
+
+            } else if (hasUnsavedContactChanges || isImport) {
                 storage.saveAddressBook(model.getAddressBook());
                 hasUnsavedContactChanges = false;
-            } else {
-                model.commit();
             }
+
         } catch (DataLoadingException e) {
             throw new CommandException(
                     String.format(
