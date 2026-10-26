@@ -89,6 +89,18 @@ public class AliasRegistryTest {
     }
 
     @Test
+    public void register_caseVariantOfBuiltInCommand_preservesOriginalMappings() {
+        registry.register("find", "f");
+
+        for (String alias : new String[] {"LIST", "List", "Add"}) {
+            assertThrows(IllegalArgumentException.class,
+                    "Alias conflicts with a built-in command word: list", () ->
+                    registry.register("find", alias));
+            assertEquals(Map.of("f", "find"), registry.getAliases());
+        }
+    }
+
+    @Test
     public void resolve_unregisteredWords_returnsSuppliedWords() {
         assertEquals("unknown", registry.resolve("unknown"));
         assertEquals("find", registry.resolve("find"));
