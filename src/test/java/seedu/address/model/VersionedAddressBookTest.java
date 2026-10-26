@@ -2,6 +2,7 @@ package seedu.address.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonComparatorFactory;
+import seedu.address.model.person.SortCriteria;
+import seedu.address.model.person.SortOrder;
 import seedu.address.testutil.AddressBookBuilder;
 
 public class VersionedAddressBookTest {
@@ -85,7 +88,7 @@ public class VersionedAddressBookTest {
     public void redo_undoneStateExists_restoresUndoneState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
 
         versionedAddressBook.redo();
@@ -99,9 +102,9 @@ public class VersionedAddressBookTest {
     public void redo_multipleUndoneStates_restoresStatesInOrder() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(new AddressBook());
         versionedAddressBook.addPerson(ALICE);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
         versionedAddressBook.undo();
 
@@ -116,21 +119,55 @@ public class VersionedAddressBookTest {
     public void redo_noUndoneState_throwsIllegalStateException() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
 
         assertFalse(versionedAddressBook.canRedo());
         assertThrows(IllegalStateException.class, versionedAddressBook::redo);
     }
 
     @Test
+    public void undoRedo_differentSorts_restoresSavedComparatorsAndOrder() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAliceAndBenson);
+        Comparator<Person> descending = PersonComparatorFactory.createComparator(SortCriteria.NAME, SortOrder.DESC);
+        Comparator<Person> ascending = PersonComparatorFactory.createComparator(SortCriteria.NAME, SortOrder.ASC);
+        versionedAddressBook.sortPersons(descending);
+        versionedAddressBook.commit(descending);
+        AddressBook descendingState = new AddressBook(versionedAddressBook);
+        versionedAddressBook.sortPersons(ascending);
+        versionedAddressBook.commit(ascending);
+
+        assertSame(descending, versionedAddressBook.undo());
+        assertEquals(descendingState, versionedAddressBook);
+        assertSame(ascending, versionedAddressBook.redo());
+        assertEquals(addressBookWithAliceAndBenson, versionedAddressBook);
+        assertSame(descending, versionedAddressBook.undo());
+        assertEquals(descendingState, versionedAddressBook);
+    }
+
+    @Test
+    public void commit_onlyComparatorChanged_savesStateAndRestoresComparatorOnRedo() {
+        VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
+        Comparator<Person> comparator = PersonComparatorFactory.createComparator(SortCriteria.EMAIL, SortOrder.DESC);
+
+        assertTrue(versionedAddressBook.commit(comparator));
+        assertTrue(versionedAddressBook.canUndo());
+        versionedAddressBook.undo();
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+        assertSame(comparator, versionedAddressBook.redo());
+        assertEquals(addressBookWithAlice, versionedAddressBook);
+        assertFalse(versionedAddressBook.commit(comparator));
+        assertFalse(versionedAddressBook.canRedo());
+    }
+
+    @Test
     public void commit_dataUnchangedAfterUndo_keepsUndoneState() {
         VersionedAddressBook versionedAddressBook = new VersionedAddressBook(addressBookWithAlice);
         versionedAddressBook.addPerson(BENSON);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         versionedAddressBook.undo();
 
         // a command that does not change the data should not clear the redo history
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
 
         assertTrue(versionedAddressBook.canRedo());
     }
@@ -144,7 +181,7 @@ public class VersionedAddressBookTest {
 
         versionedAddressBook.addPerson(CARL);
         versionedAddressBook.commit(DEFAULT_COMPARATOR);
-        versionedAddressBook.commit();
+        versionedAddressBook.commit(DEFAULT_COMPARATOR);
         assertFalse(versionedAddressBook.canRedo());
         versionedAddressBook.undo();
 
