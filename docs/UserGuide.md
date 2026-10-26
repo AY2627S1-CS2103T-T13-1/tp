@@ -235,6 +235,21 @@ Example:
 
 * `import -f data/exports/contacts.json`
 
+### Redoing an undone change: `redo`
+
+Reapplies the most recent change that was reversed by `undo`.
+
+Format: `redo`
+
+* You can use `redo` several times in a row to reapply undone changes one at a time, in the order they were made.
+* Making a new change after an `undo` (e.g. `add`, `edit` or `delete`) clears the redo history, so the undone changes can no longer be redone.
+* Commands that do not change your contact list, such as `list` and `find`, do not clear the redo history.
+* After a redo, all contacts are shown, with pinned contacts at the top.
+
+Examples:
+* `delete 2`, `undo`, then `redo` deletes the contact again.
+* `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
+
 ### Changing the theme: `theme`
 
 Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
@@ -308,5 +323,6 @@ Action     | Format, Examples
 **List**   | `list`
 **Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
 **Undo**   | `undo`
+**Redo**   | `redo`
 **Help**   | `help`
 **Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`

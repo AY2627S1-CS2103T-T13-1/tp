@@ -110,7 +110,7 @@ public class ModelManager implements Model {
         sortAddressBook(activeComparator);
     }
 
-    //=========== Undo =====================================================================================
+    //=========== Undo and redo ==============================================================================
 
     @Override
     public void commit() {
@@ -129,6 +129,18 @@ public class ModelManager implements Model {
         addressBook.undo();
         sortAddressBook(this.activeComparator);
         logger.info("Restored the previous address book state");
+    }
+
+    @Override
+    public boolean canRedo() {
+        return addressBook.canRedo();
+    }
+
+    @Override
+    public void redo() {
+        addressBook.redo();
+        sortAddressBook(activeComparator);
+        logger.info("Restored the most recently undone address book state");
     }
 
     //=========== Filtered Person List Accessors =============================================================

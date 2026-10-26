@@ -24,6 +24,7 @@ public class CommandCatalog {
             ExportCommand.COMMAND_WORD,
             ImportCommand.COMMAND_WORD,
             UndoCommand.COMMAND_WORD,
+            RedoCommand.COMMAND_WORD,
             SortCommand.COMMAND_WORD
     );
 }

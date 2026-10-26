@@ -94,6 +94,17 @@ public interface Model {
     void undo();
 
     /**
+     * Returns true if there is an undone address book state to redo to.
+     */
+    boolean canRedo();
+
+    /**
+     * Restores the address book to its most recently undone state.
+     * There must be an undone state to redo to.
+     */
+    void redo();
+
+    /**
      * Returns the alias registry of the current application session.
      */
     AliasRegistry getAliasRegistry();
