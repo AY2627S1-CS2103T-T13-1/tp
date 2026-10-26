@@ -28,6 +28,9 @@ class JsonSerializableAddressBook {
      */
     @JsonCreator
     public JsonSerializableAddressBook(@JsonProperty("persons") List<JsonAdaptedPerson> persons) {
+        if (persons == null) {
+            throw new IllegalArgumentException("The file must contain a persons list.");
+        }
         this.persons.addAll(persons);
     }
 

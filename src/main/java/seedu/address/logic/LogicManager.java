@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
@@ -34,6 +35,9 @@ public class LogicManager implements Logic {
             "Could not import contacts from %s: %s";
 
     public static final String FILE_NOT_FOUND = "file was not found.";
+
+    public static final String FILE_INVALID_FORMAT =
+            "The file is not a valid address book JSON file.";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -70,7 +74,7 @@ public class LogicManager implements Logic {
                     String.format(
                             FILE_IMPORT_ERROR_FORMAT,
                             commandResult.getImportRequest().orElseThrow().getFilePath(),
-                            e.getCause().getMessage()),
+                            getImportErrorMessage(e)),
                     e);
         } catch (AccessDeniedException e) {
             throw new CommandException(
@@ -81,6 +85,17 @@ public class LogicManager implements Logic {
         }
 
         return commandResult;
+    }
+
+    private String getImportErrorMessage(DataLoadingException exception) {
+        Throwable cause = exception;
+        while (cause != null) {
+            if (cause instanceof IllegalValueException || cause instanceof IllegalArgumentException) {
+                return cause.getMessage();
+            }
+            cause = cause.getCause();
+        }
+        return FILE_INVALID_FORMAT;
     }
 
     private CommandResult executeImport(ImportRequest importRequest)

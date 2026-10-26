@@ -76,7 +76,7 @@ public class CommandResult {
      * @param importRequest the import request associated with this result
      */
     public CommandResult(String feedbackToUser, ImportRequest importRequest) {
-        requireAllNonNull(feedbackToUser);
+        requireAllNonNull(feedbackToUser, importRequest);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
         this.importRequest = Optional.of(importRequest);
