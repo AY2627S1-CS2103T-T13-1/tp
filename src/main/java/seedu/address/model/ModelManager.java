@@ -30,11 +30,20 @@ public class ModelManager implements Model {
     private Comparator<Person> activeComparator;
 
     /**
-     * Initializes a ModelManager with the given addressBook and userPrefs.
+     * Initializes a ModelManager with the given addressBook, userPrefs and empty aliases.
      */
     public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs,
                         Set<String> builtInCommandWords) {
-        requireAllNonNull(addressBook, userPrefs);
+        this(addressBook, userPrefs, builtInCommandWords, new AliasRegistry(builtInCommandWords));
+    }
+
+    /**
+     * Initializes a ModelManager with the given address book, user prefs and aliases.
+     * Copies the supplied aliases so subsequent changes to them do not affect the model.
+     */
+    public ModelManager(ReadOnlyAddressBook addressBook, ReadOnlyUserPrefs userPrefs,
+                        Set<String> builtInCommandWords, AliasRegistry aliasRegistry) {
+        requireAllNonNull(addressBook, userPrefs, builtInCommandWords, aliasRegistry);
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
@@ -44,6 +53,8 @@ public class ModelManager implements Model {
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
         this.aliasRegistry = new AliasRegistry(builtInCommandWords);
+        aliasRegistry.getAliases().forEach((alias, commandWord) ->
+                this.aliasRegistry.register(commandWord, alias));
         this.activeComparator = PersonComparatorFactory.createDefaultComparator();
         sortedAddressBook.sortPersons(this.activeComparator);
     }
