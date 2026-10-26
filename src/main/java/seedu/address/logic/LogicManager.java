@@ -13,6 +13,7 @@ import seedu.address.logic.commands.ExportRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 import seedu.address.storage.Storage;
@@ -31,6 +32,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final AddressBookParser addressBookParser;
+    private boolean hasUnsavedContactChanges;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -45,17 +47,22 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
+        CommandResult commandResult = command.execute(model);
+        model.commit();
+
+        boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+        hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
 
         try {
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
                 storage.saveAddressBook(
                         exportRequest.getAddressBook(), exportRequest.getFilePath());
-            } else {
+            } else if (hasUnsavedContactChanges) {
                 storage.saveAddressBook(model.getAddressBook());
+                hasUnsavedContactChanges = false;
             }
         } catch (AccessDeniedException e) {
             throw new CommandException(
