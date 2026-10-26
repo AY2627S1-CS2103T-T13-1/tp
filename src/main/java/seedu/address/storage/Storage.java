@@ -70,10 +70,12 @@ public interface Storage {
     Path getAliasPath();
 
     /**
-     * Returns alias data as a {@link AliasRegistry}.
+     * Returns alias data as an {@link AliasRegistry}.
      * Returns {@code Optional.empty()} if the storage file is not found.
+     * Invalid alias mapping are skipped with warnings, while valid mappings
+     * are retained and read into memory.
      *
-     * @throws DataLoadingException if reading or validating the stored aliases fails.
+     * @throws DataLoadingException if the file cannot be read or deserialized.
      */
     Optional<AliasRegistry> readAliases() throws DataLoadingException;
 
