@@ -50,12 +50,15 @@ public class JsonAliasStorageTest {
     }
 
     @Test
-    public void readAliases_invalidCommandWord_throwsDataLoadingException() throws IOException {
+    public void readAliases_invalidCommandWord_skipsInvalidEntry() throws Exception {
         Path filePath = testFolder.resolve("invalidEntry.json");
-        FileUtil.writeToFile(filePath, "{\"aliases\":{\"f\":\"unknown\"}}");
+        FileUtil.writeToFile(filePath, "{\"aliases\":{\"f\":\"unknown\",\"l\":\"list\"}}");
         JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
 
-        assertThrows(DataLoadingException.class, storage::readAliases);
+        AliasRegistry expected = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        expected.register("list", "l");
+
+        assertEquals(Optional.of(expected), storage.readAliases());
     }
 
     @Test
