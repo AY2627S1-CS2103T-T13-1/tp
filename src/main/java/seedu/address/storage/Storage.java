@@ -8,6 +8,7 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 
 /**
  * API of the Storage component
@@ -62,5 +63,26 @@ public interface Storage {
      * @throws IOException if there was any problem writing to the file
      */
     void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException;
+
+    /**
+     * Returns the {@code Path} of the alias data file.
+     */
+    Path getAliasPath();
+
+    /**
+     * Returns alias data as a {@link AliasRegistry}.
+     * Returns {@code Optional.empty()} if the storage file is not found.
+     *
+     * @throws DataLoadingException if reading or validating the stored aliases fails.
+     */
+    Optional<AliasRegistry> readAliases() throws DataLoadingException;
+
+    /**
+     * Saves the given {@link AliasRegistry} to storage.
+     *
+     * @param aliases The aliases to be saved, which cannot be null.
+     * @throws IOException if there were issues writing to the data file.
+     */
+    void saveAliases(AliasRegistry aliases) throws IOException;
 
 }

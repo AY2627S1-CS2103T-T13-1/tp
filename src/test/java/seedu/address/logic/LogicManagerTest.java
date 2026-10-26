@@ -46,6 +46,7 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
+import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.AddressBookBuilder;
@@ -66,7 +67,8 @@ public class LogicManagerTest {
         JsonAddressBookStorage addressBookStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS));
         logic = new LogicManager(model, storage);
     }
 
@@ -170,7 +172,8 @@ public class LogicManagerTest {
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         boolean[] storageUnwritable = {true};
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
                 if (storageUnwritable[0]) {
@@ -203,7 +206,8 @@ public class LogicManagerTest {
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
 
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) {
                 throw new AssertionError("Deleting an alias must not save contacts.");
@@ -236,7 +240,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("exportAddressBook.json"));
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("exportUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
                 exportedAddressBooks.add(addressBook);
@@ -369,7 +374,8 @@ public class LogicManagerTest {
 
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS));
 
         logic = new LogicManager(model, storage);
 
@@ -390,7 +396,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("exportExceptionAddressBook.json"));
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("exportExceptionUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException {
                 throw exception;
