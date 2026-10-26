@@ -44,7 +44,9 @@ public class ImportCommandParserTest {
 
     @Test
     public void parse_invalidFilePath_throwsParseException() {
-        assertParseFailure(" -f invalid\u0000path", MESSAGE_INVALID_FILE_PATH);
+        String invalidFilePath = "invalid\u0000path";
+        assertParseFailure(" -f " + invalidFilePath,
+                String.format(MESSAGE_INVALID_FILE_PATH, invalidFilePath));
     }
 
     @Test

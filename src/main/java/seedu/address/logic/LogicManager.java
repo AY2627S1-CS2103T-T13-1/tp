@@ -31,7 +31,9 @@ public class LogicManager implements Logic {
             "Could not save data to file %s due to insufficient permissions to write to the file or the folder.";
 
     public static final String FILE_IMPORT_ERROR_FORMAT =
-            "Could not import contacts. File was not found: %s";
+            "Could not import contacts from %s: %s";
+
+    public static final String FILE_NOT_FOUND = "file was not found.";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -54,58 +56,56 @@ public class LogicManager implements Logic {
 
         Command command = addressBookParser.parseCommand(commandText);
         CommandResult commandResult = command.execute(model);
+
         try {
             if (commandResult.getImportRequest().isPresent()) {
-                ImportRequest importRequest =
-                        commandResult.getImportRequest().get();
-
-                ReadOnlyAddressBook importedAddressBook = storage
-                        .readAddressBook(importRequest.getFilePath())
-                        .orElseThrow(() -> new CommandException(
-                                String.format(
-                                        FILE_IMPORT_ERROR_FORMAT,
-                                        importRequest.getFilePath())));
-
-                ImportSummary summary =
-                        model.mergeAddressBook(importedAddressBook);
-
-                commandResult = new CommandResult(summary.getMessage());
+                commandResult = executeImport(commandResult.getImportRequest().get());
             }
 
             model.commit();
-
-            if (commandResult.getExportRequest().isPresent()) {
-                ExportRequest exportRequest =
-                        commandResult.getExportRequest().get();
-
-                storage.saveAddressBook(
-                        exportRequest.getAddressBook(),
-                        exportRequest.getFilePath());
-            } else {
-                storage.saveAddressBook(model.getAddressBook());
-            }
+            executeSave(commandResult);
 
         } catch (DataLoadingException e) {
             throw new CommandException(
                     String.format(
                             FILE_IMPORT_ERROR_FORMAT,
+                            commandResult.getImportRequest().orElseThrow().getFilePath(),
                             e.getCause().getMessage()),
                     e);
         } catch (AccessDeniedException e) {
             throw new CommandException(
-                    String.format(
-                            FILE_OPS_PERMISSION_ERROR_FORMAT,
-                            e.getMessage()),
-                    e);
+                    String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
         } catch (IOException e) {
             throw new CommandException(
-                    String.format(
-                            FILE_OPS_ERROR_FORMAT,
-                            e.getMessage()),
-                    e);
+                    String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
         }
 
         return commandResult;
+    }
+
+    private CommandResult executeImport(ImportRequest importRequest)
+            throws DataLoadingException, CommandException {
+        ReadOnlyAddressBook importedAddressBook = storage
+                .readAddressBook(importRequest.getFilePath())
+                .orElseThrow(() -> new CommandException(
+                        String.format(
+                                FILE_IMPORT_ERROR_FORMAT,
+                                importRequest.getFilePath(), FILE_NOT_FOUND)));
+
+        ImportSummary summary = model.mergeAddressBook(importedAddressBook);
+        return new CommandResult(summary.getMessage());
+    }
+
+    private void executeSave(CommandResult commandResult) throws IOException {
+        if (commandResult.getExportRequest().isPresent()) {
+            ExportRequest exportRequest = commandResult.getExportRequest().get();
+
+            storage.saveAddressBook(
+                    exportRequest.getAddressBook(),
+                    exportRequest.getFilePath());
+        } else {
+            storage.saveAddressBook(model.getAddressBook());
+        }
     }
 
     @Override

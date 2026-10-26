@@ -93,7 +93,8 @@ public class CommandResult {
     }
 
     public Optional<ImportRequest> getImportRequest() {
-        return this.importRequest; }
+        return this.importRequest;
+    }
 
     public boolean isExit() {
         return exit;

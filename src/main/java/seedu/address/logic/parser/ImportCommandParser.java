@@ -20,7 +20,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
             "Please provide a file path.";
 
     public static final String MESSAGE_INVALID_FILE_PATH =
-            "The provided file path is invalid.";
+            "The provided file path is invalid: %s.";
     private static final Prefix[] IMPORT_PREFIXES = {
         PREFIX_FILENAME
     };
@@ -64,7 +64,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
             return new ImportCommand(Path.of(trimmedFilePath));
         } catch (InvalidPathException e) {
             throw new ParseException(
-                    String.format(MESSAGE_INVALID_FILE_PATH, e.getReason()));
+                    String.format(MESSAGE_INVALID_FILE_PATH, trimmedFilePath));
         }
     }
 }

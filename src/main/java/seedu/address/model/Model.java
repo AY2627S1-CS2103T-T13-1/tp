@@ -109,7 +109,7 @@ public interface Model {
     Map<String, String> getAliases();
 
     /**
-     * Merges address book with the current Model AddressBook
+     * Merges imported address book with the current Model AddressBook
      */
     ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook);
 }

@@ -274,7 +274,7 @@ public class LogicManagerTest {
                 CommandException.class,
                 String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT,
                         missingFilePath,
-                        "file was not found"),
+                        LogicManager.FILE_NOT_FOUND),
                 expectedModel);
     }
 
