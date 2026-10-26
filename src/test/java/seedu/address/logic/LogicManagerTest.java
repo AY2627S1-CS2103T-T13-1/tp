@@ -379,6 +379,50 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_importSaveFailsThenLaterCommandRetriesSave() throws Exception {
+        AddressBook importedAddressBook = new AddressBookBuilder()
+                .withPerson(AMY)
+                .build();
+        Path importFilePath = temporaryFolder.resolve("contactsToRetry.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        Path addressBookFilePath = temporaryFolder.resolve("addressBookToRetry.json");
+        int[] regularSaveAttempts = {0};
+        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(addressBookFilePath);
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("retryUserPrefs.json"));
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                regularSaveAttempts[0]++;
+                if (regularSaveAttempts[0] == 1) {
+                    throw DUMMY_IO_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, storage);
+
+        Model expectedModel = new ModelManager(
+                importedAddressBook,
+                new UserPrefs(),
+                BUILT_IN_COMMAND_WORDS);
+        assertCommandFailure(
+                "import -f " + importFilePath,
+                CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
+                expectedModel);
+        assertEquals(1, regularSaveAttempts[0]);
+
+        CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
+
+        assertEquals(ListCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(2, regularSaveAttempts[0]);
+        assertEquals(importedAddressBook,
+                new AddressBook(addressBookStorage.readAddressBook().orElseThrow()));
+    }
+
+    @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
     }

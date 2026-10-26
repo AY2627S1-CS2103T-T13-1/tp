@@ -56,10 +56,6 @@ public class ImportCommandParser implements Parser<ImportCommand> {
 
         String trimmedFilePath = filePath.get().trim();
 
-        if (trimmedFilePath.isEmpty()) {
-            throw new ParseException(MESSAGE_MISSING_FILE_PATH);
-        }
-
         try {
             return new ImportCommand(Path.of(trimmedFilePath));
         } catch (InvalidPathException e) {

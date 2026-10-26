@@ -130,18 +130,6 @@ public class LogicManager implements Logic {
         return new CommandResult(summary.getMessage());
     }
 
-    private void executeSave(CommandResult commandResult) throws IOException {
-        if (commandResult.getExportRequest().isPresent()) {
-            ExportRequest exportRequest = commandResult.getExportRequest().get();
-
-            storage.saveAddressBook(
-                    exportRequest.getAddressBook(),
-                    exportRequest.getFilePath());
-        } else {
-            storage.saveAddressBook(model.getAddressBook());
-        }
-    }
-
     @Override
     public ObservableList<Person> getFilteredPersonList() {
         return model.getFilteredPersonList();
