@@ -149,6 +149,16 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_duplicateEmailEdit_preservesContactsStorageAndUndoHistory() throws Exception {
+        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB);
+    }
+
+    @Test
+    public void execute_duplicatePhoneEdit_preservesContactsStorageAndUndoHistory() throws Exception {
+        assertDuplicateEditPreservesSession(PHONE_DESC_BOB);
+    }
+
+    @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_IO_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
@@ -295,6 +305,37 @@ public class LogicManagerTest {
         CommandResult result = logic.execute(inputCommand);
         assertEquals(expectedMessage, result.getFeedbackToUser());
         assertEquals(expectedModel, model);
+    }
+
+    /**
+     * Verifies that a rejected identity-field edit leaves contacts and storage unchanged,
+     * and that subsequent list and undo commands still work without an extra history entry.
+     */
+    private void assertDuplicateEditPreservesSession(String duplicateField) throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_BOB + PHONE_DESC_BOB
+                + EMAIL_DESC_BOB + ADDRESS_DESC_BOB);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        JsonAddressBookStorage addressBookStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
+
+        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField,
+                EditCommand.MESSAGE_DUPLICATE_PERSON);
+
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
+        CommandResult listResult = logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(ListCommand.MESSAGE_SUCCESS, listResult.getFeedbackToUser());
+        assertEquals(originalContacts, model.getAddressBook());
+
+        Person amy = new PersonBuilder(AMY).withTags().build();
+        assertUndoSuccess(amy);
+        assertEquals(model.getAddressBook(), addressBookStorage.readAddressBook().orElseThrow());
+        assertUndoSuccess();
+        assertEquals(new AddressBook(), addressBookStorage.readAddressBook().orElseThrow());
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }
 
     /**
