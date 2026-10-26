@@ -139,8 +139,7 @@ public class ModelManager implements Model {
 
     @Override
     public void redo() {
-        addressBook.redo();
-        sortAddressBook(activeComparator);
+        activeComparator = addressBook.redo();
         logger.info("Restored the most recently undone address book state");
     }
 

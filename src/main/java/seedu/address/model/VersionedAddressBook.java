@@ -83,13 +83,15 @@ public class VersionedAddressBook extends AddressBook {
      *
      * @throws IllegalStateException if there is no undone state.
      */
-    public void redo() {
+    public Comparator<Person> redo() {
         if (!canRedo()) {
             throw new IllegalStateException("There is no undone state to redo to.");
         }
 
         currentStatePointer++;
         assert currentStatePointer < addressBookStateList.size() : "Redo must not move past the last state";
-        resetData(addressBookStateList.get(currentStatePointer));
+        SavedState previousState = addressBookStateList.get(currentStatePointer);
+        resetData(previousState.readOnlyAddressBook());
+        return previousState.comparator();
     }
 }
