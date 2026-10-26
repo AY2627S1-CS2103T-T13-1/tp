@@ -54,7 +54,7 @@
         "dark-and-light-themes": "Dark and light themes",
         "pinning-a-contact": "Pinning a contact",
         "setting-an-alias-for-a-command": "Setting an alias for a command",
-        "proposed-undo-redo-feature": "[Proposed] Undo/redo feature",
+        "undo-redo-feature": "Undo/redo feature",
         "proposed-data-archiving": "[Proposed] Data archiving",
         "documentation-logging-testing-dev-ops": "Documentation, logging, testing, dev-ops",
         "appendix-requirements": "Appendix: Requirements",
@@ -67,6 +67,7 @@
         "launch-and-shutdown": "Launch and shutdown",
         "changing-the-theme": "Changing the theme",
         "deleting-a-person": "Deleting a person",
+        "undoing-and-redoing-changes": "Undoing and redoing changes",
         "saving-data": "Saving data"
       },
       "headingKeywords": {}
@@ -124,6 +125,7 @@
         "tagging-a-person": "Tagging a person",
         "clearing-all-entries-clear": "Clearing all entries: clear",
         "undoing-a-change-undo": "Undoing a change: undo",
+        "redoing-an-undone-change-redo": "Redoing an undone change: redo",
         "changing-the-theme-theme": "Changing the theme: theme",
         "exiting-the-program-exit": "Exiting the program: exit",
         "saving-the-data": "Saving the data",
