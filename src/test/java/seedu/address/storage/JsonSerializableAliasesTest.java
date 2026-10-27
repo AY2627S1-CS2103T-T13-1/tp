@@ -5,6 +5,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +50,11 @@ public class JsonSerializableAliasesTest {
     public void toLoadResult_unsupportedCommandWord_skipsInvalidEntry() {
         JsonSerializableAliases snapshot = new JsonSerializableAliases(Map.of("f", "unknown", "L", "list"));
 
-        assertEquals(Map.of("L", "list"), snapshot.toLoadResult(BUILT_IN_COMMAND_WORDS).aliases().getAliases());
+        AliasLoadResult result = snapshot.toLoadResult(BUILT_IN_COMMAND_WORDS);
+
+        assertEquals(Map.of("L", "list"), result.aliases().getAliases());
+        assertEquals(List.of("Skipped alias entry 'f': Unsupported command word unknown"),
+                result.warnings());
     }
 
     @Test
