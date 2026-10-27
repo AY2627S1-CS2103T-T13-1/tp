@@ -220,4 +220,28 @@ public class ModelManager implements Model {
     public void deleteAlias(String alias) {
         aliasRegistry.deleteAlias(alias);
     }
+
+    @Override
+    public ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook) {
+        requireNonNull(importedAddressBook);
+
+        AddressBook mergedAddressBook = new AddressBook(addressBook);
+
+        int importedCount = 0;
+        int skippedCount = 0;
+
+        for (Person importedPerson : importedAddressBook.getPersonList()) {
+            if (mergedAddressBook.hasPerson(importedPerson)) {
+                skippedCount++;
+            } else {
+                mergedAddressBook.addPerson(importedPerson);
+                importedCount++;
+            }
+        }
+
+        setAddressBook(mergedAddressBook);
+        updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+
+        return new ImportSummary(importedCount, skippedCount);
+    }
 }

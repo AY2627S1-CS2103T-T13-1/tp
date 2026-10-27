@@ -123,4 +123,9 @@ public interface Model {
      * Removes a registered alias.
      */
     void deleteAlias(String alias);
+
+    /**
+     * Merges imported address book with the current Model AddressBook
+     */
+    ImportSummary mergeAddressBook(ReadOnlyAddressBook importedAddressBook);
 }
