@@ -43,19 +43,16 @@ public class JsonAliasStorage {
     }
 
     /**
-     * Reads aliases from the configured JSON file and validates them.
+     * Reads validated aliases and warnings for skipped mappings.
      *
-     * @return the validated alias registry, or {@code Optional.empty()} if the file does not exist.
+     * @return the loading result, or {@code Optional.empty()} if the file is missing.
      * @throws DataLoadingException if the file cannot be read or deserialized.
      */
-    public Optional<AliasRegistry> readAliases() throws DataLoadingException {
+    public Optional<AliasLoadResult> readAliases() throws DataLoadingException {
         Optional<JsonSerializableAliases> jsonAliases = JsonUtil.readJsonFileStrict(
                 filePath, JsonSerializableAliases.class);
 
-        if (jsonAliases.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(jsonAliases.get().toModelType(builtInCommandWords));
+        return jsonAliases.map(snapshot -> snapshot.toLoadResult(builtInCommandWords));
     }
 
     /**

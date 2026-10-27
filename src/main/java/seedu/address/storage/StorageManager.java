@@ -90,7 +90,7 @@ public class StorageManager implements Storage {
     }
 
     @Override
-    public Optional<AliasRegistry> readAliases() throws DataLoadingException {
+    public Optional<AliasLoadResult> readAliases() throws DataLoadingException {
         return jsonAliasStorage.readAliases();
     }
 

@@ -41,12 +41,12 @@ public class JsonAliasStorageTest {
         assertEquals(filePath, storage.getAliasPath());
         storage.saveAliases(registry);
         assertEquals(Optional.of(registry),
-                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases());
+                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases().map(AliasLoadResult::aliases));
 
         AliasRegistry emptyRegistry = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
         storage.saveAliases(emptyRegistry);
         assertEquals(Optional.of(emptyRegistry),
-                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases());
+                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases().map(AliasLoadResult::aliases));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class JsonAliasStorageTest {
         AliasRegistry expected = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
         expected.register("list", "l");
 
-        assertEquals(Optional.of(expected), storage.readAliases());
+        assertEquals(Optional.of(expected), storage.readAliases().map(AliasLoadResult::aliases));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class JsonAliasStorageTest {
             FileUtil.writeToFile(filePath, "{\"aliases\":{\"L\":\"list\",\"bad\":"
                     + invalidValue + "}}");
 
-            assertEquals(Optional.of(expected), storage.readAliases(),
+            assertEquals(Optional.of(expected), storage.readAliases().map(AliasLoadResult::aliases),
                     "Invalid value: " + invalidValue);
         }
     }
@@ -97,7 +97,8 @@ public class JsonAliasStorageTest {
         FileUtil.writeToFile(filePath, "{\"aliases\":{\"bad\":{}}}");
         JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
 
-        assertEquals(Optional.of(new AliasRegistry(BUILT_IN_COMMAND_WORDS)), storage.readAliases());
+        assertEquals(Optional.of(new AliasRegistry(BUILT_IN_COMMAND_WORDS)),
+                storage.readAliases().map(AliasLoadResult::aliases));
     }
 
     @Test
@@ -106,7 +107,7 @@ public class JsonAliasStorageTest {
         FileUtil.writeToFile(filePath, "{\"aliases\":{\"L\":\"list\",\"bad\":{}}}");
         JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
 
-        AliasRegistry loaded = storage.readAliases().orElseThrow();
+        AliasRegistry loaded = storage.readAliases().orElseThrow().aliases();
         loaded.register("find", "f");
         storage.saveAliases(loaded);
 
@@ -114,7 +115,7 @@ public class JsonAliasStorageTest {
         expected.register("list", "L");
         expected.register("find", "f");
         assertEquals(Optional.of(expected),
-                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases());
+                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases().map(AliasLoadResult::aliases));
     }
 
     @Test

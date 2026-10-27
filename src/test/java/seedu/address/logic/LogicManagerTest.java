@@ -227,7 +227,7 @@ public class LogicManagerTest {
                 new CommandResult(String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f")),
                 result);
         assertEquals(Map.of(), model.getAliases());
-        assertEquals(Map.of(), storage.readAliases().orElseThrow().getAliases());
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(0, storage.contactSaveAttempts);
     }
@@ -249,7 +249,7 @@ public class LogicManagerTest {
         logic.execute(ListCommand.COMMAND_WORD);
 
         assertEquals(2, storage.aliasSaveAttempts);
-        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
 
         logic.execute(ListCommand.COMMAND_WORD);
         assertEquals(2, storage.aliasSaveAttempts);

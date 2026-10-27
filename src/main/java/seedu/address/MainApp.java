@@ -23,6 +23,7 @@ import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.util.SampleDataUtil;
+import seedu.address.storage.AliasLoadResult;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -96,7 +97,8 @@ public class MainApp extends Application {
 
         AliasRegistry initialAliases;
         try {
-            initialAliases = storage.readAliases().orElseGet(() -> new AliasRegistry(BUILT_IN_COMMAND_WORDS));
+            initialAliases = storage.readAliases().map(AliasLoadResult::aliases)
+                    .orElseGet(() -> new AliasRegistry(BUILT_IN_COMMAND_WORDS));
         } catch (DataLoadingException exception) {
             logger.warning(String.format(MESSAGE_ALIAS_LOAD_FAILED, storage.getAliasPath()));
             initialAliases = new AliasRegistry(BUILT_IN_COMMAND_WORDS);

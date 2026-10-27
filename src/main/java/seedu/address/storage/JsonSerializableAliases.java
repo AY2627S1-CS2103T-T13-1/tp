@@ -63,17 +63,6 @@ public class JsonSerializableAliases {
     }
 
     /**
-     * Converts stored mappings into an alias registry, skipping invalid entries.
-     *
-     * @param builtInCommandWords the supported built-in command words.
-     * @return an {@code AliasRegistry} containing valid alias mappings.
-     */
-    public AliasRegistry toModelType(Set<String> builtInCommandWords) {
-        return toLoadResult(builtInCommandWords).aliases();
-    }
-
-
-    /**
      * Converts stored mappings into validated aliases and loading warnings.
      * Invalid mappings are logged and skipped while valid mappings are retained.
      *

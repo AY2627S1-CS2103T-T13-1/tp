@@ -105,7 +105,7 @@ public class StorageManagerTest {
 
         storageManager.saveAliases(original);
 
-        AliasRegistry retrieved = storageManager.readAliases().orElseThrow();
+        AliasRegistry retrieved = storageManager.readAliases().orElseThrow().aliases();
         assertEquals(original, retrieved);
     }
 
