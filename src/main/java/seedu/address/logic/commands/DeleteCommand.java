@@ -4,6 +4,8 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -21,35 +23,42 @@ import seedu.address.model.person.Person;
 import seedu.address.model.tag.Tag;
 
 /**
- * Deletes a person by their currently displayed list index or all persons whose complete tag sets match
- * the supplied tags by category and case-insensitive name. Tag-based deletion searches
- * the entire address book, including persons hidden by the current filter.
+ * Deletes a person by their currently displayed list index or removes supplied tag instances.
+ * Tag-based deletion deletes persons whose nonempty tag sets are fully covered by the supplied tags,
+ * and removes matching tags from other persons. Matching uses category and case-insensitive name
+ * across the entire address book, including persons hidden by the current filter.
  */
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
-    public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index,"
-            + " or all contacts whose complete tag set matches the supplied tags (case-insensitive).\n"
-            + "Tag-based deletion includes contacts hidden by the current filter.";
+    public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index, "
+            + "or removes the specified tags (case-insensitive) from all contacts.\n"
+            + "Contacts with no remaining tags are deleted. "
+            + "Contacts initially without tags are not deleted.\n"
+            + "Tag removal also applies to contacts hidden by the current filter.";
 
-    public static final String COMMAND_SYNTAX = COMMAND_WORD + " [LIST_INDEX] "
-            + "OR [-t TAG_CATEGORY TAG_NAME]...";
+    public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
+            + "| -t TAG_CATEGORY TAG_NAME...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1, "
-            + COMMAND_WORD + " -t others Friend";
+            + COMMAND_WORD + " -t others Friend -t faculty FASS";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": " + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: [LIST_INDEX] (must be a positive integer) OR [-t TAG_CATEGORY TAG_NAME]...\n"
+            + "Parameters: LIST_INDEX (must be a positive integer) | -t TAG_CATEGORY TAG_NAME...\n"
             + COMMAND_SAMPLE_USAGE;
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed %1$s from your address book.";
+    public static final String MESSAGE_DELETE_PERSON_SUCCESS =
+            "Successfully removed %1$s from your address book.";
 
     public static final String MESSAGE_DELETE_TAGS_SUCCESS =
             "Successfully removed %d matching contact(s) from your address book.";
 
-    public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons were found to be deleted.";
+    public static final String MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS =
+            "All instances of tag(s) (%s) have been removed.";
+
+    public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons found!";
 
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified. "
         + "Please check again with list.";
@@ -72,8 +81,8 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Constructs a command to delete all persons in the entire address book whose complete tag sets
-     * match the supplied tags by category and case-insensitive name.
+     * Constructs a command to remove matching tag instances throughout the entire address book,
+     * deleting persons whose nonempty tag sets are fully covered by the supplied tags.
      *
      * @param targetTags Nonempty set of tags to match against the entire address book.
      * @throws NullPointerException if {@code targetTags} or any of its elements is null.
@@ -94,53 +103,114 @@ public class DeleteCommand extends Command {
 
         if (targetIndex != null) {
             Person personToDelete = deletePersonAtIndex(model);
-            return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
+            return new CommandResult(String.format(
+                    MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
         }
 
-        List<Person> personsToDelete = deletePeopleWithTags(model);
-        if (personsToDelete.isEmpty()) {
-            return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
-        }
-        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, personsToDelete.size()));
+        return removeTagInstances(model);
     }
 
     /**
-     * Collects and deletes all persons in the entire address book with exactly the supplied tags,
-     * matching by category and case-insensitive name.
-     * Returns the deleted persons, or an empty list if no persons match.
+     * Removes matching tags from a snapshot of the entire address book, matching by category and
+     * case-insensitive name. Deletes persons whose nonempty tag sets are fully covered by the supplied
+     * tags and leaves untagged persons unchanged. Reports the deleted count and matched tag names.
      */
-    private List<Person> deletePeopleWithTags(Model model) {
+    private CommandResult removeTagInstances(Model model) throws CommandException {
         int originalSize = model.getAddressBook().getPersonList().size();
         Set<String> normalizedTargetTags = normalizeTags(targetTags);
-        List<Person> personsToDelete = model.getAddressBook().getPersonList().stream()
-                .filter(person -> normalizeTags(person.getTags()).equals(normalizedTargetTags))
-                .toList();
+        List<Person> snapshotOfPersonList = new ArrayList<>(model.getAddressBook().getPersonList());
+        List<Person> deletedPersons = new ArrayList<>();
+        Set<String> matchedTags = new HashSet<>();
 
-        logger.fine(() -> "Bulk delete matched " + personsToDelete.size()
-                + " of " + originalSize
-                + " contacts using exact, case-insensitive tag-set matching");
-
-        for (Person person : personsToDelete) {
-            model.deletePerson(person);
+        if (snapshotOfPersonList.isEmpty()) {
+            throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
         }
 
-        assert model.getAddressBook().getPersonList().size() == originalSize - personsToDelete.size()
+        for (Person person : snapshotOfPersonList) {
+            if (person.getTags().isEmpty()) {
+                continue;
+            }
+
+            Set<String> personTags = normalizeTags(person.getTags());
+            personTags.stream()
+                    .filter(normalizedTargetTags::contains)
+                    .forEach(matchedTags::add);
+
+            if (normalizedTargetTags.containsAll(personTags)) {
+                model.deletePerson(person);
+                deletedPersons.add(person);
+                continue;
+            }
+
+            removeMatchingTags(model, person, normalizedTargetTags);
+        }
+
+        assert model.getAddressBook().getPersonList().size() == originalSize - deletedPersons.size()
                 : "Bulk deletion must remove exactly the matched number of contacts";
 
-        logger.info(() -> "Bulk delete removed " + personsToDelete.size()
+        logger.info(() -> "Bulk delete removed " + deletedPersons.size()
                 + " contacts from the address book");
 
-        return personsToDelete;
+        return createTagRemovalResult(deletedPersons.size(), matchedTags);
     }
 
     /**
-     * Returns lowercase tag strings in {@code category:name} format for comparison without changing the supplied tags.
+     * Builds the result message from the deleted count and matched, normalized tag strings.
+     */
+    private CommandResult createTagRemovalResult(int deletedCount, Set<String> matchedTags) {
+        if (matchedTags.isEmpty()) {
+            return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
+        }
+
+        String matchedTagNames = matchedTags.stream()
+                .sorted()
+                .collect(Collectors.joining(", "));
+        String tagInstanceRemovalMessage = String.format(
+                MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS, matchedTagNames);
+
+        if (deletedCount == 0) {
+            return new CommandResult(tagInstanceRemovalMessage);
+        }
+        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, deletedCount)
+                + "\n" + tagInstanceRemovalMessage);
+    }
+
+    /**
+     * Removes matching tags from a person in the model, preserving all other fields and pinned status.
+     * Leaves the person unchanged if no tags match.
+     */
+    private void removeMatchingTags(Model model, Person person, Set<String> normalizedTargetTags) {
+        Set<Tag> remainingTags = new HashSet<>(person.getTags());
+        boolean changed = remainingTags.removeIf(
+                tag -> normalizedTargetTags.contains(normalizeTag(tag)));
+
+        if (changed) {
+            Person editedPerson = new Person(
+                    person.getName(),
+                    person.getPhone(),
+                    person.getEmail(),
+                    person.getAddress(),
+                    remainingTags,
+                    person.isPinned());
+            model.setPerson(person, editedPerson);
+        }
+    }
+
+    /**
+     * Returns lowercase tag strings in {@code category:name} format
+     * for comparison without changing the supplied tags.
      */
     private Set<String> normalizeTags(Set<Tag> tags) {
         return tags.stream()
-                .map(tag -> (tag.getTagCategory() + ":" + tag.tagName)
-                        .toLowerCase(Locale.ROOT))
+                .map(this::normalizeTag)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Returns a lowercase category-and-name string for matching a tag.
+     */
+    private String normalizeTag(Tag tag) {
+        return (tag.getTagCategory() + ":" + tag.tagName).toLowerCase(Locale.ROOT);
     }
 
     /**
