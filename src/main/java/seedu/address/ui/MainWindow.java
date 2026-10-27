@@ -130,9 +130,11 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Fills up all the placeholders of this window.
+     * Fills the window placeholders and displays any startup warnings in the output pane.
+     *
+     * @param startupWarning the startup warning, or an empty string if there is none.
      */
-    void fillInnerParts() {
+    void fillInnerParts(String startupWarning) {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
@@ -149,8 +151,19 @@ public class MainWindow extends UiPart<Stage> {
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
 
+        String startupFeedback = startupWarning;
         if (isThemeMissingOnStartup) {
-            showMissingThemeMessage(currentTheme);
+            String themeWarning = String.format(MESSAGE_MISSING_THEME, currentTheme.getDisplayName());
+
+            if (startupWarning.isBlank()) {
+                startupFeedback = themeWarning;
+            } else {
+                startupFeedback = String.join("\n\n", themeWarning, startupWarning);
+            }
+        }
+
+        if (!startupFeedback.isBlank()) {
+            resultDisplay.setFeedbackToUser(startupFeedback);
         }
     }
 

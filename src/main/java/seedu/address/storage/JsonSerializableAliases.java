@@ -32,7 +32,7 @@ public class JsonSerializableAliases {
     private static final String MESSAGE_INVALID_ALIASES_PROPERTY_TYPE =
             "Property 'aliases' must be a JSON object, but found %s.";
     private static final String MESSAGE_NON_STRING_COMMAND_WORD =
-            "Skipped alias '%s': expected a command word as a JSON string, but found %s.";
+            "Skipped alias '%s': expected a command word as a string, but found %s.";
     private static final Logger logger = LogsCenter.getLogger(JsonSerializableAliases.class);
 
     private final Map<String, String> aliases;

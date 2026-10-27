@@ -51,7 +51,7 @@ public class MainApp extends Application {
     private static final int MAX_ALIAS_LOADING_ERRORS = 5;
 
     private static final String MESSAGE_ALIAS_PARTIAL_LOAD_WARNING =
-            "Alias file: %s\nLoaded %d alias(es). Skipped %d invalid entries.\n\n%s";
+            "Alias file: %s\nLoaded %d alias(es). Skipped %d invalid entries.\n%s";
 
     private static final String MESSAGE_ADDITIONAL_ALIAS_ISSUES =
             "\n\n…and %d more issue(s). See the log for details.";
@@ -66,9 +66,8 @@ public class MainApp extends Application {
             "The file could not be read or has an invalid format.";
 
     private static final String MESSAGE_ALIAS_LOAD_FAILURE_DETAILS =
-            "%s\n\nReason: %s"
-                    + "\n\nCorrect the file or resolve the read error, "
-                    + "then restart the application.";
+            String.join("\n", "%s", "Reason: %s" ,
+                    "Correct the file or resolve the read error, then restart the application.");
 
     protected Ui ui;
     protected Logic logic;
@@ -91,7 +90,7 @@ public class MainApp extends Application {
 
         logic = new LogicManager(model, storage);
 
-        ui = new UiManager(logic, storage.getAddressBookFilePath());
+        ui = new UiManager(logic, storage.getAddressBookFilePath(), aliasLoadingWarning);
     }
 
     /**
@@ -200,7 +199,8 @@ public class MainApp extends Application {
 
         // prepare only warning items to display
         int displayedCount = Math.min(MAX_ALIAS_LOADING_ERRORS, warnings.size());
-        String details = String.join("\n\n", warnings.subList(0, displayedCount));
+        String details = "- " + String.join(
+                "\n- ", warnings.subList(0, displayedCount));
 
         int remaining = warnings.size() - displayedCount;
         if (remaining > 0) {
