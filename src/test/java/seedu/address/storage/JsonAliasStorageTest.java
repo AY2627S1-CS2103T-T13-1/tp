@@ -62,6 +62,19 @@ public class JsonAliasStorageTest {
     }
 
     @Test
+    public void readAliases_invalidAliasesProperty_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("invalidAliasesProperty.json");
+        JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
+
+        String[] invalidJsons = {"{}", "{\"aliases\":null}", "{\"aliases\":[]}", "{\"aliases\":\"list\"}"};
+        for (String invalidJson : invalidJsons) {
+            FileUtil.writeToFile(filePath, invalidJson);
+
+            assertThrows(DataLoadingException.class, storage::readAliases);
+        }
+    }
+
+    @Test
     public void readAliases_nonStringValue_preservesValidEntry() throws Exception {
         Path filePath = testFolder.resolve("nonStringValue.json");
         JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
