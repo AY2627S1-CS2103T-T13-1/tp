@@ -40,7 +40,6 @@ public class ImportCommandParser implements Parser<ImportCommand> {
                 IMPORT_PREFIXES);
 
         ArgumentStructureValidator.validate(
-                args,
                 arguments,
                 IMPORT_PREFIXES,
                 ImportCommand.COMMAND_WORD);
