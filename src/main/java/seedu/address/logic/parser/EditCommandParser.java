@@ -63,6 +63,11 @@ public class EditCommandParser implements Parser<EditCommand> {
                 editPersonDescriptor.setAddress(ParserUtil.parseAddress(address));
             }
         }
+
+        if (argMultimap.getAllValues(PREFIX_TAG).size() > Tag.MAX_TAGS_PER_PERSON) {
+            throw new ParseException(Tag.MESSAGE_TOO_MANY_TAGS);
+        }
+
         parseTagsForEdit(argMultimap.getAllValues(PREFIX_TAG)).ifPresent(editPersonDescriptor::setTags);
 
         if (!editPersonDescriptor.isAnyFieldEdited()) {
