@@ -16,6 +16,7 @@ public class CommandResult {
 
     private final String feedbackToUser;
     private final Optional<ExportRequest> exportRequest;
+    private final Optional<ImportRequest> importRequest;
 
     /** The application should exit. */
     private final boolean exit;
@@ -31,6 +32,7 @@ public class CommandResult {
         requireNonNull(feedbackToUser);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.empty();
+        this.importRequest = Optional.empty();
         this.exit = exit;
         this.theme = theme;
     }
@@ -61,6 +63,23 @@ public class CommandResult {
         requireAllNonNull(feedbackToUser, exportRequest);
         this.feedbackToUser = feedbackToUser;
         this.exportRequest = Optional.of(exportRequest);
+        this.importRequest = Optional.empty();
+        this.exit = false;
+        this.theme = null;
+    }
+
+    /**
+     * Constructs a {@code CommandResult} with the specified feedback message and import request,
+     * with other fields set to their default values.
+     *
+     * @param feedbackToUser the feedback message to display to the user
+     * @param importRequest the import request associated with this result
+     */
+    public CommandResult(String feedbackToUser, ImportRequest importRequest) {
+        requireAllNonNull(feedbackToUser, importRequest);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = Optional.empty();
+        this.importRequest = Optional.of(importRequest);
         this.exit = false;
         this.theme = null;
     }
@@ -71,6 +90,10 @@ public class CommandResult {
 
     public Optional<ExportRequest> getExportRequest() {
         return this.exportRequest;
+    }
+
+    public Optional<ImportRequest> getImportRequest() {
+        return this.importRequest;
     }
 
     public boolean isExit() {
@@ -95,12 +118,13 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && exit == otherCommandResult.exit
                 && theme == otherCommandResult.theme
-                && exportRequest.equals(otherCommandResult.exportRequest);
+                && exportRequest.equals(otherCommandResult.exportRequest)
+                && importRequest.equals(otherCommandResult.importRequest);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, exit, theme, exportRequest);
+        return Objects.hash(feedbackToUser, exit, theme, exportRequest, importRequest);
     }
 
     @Override

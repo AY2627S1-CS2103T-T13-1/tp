@@ -5,6 +5,8 @@ import static seedu.address.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +23,13 @@ public class JsonSerializableAddressBookTest {
     private static final Path DUPLICATE_PERSON_FILE = TEST_DATA_FOLDER.resolve("duplicatePersonAddressBook.json");
 
     @Test
+    public void constructor_nullPersons_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                "The file must contain a persons list.", ()
+                        -> new JsonSerializableAddressBook((List<JsonAdaptedPerson>) null));
+    }
+
+    @Test
     public void toModelType_typicalPersonsFile_success() throws Exception {
         JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(TYPICAL_PERSONS_FILE,
                 JsonSerializableAddressBook.class).get();
@@ -34,6 +43,17 @@ public class JsonSerializableAddressBookTest {
         JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(INVALID_PERSON_FILE,
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_nullPerson_throwsIllegalValueException() {
+        List<JsonAdaptedPerson> persons = new ArrayList<>();
+        persons.add(null);
+        JsonSerializableAddressBook data = new JsonSerializableAddressBook(persons);
+
+        assertThrows(IllegalValueException.class,
+                JsonSerializableAddressBook.MESSAGE_NULL_PERSON,
+                data::toModelType);
     }
 
     @Test

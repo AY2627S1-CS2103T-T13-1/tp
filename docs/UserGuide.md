@@ -209,7 +209,7 @@ Reverses the most recent command that changed your contact list.
 
 Format: `undo`
 
-* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin` and `unpin`.
+* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin`, `unpin`, `import`.
 * Other commands, such as `list`, `find`, `theme` and `alias`, are skipped. `undo` reverses the most recent command that changed your contact list.
 * You can use `undo` several times in a row to reverse earlier changes one at a time.
 * After an undo, all contacts are shown, with pinned contacts at the top.
@@ -218,6 +218,22 @@ Format: `undo`
 Examples:
 * `delete 2` followed by `undo` brings back the deleted contact.
 * `pin 1`, `edit 3 -n John Doe`, then `undo` twice reverses the edit and then the pin.
+
+### Importing contacts: `import`
+
+Imports contacts from a JSON address book file and merges them into the current address book.
+
+Format: `import -f FILE_PATH`
+
+* `FILE_PATH` is the path to a JSON address book file.
+* Contacts with the same phone number or email address as an existing contact are skipped.
+* Imported contacts are added to the current address book; existing contacts are not replaced.
+* The command displays the number of imported and skipped contacts.
+* The imported contacts can be removed using `undo`.
+
+Example:
+
+* `import -f data/exports/contacts.json`
 
 ### Redoing an undone change: `redo`
 
@@ -309,3 +325,4 @@ Action     | Format, Examples
 **Undo**   | `undo`
 **Redo**   | `redo`
 **Help**   | `help`
+**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`
