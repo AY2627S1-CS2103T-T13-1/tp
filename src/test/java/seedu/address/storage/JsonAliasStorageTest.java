@@ -62,6 +62,49 @@ public class JsonAliasStorageTest {
     }
 
     @Test
+    public void readAliases_nonStringValue_preservesValidEntry() throws Exception {
+        Path filePath = testFolder.resolve("nonStringValue.json");
+        JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
+        AliasRegistry expected = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        expected.register("list", "L");
+
+        // Exercise each non-string JSON value type independently to avoid masking failures.
+        for (String invalidValue : new String[]{"{}", "[]", "null", "true", "123", "1.5"}) {
+            FileUtil.writeToFile(filePath, "{\"aliases\":{\"L\":\"list\",\"bad\":"
+                    + invalidValue + "}}");
+
+            assertEquals(Optional.of(expected), storage.readAliases(),
+                    "Invalid value: " + invalidValue);
+        }
+    }
+
+    @Test
+    public void readAliases_onlyNonStringValue_returnsEmptyRegistry() throws Exception {
+        Path filePath = testFolder.resolve("onlyInvalidEntry.json");
+        FileUtil.writeToFile(filePath, "{\"aliases\":{\"bad\":{}}}");
+        JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
+
+        assertEquals(Optional.of(new AliasRegistry(BUILT_IN_COMMAND_WORDS)), storage.readAliases());
+    }
+
+    @Test
+    public void saveAndReadAliases_invalidEntry_preservesExistingAndNewAliases() throws Exception {
+        Path filePath = testFolder.resolve("partiallyValidAliases.json");
+        FileUtil.writeToFile(filePath, "{\"aliases\":{\"L\":\"list\",\"bad\":{}}}");
+        JsonAliasStorage storage = new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS);
+
+        AliasRegistry loaded = storage.readAliases().orElseThrow();
+        loaded.register("find", "f");
+        storage.saveAliases(loaded);
+
+        AliasRegistry expected = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        expected.register("list", "L");
+        expected.register("find", "f");
+        assertEquals(Optional.of(expected),
+                new JsonAliasStorage(filePath, BUILT_IN_COMMAND_WORDS).readAliases());
+    }
+
+    @Test
     public void readAliases_duplicateKeys_throwsDataLoadingException() throws IOException {
         Path filePath = testFolder.resolve("duplicateKeys.json");
         FileUtil.writeToFile(filePath, "{\"aliases\":{\"f\":\"find\",\"f\":\"list\"}}");
