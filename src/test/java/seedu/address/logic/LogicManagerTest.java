@@ -47,6 +47,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonAliasStorage;
@@ -248,13 +249,53 @@ public class LogicManagerTest {
         };
         logic = new LogicManager(model, storage);
 
+        JsonAliasStorage aliasStorage =
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS);
+        aliasStorage.saveAliases(model.getAliasRegistry());
+
         CommandResult result = logic.execute("delete_alias f");
 
         assertEquals(
                 new CommandResult(String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f")),
                 result);
         assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of(), aliasStorage.readAliases().orElseThrow().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
+    public void execute_aliasSaveFails_retriesOnNextCommandAndStopsAfterSuccess() throws Exception {
+        model.addPerson(AMY);
+        int[] saveAttempts = {0};
+        JsonAliasStorage aliasStorage =
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS) {
+                    @Override
+                    public void saveAliases(AliasRegistry aliases) throws IOException {
+                        saveAttempts[0]++;
+                        if (saveAttempts[0] == 1) {
+                            throw DUMMY_IO_EXCEPTION;
+                        }
+                        super.saveAliases(aliases);
+                    }
+                };
+        StorageManager storage = new StorageManager(
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json")),
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")), aliasStorage);
+        logic = new LogicManager(model, storage);
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
+                () -> logic.execute("alias find f"));
+        assertEquals(Map.of("f", "find"), model.getAliases());
+        assertEquals(1, saveAttempts[0]);
+
+        logic.execute(ListCommand.COMMAND_WORD);
+
+        assertEquals(2, saveAttempts[0]);
+        assertEquals(Map.of("f", "find"), aliasStorage.readAliases().orElseThrow().getAliases());
+
+        logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(2, saveAttempts[0]);
     }
 
     @Test
