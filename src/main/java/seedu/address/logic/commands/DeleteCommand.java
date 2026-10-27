@@ -170,7 +170,7 @@ public class DeleteCommand extends Command {
 
         String matchedTagNames = targetTags.stream()
                 .filter(tag -> matchedTags.contains(normalizeTag(tag)))
-                .map(tag -> tag.tagName)
+                .map(this::normalizeTag)
                 .distinct()
                 .sorted()
                 .collect(Collectors.joining(", "));

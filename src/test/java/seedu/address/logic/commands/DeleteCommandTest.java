@@ -30,6 +30,7 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
 import seedu.address.model.tag.FacultyTag;
+import seedu.address.model.tag.ModuleTag;
 import seedu.address.model.tag.OthersTag;
 import seedu.address.model.tag.Tag;
 import seedu.address.testutil.PersonBuilder;
@@ -82,7 +83,7 @@ public class DeleteCommandTest {
         Model tagModel = modelWithPersons(person);
 
         Person expectedPerson = new PersonBuilder(person).withTags(new OthersTag("Friend")).build();
-        String expectedMessage = "All instances of tag(s) (Science, coder) have been removed.";
+        String expectedMessage = "All instances of tag(s) (faculty:science, others:coder) have been removed.";
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("coder"), new FacultyTag("Science"))),
                 tagModel, expectedMessage, modelWithPersons(expectedPerson));
     }
@@ -95,8 +96,33 @@ public class DeleteCommandTest {
         Model tagModel = modelWithPersons(person);
 
         Person expectedPerson = new PersonBuilder(person).withTags(new FacultyTag("coder")).build();
+        String expectedMessage = "All instances of tag(s) (faculty:science) have been removed.";
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("coder"), new FacultyTag("Science"))),
-                tagModel, "All instances of tag(s) (Science) have been removed.", modelWithPersons(expectedPerson));
+                tagModel, expectedMessage, modelWithPersons(expectedPerson));
+    }
+
+    @Test
+    public void execute_sameTagNameDifferentCategories_reportsBothCategories() {
+        Person person = new PersonBuilder(ALICE)
+                .withTags(new OthersTag("friend"), new ModuleTag("friend"),
+                        new FacultyTag("Science")).build();
+        Model tagModel = modelWithPersons(person);
+        Person expectedPerson = new PersonBuilder(person).withTags(new FacultyTag("Science")).build();
+        String expectedMessage = "All instances of tag(s) (module:friend, others:friend) have been removed.";
+
+        assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("friend"),
+                new ModuleTag("friend"))), tagModel, expectedMessage, modelWithPersons(expectedPerson));
+    }
+
+    @Test
+    public void execute_duplicateTagsDifferentCase_reportsTagOnce() {
+        Person person = new PersonBuilder(ALICE).withTags(new OthersTag("Friend")).build();
+        Model tagModel = modelWithPersons(person);
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 1)
+                + "\nAll instances of tag(s) (others:friend) have been removed.";
+
+        assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("FRIEND"),
+                new OthersTag("friend"))), tagModel, expectedMessage, modelWithPersons());
     }
 
     @Test
@@ -136,7 +162,8 @@ public class DeleteCommandTest {
 
         assertCommandSuccess(command, tagModel,
                 String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 2)
-                        + "\nAll instances of tag(s) (coder) have been removed.", modelWithPersons(CARL));
+                        + "\nAll instances of tag(s) (others:coder) have been removed.",
+                modelWithPersons(CARL));
     }
 
     @Test
@@ -148,7 +175,7 @@ public class DeleteCommandTest {
         Person expectedEditedPerson = new PersonBuilder(editedPerson).withTags(new FacultyTag("Science")).build();
 
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 1)
-                + "\nAll instances of tag(s) (coder) have been removed.";
+                + "\nAll instances of tag(s) (others:coder) have been removed.";
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("coder"))), tagModel,
                 expectedMessage, modelWithPersons(expectedEditedPerson, CARL));
     }
@@ -199,7 +226,7 @@ public class DeleteCommandTest {
         showNoPerson(expectedModel);
 
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("Friend"))), tagModel,
-                "All instances of tag(s) (Friend) have been removed.", expectedModel);
+                "All instances of tag(s) (others:friend) have been removed.", expectedModel);
     }
 
     @Test
@@ -211,7 +238,7 @@ public class DeleteCommandTest {
                 .withTags(new FacultyTag("Science")).build().pinPerson();
 
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("Friend"))), tagModel,
-                "All instances of tag(s) (Friend) have been removed.",
+                "All instances of tag(s) (others:friend) have been removed.",
                 modelWithPersons(CARL, expectedPerson));
     }
 
@@ -232,7 +259,7 @@ public class DeleteCommandTest {
         Person expectedSecondPerson = new PersonBuilder(secondPartialMatch)
                 .withTags(new OthersTag("Colleague")).build();
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 1)
-                + "\nAll instances of tag(s) (Friend) have been removed.";
+                + "\nAll instances of tag(s) (others:friend) have been removed.";
         Model expectedModel = modelWithPersons(
                 expectedFirstPerson, expectedSecondPerson, untaggedPerson, unmatchedPerson);
 
@@ -249,7 +276,7 @@ public class DeleteCommandTest {
 
         Person expectedPerson = new PersonBuilder(editedPerson).withTags(new OthersTag("Colleague")).build();
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 1)
-                + "\nAll instances of tag(s) (Friend, Science) have been removed.";
+                + "\nAll instances of tag(s) (faculty:science, others:friend) have been removed.";
         Model expectedModel = modelWithPersons(expectedPerson, CARL);
 
         assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("Friend"), new FacultyTag("Science"))),
