@@ -48,6 +48,15 @@ public interface Storage {
     Optional<ReadOnlyAddressBook> readAddressBook() throws DataLoadingException;
 
     /**
+     * Returns AddressBook data from the specified file path.
+     * Returns {@code Optional.empty()} if the storage file is not found.
+     *
+     * @param path the file path from which to read the AddressBook; cannot be null.
+     * @throws DataLoadingException if loading the data from storage failed.
+     */
+    Optional<ReadOnlyAddressBook> readAddressBook(Path path) throws DataLoadingException;
+
+    /**
      * Saves the given {@link ReadOnlyAddressBook} to the storage.
      * @param addressBook cannot be null.
      * @throws IOException if there was any problem writing to the file.

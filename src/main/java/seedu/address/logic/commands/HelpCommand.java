@@ -77,6 +77,11 @@ public class HelpCommand extends Command {
                     SortCommand.COMMAND_DESCRIPTION,
                     SortCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
+                    ImportCommand.COMMAND_SYNTAX,
+                    ImportCommand.COMMAND_DESCRIPTION,
+                    ImportCommand.COMMAND_SAMPLE_USAGE
+            ),
+            formatHelpEntry(
                     "User Guide Link: " + AppConstants.USERGUIDE_URL));
 
     @Override
