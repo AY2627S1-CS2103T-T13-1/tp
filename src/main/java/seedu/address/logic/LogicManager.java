@@ -2,6 +2,7 @@ package seedu.address.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -46,6 +47,7 @@ public class LogicManager implements Logic {
     private final Storage storage;
     private final AddressBookParser addressBookParser;
     private boolean hasUnsavedContactChanges;
+    private boolean hasUnsavedAliasChanges;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -62,6 +64,8 @@ public class LogicManager implements Logic {
 
         Command command = addressBookParser.parseCommand(commandText);
         AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
+        Map<String, String> originalAliases = model.getAliases();
+
         CommandResult commandResult = command.execute(model);
 
         boolean isImport = commandResult.getImportRequest().isPresent();
@@ -74,7 +78,11 @@ public class LogicManager implements Logic {
             model.commit();
 
             boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+            boolean aliasChanged = !originalAliases.equals(model.getAliases());
+
+            // account for pending saves from failed attempt
             hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+            hasUnsavedAliasChanges = hasUnsavedAliasChanges || aliasChanged;
 
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
@@ -86,6 +94,11 @@ public class LogicManager implements Logic {
             } else if (hasUnsavedContactChanges || isImport) {
                 storage.saveAddressBook(model.getAddressBook());
                 hasUnsavedContactChanges = false;
+            }
+
+            if (hasUnsavedAliasChanges) {
+                storage.saveAliases(model.getAliasRegistry());
+                hasUnsavedAliasChanges = false;
             }
 
         } catch (DataLoadingException e) {
