@@ -107,7 +107,7 @@ public class DeleteCommand extends Command {
                     MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
         }
 
-        return deletePeopleWithTags(model);
+        return removeTagInstances(model);
     }
 
     /**
@@ -115,18 +115,18 @@ public class DeleteCommand extends Command {
      * case-insensitive name. Deletes persons whose nonempty tag sets are fully covered by the supplied
      * tags and leaves untagged persons unchanged. Reports the deleted count and matched tag names.
      */
-    private CommandResult deletePeopleWithTags(Model model) throws CommandException {
+    private CommandResult removeTagInstances(Model model) throws CommandException {
         int originalSize = model.getAddressBook().getPersonList().size();
         Set<String> normalizedTargetTags = normalizeTags(targetTags);
-        List<Person> snapshotOfPersonlist = new ArrayList<>(model.getAddressBook().getPersonList());
-        List<Person> personsToDelete = new ArrayList<>();
+        List<Person> snapshotOfPersonList = new ArrayList<>(model.getAddressBook().getPersonList());
+        List<Person> deletedPersons = new ArrayList<>();
         Set<String> matchedTags = new HashSet<>();
 
-        if (snapshotOfPersonlist.isEmpty()) {
+        if (snapshotOfPersonList.isEmpty()) {
             throw new CommandException(Messages.MESSAGE_EMPTY_LIST);
         }
 
-        for (Person person : snapshotOfPersonlist) {
+        for (Person person : snapshotOfPersonList) {
             if (person.getTags().isEmpty()) {
                 continue;
             }
@@ -138,50 +138,62 @@ public class DeleteCommand extends Command {
 
             if (normalizedTargetTags.containsAll(personTags)) {
                 model.deletePerson(person);
-                personsToDelete.add(person);
+                deletedPersons.add(person);
                 continue;
             }
 
-            Set<Tag> remainingTags = new HashSet<>(person.getTags());
-            boolean changed = remainingTags.removeIf(
-                    tag -> normalizedTargetTags.contains(normalizeTag(tag)));
-
-            if (changed) {
-                Person editedPerson = new Person(
-                        person.getName(),
-                        person.getPhone(),
-                        person.getEmail(),
-                        person.getAddress(),
-                        remainingTags,
-                        person.isPinned());
-                model.setPerson(person, editedPerson);
-            }
+            removeMatchingTags(model, person, normalizedTargetTags);
         }
 
-        assert model.getAddressBook().getPersonList().size() == originalSize - personsToDelete.size()
+        assert model.getAddressBook().getPersonList().size() == originalSize - deletedPersons.size()
                 : "Bulk deletion must remove exactly the matched number of contacts";
 
-        logger.info(() -> "Bulk delete removed " + personsToDelete.size()
+        logger.info(() -> "Bulk delete removed " + deletedPersons.size()
                 + " contacts from the address book");
 
+        return createTagRemovalResult(deletedPersons.size(), matchedTags);
+    }
+
+    /**
+     * Builds the result message from the deleted count and matched, normalized tag strings.
+     */
+    private CommandResult createTagRemovalResult(int deletedCount, Set<String> matchedTags) {
         if (matchedTags.isEmpty()) {
             return new CommandResult(MESSAGE_NO_MATCHING_PERSONS);
         }
 
-        String matchedTagNames = targetTags.stream()
-                .filter(tag -> matchedTags.contains(normalizeTag(tag)))
-                .map(this::normalizeTag)
-                .distinct()
+        String matchedTagNames = matchedTags.stream()
                 .sorted()
                 .collect(Collectors.joining(", "));
         String tagInstanceRemovalMessage = String.format(
                 MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS, matchedTagNames);
 
-        if (personsToDelete.isEmpty()) {
+        if (deletedCount == 0) {
             return new CommandResult(tagInstanceRemovalMessage);
         }
-        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, personsToDelete.size())
+        return new CommandResult(String.format(MESSAGE_DELETE_TAGS_SUCCESS, deletedCount)
                 + "\n" + tagInstanceRemovalMessage);
+    }
+
+    /**
+     * Removes matching tags from a person in the model, preserving all other fields and pinned status.
+     * Leaves the person unchanged if no tags match.
+     */
+    private void removeMatchingTags(Model model, Person person, Set<String> normalizedTargetTags) {
+        Set<Tag> remainingTags = new HashSet<>(person.getTags());
+        boolean changed = remainingTags.removeIf(
+                tag -> normalizedTargetTags.contains(normalizeTag(tag)));
+
+        if (changed) {
+            Person editedPerson = new Person(
+                    person.getName(),
+                    person.getPhone(),
+                    person.getEmail(),
+                    person.getAddress(),
+                    remainingTags,
+                    person.isPinned());
+            model.setPerson(person, editedPerson);
+        }
     }
 
     /**
