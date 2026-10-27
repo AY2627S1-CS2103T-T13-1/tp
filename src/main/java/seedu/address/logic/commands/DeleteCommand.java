@@ -39,14 +39,14 @@ public class DeleteCommand extends Command {
             + "Tag removal also applies to contacts hidden by the current filter.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
-            + "| -t TAG_CAT TAG_NAME...";
+            + "| -t TAG_CATEGORY TAG_NAME...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1, "
             + COMMAND_WORD + " -t others Friend -t faculty FASS";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": " + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: LIST_INDEX (must be a positive integer) | -t TAG_CAT TAG_NAME...\n"
+            + "Parameters: LIST_INDEX (must be a positive integer) | -t TAG_CATEGORY TAG_NAME...\n"
             + COMMAND_SAMPLE_USAGE;
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS =
