@@ -81,7 +81,7 @@ public class JsonSerializableAliases {
      */
     @JsonCreator
     public static JsonSerializableAliases fromJson(@JsonProperty("aliases") JsonNode aliases)
-            throws IllegalArgumentException{
+            throws IllegalArgumentException {
         if (aliases == null || !aliases.isObject()) {
             throw new IllegalArgumentException("The alias must be a valid JSON object.");
         }
