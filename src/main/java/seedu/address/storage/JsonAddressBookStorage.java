@@ -49,18 +49,18 @@ public class JsonAddressBookStorage {
      */
     public Optional<ReadOnlyAddressBook> readAddressBook(Path filePath) throws DataLoadingException {
         requireNonNull(filePath);
-
-        Optional<JsonSerializableAddressBook> jsonAddressBook = JsonUtil.readJsonFile(
-                filePath, JsonSerializableAddressBook.class);
-        if (!jsonAddressBook.isPresent()) {
-            return Optional.empty();
-        }
-
         try {
+            Optional<JsonSerializableAddressBook> jsonAddressBook =
+                    JsonUtil.readJsonFile(filePath, JsonSerializableAddressBook.class);
+
+            if (jsonAddressBook.isEmpty()) {
+                return Optional.empty();
+            }
+
             return Optional.of(jsonAddressBook.get().toModelType());
-        } catch (IllegalValueException ive) {
-            logger.info("Illegal values found in " + filePath + ": " + ive.getMessage());
-            throw new DataLoadingException(ive);
+        } catch (IllegalValueException | RuntimeException exception) {
+            logger.info("Invalid data found in " + filePath + ": " + exception.getMessage());
+            throw new DataLoadingException(exception);
         }
     }
 

@@ -7,14 +7,19 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
+import seedu.address.logic.commands.ImportRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.AddressBook;
+import seedu.address.model.ImportSummary;
 import seedu.address.model.Model;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.person.Person;
 import seedu.address.storage.Storage;
 
@@ -26,6 +31,14 @@ public class LogicManager implements Logic {
 
     public static final String FILE_OPS_PERMISSION_ERROR_FORMAT =
             "Could not save data to file %s due to insufficient permissions to write to the file or the folder.";
+
+    public static final String FILE_IMPORT_ERROR_FORMAT =
+            "Could not import contacts from %s: %s";
+
+    public static final String FILE_NOT_FOUND = "file was not found.";
+
+    public static final String FILE_INVALID_FORMAT =
+            "The file is not a valid address book JSON file.";
 
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
@@ -50,20 +63,38 @@ public class LogicManager implements Logic {
         Command command = addressBookParser.parseCommand(commandText);
         AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
-        model.commit();
 
-        boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
-        hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+        boolean isImport = commandResult.getImportRequest().isPresent();
 
         try {
+            if (isImport) {
+                commandResult = executeImport(commandResult.getImportRequest().get());
+            }
+
+            model.commit();
+
+            boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+            hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
+
                 storage.saveAddressBook(
-                        exportRequest.getAddressBook(), exportRequest.getFilePath());
-            } else if (hasUnsavedContactChanges) {
+                        exportRequest.getAddressBook(),
+                        exportRequest.getFilePath());
+
+            } else if (hasUnsavedContactChanges || isImport) {
                 storage.saveAddressBook(model.getAddressBook());
                 hasUnsavedContactChanges = false;
             }
+
+        } catch (DataLoadingException e) {
+            throw new CommandException(
+                    String.format(
+                            FILE_IMPORT_ERROR_FORMAT,
+                            commandResult.getImportRequest().orElseThrow().getFilePath(),
+                            getImportErrorMessage(e)),
+                    e);
         } catch (AccessDeniedException e) {
             throw new CommandException(
                     String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
@@ -71,7 +102,32 @@ public class LogicManager implements Logic {
             throw new CommandException(
                     String.format(FILE_OPS_ERROR_FORMAT, e.getMessage()), e);
         }
+
         return commandResult;
+    }
+
+    private String getImportErrorMessage(DataLoadingException exception) {
+        Throwable cause = exception;
+        while (cause != null) {
+            if (cause instanceof IllegalValueException || cause instanceof IllegalArgumentException) {
+                return cause.getMessage();
+            }
+            cause = cause.getCause();
+        }
+        return FILE_INVALID_FORMAT;
+    }
+
+    private CommandResult executeImport(ImportRequest importRequest)
+            throws DataLoadingException, CommandException {
+        ReadOnlyAddressBook importedAddressBook = storage
+                .readAddressBook(importRequest.getFilePath())
+                .orElseThrow(() -> new CommandException(
+                        String.format(
+                                FILE_IMPORT_ERROR_FORMAT,
+                                importRequest.getFilePath(), FILE_NOT_FOUND)));
+
+        ImportSummary summary = model.mergeAddressBook(importedAddressBook);
+        return new CommandResult(summary.getMessage());
     }
 
     @Override
