@@ -46,6 +46,22 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_explicitPath_readsProvidedFile() throws Exception {
+        Path defaultFilePath = testFolder.resolve("defaultAddressBook.json");
+        Path importedFilePath = testFolder.resolve("importedAddressBook.json");
+        JsonAddressBookStorage jsonAddressBookStorage =
+                new JsonAddressBookStorage(defaultFilePath);
+        AddressBook expectedAddressBook = getTypicalAddressBook();
+
+        jsonAddressBookStorage.saveAddressBook(expectedAddressBook, importedFilePath);
+
+        ReadOnlyAddressBook readAddressBook =
+                jsonAddressBookStorage.readAddressBook(importedFilePath).orElseThrow();
+
+        assertEquals(expectedAddressBook, new AddressBook(readAddressBook));
+    }
+
+    @Test
     public void read_notJsonFormat_exceptionThrown() {
         assertThrows(DataLoadingException.class, () -> readAddressBook("notJsonFormatAddressBook.json"));
     }
