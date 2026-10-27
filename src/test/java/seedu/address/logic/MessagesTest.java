@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 
@@ -48,5 +49,12 @@ public class MessagesTest {
 
         assertEquals(Messages.MESSAGE_DUPLICATE_PHONE_AND_EMAIL,
                 Messages.getDuplicateContactMessage(person, otherPersons));
+    }
+
+    @Test
+    public void getDuplicateContactMessage_noSharedField_throwsAssertionError() {
+        Person person = new PersonBuilder().build();
+
+        assertThrows(AssertionError.class, () -> Messages.getDuplicateContactMessage(person, otherPersons));
     }
 }
