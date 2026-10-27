@@ -223,10 +223,11 @@ public class ModelManagerTest {
         AddressBook differentAddressBook = new AddressBook();
         UserPrefs userPrefs = new UserPrefs();
 
-        // same values -> returns true
+        // same values -> returns true and hash codes are equal
         modelManager = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
         ModelManager modelManagerCopy = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
         assertTrue(modelManager.equals(modelManagerCopy));
+        assertEquals(modelManager.hashCode(), modelManagerCopy.hashCode());
 
         // same object -> returns true
         assertTrue(modelManager.equals(modelManager));
@@ -257,8 +258,9 @@ public class ModelManagerTest {
         modelManager.registerAlias("find", "f");
         assertFalse(modelManager.equals(modelManagerCopy));
 
-        // same alias mappings in separate registries -> returns true
+        // same alias mappings in separate registries -> returns true and hash codes are equal
         modelManagerCopy.registerAlias("find", "f");
         assertTrue(modelManager.equals(modelManagerCopy));
+        assertEquals(modelManager.hashCode(), modelManagerCopy.hashCode());
     }
 }
