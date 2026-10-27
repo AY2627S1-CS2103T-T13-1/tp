@@ -72,7 +72,7 @@ public interface Storage {
     /**
      * Returns alias data as an {@link AliasRegistry}.
      * Returns {@code Optional.empty()} if the storage file is not found.
-     * Invalid alias mapping are skipped with warnings, while valid mappings
+     * Invalid alias mappings are skipped with warnings, while valid mappings
      * are retained and read into memory.
      *
      * @throws DataLoadingException if the file cannot be read or deserialized.

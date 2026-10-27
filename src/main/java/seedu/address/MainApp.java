@@ -70,9 +70,11 @@ public class MainApp extends Application {
     }
 
     /**
-     * Returns a {@code ModelManager} with the data from {@code storage}'s address book and {@code userPrefs}. <br>
-     * The data from the sample address book will be used instead if {@code storage}'s address book is not found,
-     * or an empty address book will be used instead if errors occur when reading {@code storage}'s address book.
+     * Returns a {@code ModelManager} initialized with stored contacts, aliases and {@code userPrefs}.
+     * Uses sample contacts if the address book file is not found, or an empty address book
+     * if loading fails.
+     * Uses empty aliases if the alias file is missing or cannot be loaded.
+     * Invalid alias mappings are skipped with warnings, while valid mappings are retained.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getAddressBookFilePath());

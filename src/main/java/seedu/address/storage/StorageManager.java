@@ -13,7 +13,7 @@ import seedu.address.model.UserPrefs;
 import seedu.address.model.alias.AliasRegistry;
 
 /**
- * Manages storage of AddressBook data in local storage.
+ * Manages storage of address book data, user preferences and command aliases.
  */
 public class StorageManager implements Storage {
 

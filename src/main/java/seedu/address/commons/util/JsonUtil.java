@@ -73,9 +73,9 @@ public class JsonUtil {
     }
 
     /**
-     * Returns the JSON object from the given file or {@code Optional.empty()} object if the
+     * Returns the JSON value from the given file or {@code Optional.empty()} object if the
      * file is not found. Rejects duplicate field names, null root values and trailing content
-     * after said JSON object.
+     * after said value.
      *
      * @param filePath the location of the JSON file, which cannot be null.
      * @param instanceClass the non-null type to deserialize.

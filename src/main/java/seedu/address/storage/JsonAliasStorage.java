@@ -24,6 +24,7 @@ public class JsonAliasStorage {
     /**
      * Creates alias storage using the supplied {@code Path} and supported
      * command words.
+     *
      * @param filePath the location of the alias JSON file.
      * @param builtInCommandWords the supported built-in command words used
      *                            to validate loaded aliases.
@@ -42,10 +43,9 @@ public class JsonAliasStorage {
     }
 
     /**
-     * Reads aliases from the configured JSON file and validates all entries.
+     * Reads aliases from the configured JSON file and validates them.
      *
-     * @return the validated alias registry or an empty optional if the file
-     *         does not exist.
+     * @return the validated alias registry, or {@code Optional.empty()} if the file does not exist.
      * @throws DataLoadingException if the file cannot be read or deserialized.
      */
     public Optional<AliasRegistry> readAliases() throws DataLoadingException {

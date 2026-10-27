@@ -36,6 +36,7 @@ public class JsonSerializableAliases {
 
     /**
      * Converts stored aliases into an alias registry.
+     * Invalid mappings are skipped with warnings while valid mappings are registered.
      *
      * @param builtInCommandWords the supported built-in command words.
      * @return an {@code AliasRegistry} containing validated aliases.
