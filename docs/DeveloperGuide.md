@@ -409,7 +409,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case resumes from Step 1.
   
 * 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
-    * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+    * 1b1. coNnectUS displays an error message, indicating whether the phone number, email address or both are already used by another contact.
 
       Use case ends.
 
@@ -504,7 +504,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2e. The new phone number or email is the same as that of another contact already in the list.
 
-    * 2e1. coNnectUS shows an error message stating that the contact already exists.
+    * 2e1. coNnectUS shows an error message stating whether the phone number, email address or both are already used by another contact.
 
       Use case resumes at step 2.
 

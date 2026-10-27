@@ -2,6 +2,8 @@ package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_EMAIL;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_PHONE;
 import static seedu.address.logic.Messages.MESSAGE_EMPTY_LIST;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -168,12 +170,12 @@ public class LogicManagerTest {
 
     @Test
     public void execute_duplicateEmailEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB);
+        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB, MESSAGE_DUPLICATE_EMAIL);
     }
 
     @Test
     public void execute_duplicatePhoneEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(PHONE_DESC_BOB);
+        assertDuplicateEditPreservesSession(PHONE_DESC_BOB, MESSAGE_DUPLICATE_PHONE);
     }
 
     @Test
@@ -442,10 +444,11 @@ public class LogicManagerTest {
     }
 
     /**
-     * Verifies that a rejected identity-field edit leaves contacts and storage unchanged,
-     * and that subsequent list and undo commands still work without an extra history entry.
+     * Verifies that a rejected identity-field edit shows {@code expectedMessage}, leaves contacts and storage
+     * unchanged, and that subsequent list and undo commands still work without an extra history entry.
      */
-    private void assertDuplicateEditPreservesSession(String duplicateField) throws Exception {
+    private void assertDuplicateEditPreservesSession(String duplicateField, String expectedMessage)
+            throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_BOB + PHONE_DESC_BOB
@@ -455,8 +458,7 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
 
-        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField,
-                EditCommand.MESSAGE_DUPLICATE_PERSON);
+        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField, expectedMessage);
 
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
