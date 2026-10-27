@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.MissingNode;
 
 public class JsonSerializableAliasesTest {
 
@@ -52,8 +53,13 @@ public class JsonSerializableAliasesTest {
     }
 
     @Test
-    public void fromJson_nullAliases_throwsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> JsonSerializableAliases.fromJson(null));
+    public void fromJson_nullOrMissingAliases_throwsIllegalArgumentException() {
+        String expectedMessage = "Missing required property 'aliases'. "
+                + "Expected an object such as {\"aliases\":{\"f\":\"find\"}}.";
+        for (JsonNode aliases : new JsonNode[] {null, MissingNode.getInstance()}) {
+            assertThrows(IllegalArgumentException.class, expectedMessage, () ->
+                    JsonSerializableAliases.fromJson(aliases));
+        }
     }
 
     @Test
