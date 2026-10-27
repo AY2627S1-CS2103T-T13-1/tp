@@ -213,6 +213,36 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_repeatedIdenticalSort_doesNotSaveNewUndoState() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("sort name asc");
+
+        // The second sort changes neither the contacts nor the active sort rule.
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_repeatedIdenticalSortAfterUndo_preservesRedoHistory() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("delete 1");
+        assertUndoSuccess(AMY, BOB);
+
+        logic.execute("sort name asc");
+        assertEquals(List.of(AMY, BOB), model.getFilteredPersonList());
+        logic.execute(RedoCommand.COMMAND_WORD);
+        assertEquals(List.of(BOB), model.getFilteredPersonList());
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(BOB, AMY);
+    }
+
+    @Test
     public void execute_redoAfterUndo_restoresAddedPerson() throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
