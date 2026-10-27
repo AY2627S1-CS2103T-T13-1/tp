@@ -121,10 +121,21 @@ public class MainApp extends Application {
 
         AliasRegistry initialAliases;
         try {
-            initialAliases = storage.readAliases().map(AliasLoadResult::aliases)
-                    .orElseGet(() -> new AliasRegistry(BUILT_IN_COMMAND_WORDS));
+            // load the aliases
+            AliasLoadResult result = storage.readAliases().orElseGet(() ->
+                    new AliasLoadResult(new AliasRegistry(BUILT_IN_COMMAND_WORDS), List.of()));
+            initialAliases = result.aliases();
+
+            aliasLoadingWarning = formatAliasLoadingWarning(result, storage.getAliasPath());
         } catch (DataLoadingException exception) {
-            logger.warning(String.format(MESSAGE_ALIAS_LOAD_FAILED, storage.getAliasPath()));
+            // log the failure
+            String warning = String.format(MESSAGE_ALIAS_LOAD_FAILED, storage.getAliasPath());
+            logger.warning(warning);
+
+            aliasLoadingWarning = String.format(MESSAGE_ALIAS_LOAD_FAILURE_DETAILS, warning,
+                    getAliasLoadingReason(exception));
+
+            // initialize new empty alias registry on failure
             initialAliases = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
         }
         return new ModelManager(initialData, userPrefs, BUILT_IN_COMMAND_WORDS, initialAliases);
