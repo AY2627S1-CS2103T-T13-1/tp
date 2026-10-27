@@ -13,6 +13,7 @@ import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
 import seedu.address.logic.commands.ImportRequest;
+import seedu.address.logic.commands.RedoCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
@@ -134,7 +135,7 @@ public class LogicManager implements Logic {
     }
 
     private boolean isHistoryNavigationCommand(Command command) {
-        return command instanceof UndoCommand;
+        return command instanceof UndoCommand || command instanceof RedoCommand;
     }
 
     @Override
