@@ -32,11 +32,11 @@ public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
-    public static final String COMMAND_DESCRIPTION =
-            "Deletes a contact either by its displayed index, "
-                    + "or removes the specified tags (case-insensitive) from all contacts.\n"
-                    + "Contacts with no remaining tags are deleted. Contacts initially without tags are not deleted.\n"
-                    + "Tag removal also applies to contacts hidden by the current filter.";
+    public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index, "
+            + "or removes the specified tags (case-insensitive) from all contacts.\n"
+            + "Contacts with no remaining tags are deleted. "
+            + "Contacts initially without tags are not deleted.\n"
+            + "Tag removal also applies to contacts hidden by the current filter.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
             + "| -t TAG_CAT TAG_NAME...";
@@ -49,12 +49,14 @@ public class DeleteCommand extends Command {
             + "Parameters: LIST_INDEX (must be a positive integer) | -t TAG_CAT TAG_NAME...\n"
             + COMMAND_SAMPLE_USAGE;
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Successfully removed %1$s from your address book.";
+    public static final String MESSAGE_DELETE_PERSON_SUCCESS =
+            "Successfully removed %1$s from your address book.";
 
     public static final String MESSAGE_DELETE_TAGS_SUCCESS =
             "Successfully removed %d matching contact(s) from your address book.";
 
-    public static final String MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS = "All instances of tag(s) (%s) have been removed.";
+    public static final String MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS =
+            "All instances of tag(s) (%s) have been removed.";
 
     public static final String MESSAGE_NO_MATCHING_PERSONS = "No matching persons found!";
 
@@ -101,7 +103,8 @@ public class DeleteCommand extends Command {
 
         if (targetIndex != null) {
             Person personToDelete = deletePersonAtIndex(model);
-            return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
+            return new CommandResult(String.format(
+                    MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
         }
 
         return deletePeopleWithTags(model);
@@ -140,7 +143,9 @@ public class DeleteCommand extends Command {
             }
 
             Set<Tag> remainingTags = new HashSet<>(person.getTags());
-            boolean changed = remainingTags.removeIf(tag -> normalizedTargetTags.contains(normalizeTag(tag)));
+            boolean changed = remainingTags.removeIf(
+                    tag -> normalizedTargetTags.contains(normalizeTag(tag)));
+
             if (changed) {
                 Person editedPerson = new Person(
                         person.getName(),
@@ -169,7 +174,8 @@ public class DeleteCommand extends Command {
                 .distinct()
                 .sorted()
                 .collect(Collectors.joining(", "));
-        String tagInstanceRemovalMessage = String.format(MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS, matchedTagNames);
+        String tagInstanceRemovalMessage = String.format(
+                MESSAGE_REMOVE_TAG_INSTANCES_SUCCESS, matchedTagNames);
 
         if (personsToDelete.isEmpty()) {
             return new CommandResult(tagInstanceRemovalMessage);
@@ -179,7 +185,8 @@ public class DeleteCommand extends Command {
     }
 
     /**
-     * Returns lowercase tag strings in {@code category:name} format for comparison without changing the supplied tags.
+     * Returns lowercase tag strings in {@code category:name} format
+     * for comparison without changing the supplied tags.
      */
     private Set<String> normalizeTags(Set<Tag> tags) {
         return tags.stream()
