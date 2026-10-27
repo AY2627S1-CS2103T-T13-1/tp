@@ -19,6 +19,7 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.Logic;
 import seedu.address.logic.LogicManager;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
@@ -182,6 +183,12 @@ public class MainApp extends Application {
     @Override
     public void stop() {
         logger.info("============================ [ Stopping coNnectUS ] =============================");
+        try {
+            logic.savePendingAliasChanges();
+        } catch (CommandException exception) {
+            logger.severe("Failed to save pending aliases during shutdown: " + exception.getMessage());
+        }
+
         try {
             storage.saveUserPrefs(model.getUserPrefs());
         } catch (IOException e) {

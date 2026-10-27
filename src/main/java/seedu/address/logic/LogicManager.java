@@ -96,10 +96,7 @@ public class LogicManager implements Logic {
                 hasUnsavedContactChanges = false;
             }
 
-            if (hasUnsavedAliasChanges) {
-                storage.saveAliases(model.getAliasRegistry());
-                hasUnsavedAliasChanges = false;
-            }
+            savePendingAliasChanges();
 
         } catch (DataLoadingException e) {
             throw new CommandException(
@@ -156,5 +153,23 @@ public class LogicManager implements Logic {
     @Override
     public void setGuiSettings(GuiSettings guiSettings) {
         model.setGuiSettings(guiSettings);
+    }
+
+    @Override
+    public void savePendingAliasChanges() throws CommandException {
+        if (!hasUnsavedAliasChanges) {
+            return;
+        }
+
+        try {
+            storage.saveAliases(model.getAliasRegistry());
+            hasUnsavedAliasChanges = false;
+        } catch (AccessDeniedException exception) {
+            throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT,
+                    exception.getMessage()), exception);
+        } catch (IOException exception) {
+            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT,
+                    exception.getMessage()), exception);
+        }
     }
 }

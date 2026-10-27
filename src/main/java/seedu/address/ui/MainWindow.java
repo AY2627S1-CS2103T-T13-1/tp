@@ -14,6 +14,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.core.Theme;
@@ -32,6 +33,9 @@ public class MainWindow extends UiPart<Stage> {
     private static final String FXML = "MainWindow.fxml";
     private static final String MESSAGE_MISSING_THEME = "Could not load the %1$s theme because its stylesheet "
             + "is missing.";
+
+    private static final String MESSAGE_SAVE_ERROR = "The application remains open because alias changes "
+            + "could not be saved. Resolve the save error and try closing again.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -238,12 +242,27 @@ public class MainWindow extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
+        try {
+            logic.savePendingAliasChanges();
+        } catch (CommandException exception) {
+            resultDisplay.setFeedbackToUser(String.join("\n",
+                    exception.getMessage(), MESSAGE_SAVE_ERROR));
+            return;
+        }
+
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
                 (int) primaryStage.getX(), (int) primaryStage.getY(), currentTheme);
         logic.setGuiSettings(guiSettings);
         userGuideAccessWindow.hide();
         primaryStage.hide();
     }
+
+    @FXML
+    private void handleCloseRequest(WindowEvent wEvent) {
+        wEvent.consume();
+        handleExit();
+    }
+
 
     public PersonListPanel getPersonListPanel() {
         return personListPanel;
