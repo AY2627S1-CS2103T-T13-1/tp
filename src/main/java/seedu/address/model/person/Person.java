@@ -1,5 +1,6 @@
 package seedu.address.model.person;
 
+import static seedu.address.commons.util.AppUtil.checkArgument;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Collections;
@@ -43,6 +44,7 @@ public class Person {
         this.phone = phone;
         this.email = email;
         this.address = address;
+        checkArgument(tags.size() <= Tag.MAX_TAGS_PER_PERSON, Tag.MESSAGE_TOO_MANY_TAGS);
         this.tags.addAll(tags);
         this.isPinned = isPinned;
     }
