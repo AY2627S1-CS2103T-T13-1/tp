@@ -284,8 +284,8 @@ public class LogicManagerTest {
         logic = new LogicManager(model, storage);
 
         assertThrows(CommandException.class,
-                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
-                () -> logic.execute("alias find f"));
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("alias find f"));
         assertEquals(Map.of("f", "find"), model.getAliases());
         assertEquals(1, saveAttempts[0]);
 
