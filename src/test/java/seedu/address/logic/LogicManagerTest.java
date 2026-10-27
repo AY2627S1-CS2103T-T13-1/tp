@@ -396,7 +396,8 @@ public class LogicManagerTest {
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(addressBookFilePath);
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("retryUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
                 regularSaveAttempts[0]++;
