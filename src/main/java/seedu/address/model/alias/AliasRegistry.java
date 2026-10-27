@@ -72,12 +72,11 @@ public class AliasRegistry {
     }
 
     /**
-     * Validates if the supplied alias contains only ASCII upper and lower-case
-     * characters.
+     * Validates if the supplied alias contains ASCII letters only.
      *
      * @param alias The alias to validate.
-     * @return {@code true} if the alias contains one or more upper and lower-case
-     *         characters, or {@code false} otherwise.
+     * @return {@code true} if every character is an ASCII upper or lower-case letter,
+     *                      or {@code false} otherwise.
      */
     public static boolean isValidAlias(String alias) {
         requireNonNull(alias);

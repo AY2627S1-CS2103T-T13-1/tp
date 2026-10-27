@@ -23,9 +23,9 @@ public record AliasLoadResult(AliasRegistry aliases, List<String> warnings) {
     }
 
     /**
-     * Returns the number of successfully loaded alias mappings.
+     * Returns the number of successfully-loaded alias mappings in the registry.
      *
-     * @return the number of valid mappings in the alias registry.
+     * @return the number of alias mappings.
      */
     public int loadedAliasCount() {
         return aliases.size();

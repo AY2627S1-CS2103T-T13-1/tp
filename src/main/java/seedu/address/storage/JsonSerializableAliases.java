@@ -100,7 +100,7 @@ public class JsonSerializableAliases {
      * {@link #toLoadResult(Set)}.
      *
      * @param aliases the JSON object mapping aliases to command words.
-     * @return a snapshot containing only string-valued mappings.
+     * @return a snapshot containing mappings and the warnings for skipped entries.
      * @throws IllegalArgumentException if the aliases property is missing,
      *         null, or not a JSON object.
      */

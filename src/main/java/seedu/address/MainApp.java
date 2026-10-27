@@ -98,7 +98,8 @@ public class MainApp extends Application {
      * Uses sample contacts if the address book file is not found, or an empty address book
      * if loading fails.
      * Uses empty aliases if the alias file is missing or cannot be loaded.
-     * Invalid alias mappings are skipped with warnings, while valid mappings are retained.
+     * Invalid alias mappings are skipped, while valid mappings are retained.
+     * Prepares an alias-loading warning if loading issues occur.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getAddressBookFilePath());
@@ -189,7 +190,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * Formats a loading summary with up to five skipped-entry warnings and the remaining issue count.
+     * Formats an alias-loading summary.
      */
     private String formatAliasLoadingWarning(AliasLoadResult result, Path path) {
         List<String> warnings = result.warnings();
@@ -212,7 +213,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * Extracts the underlying loading failure reason.
+     * Extracts the underlying loading failure reason and uses a fallback if no message is available.
      */
     private String getAliasLoadingReason(DataLoadingException exception) {
         Throwable cause = exception;
