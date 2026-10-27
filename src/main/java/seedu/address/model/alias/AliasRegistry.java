@@ -111,6 +111,13 @@ public class AliasRegistry {
     }
 
     /**
+     * Returns the number of registered aliases.
+     */
+    public int size() {
+        return aliases.size();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override

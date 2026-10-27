@@ -21,4 +21,13 @@ public record AliasLoadResult(AliasRegistry aliases, List<String> warnings) {
         requireNonNull(aliases);
         warnings = List.copyOf(warnings);
     }
+
+    /**
+     * Returns the number of successfully loaded alias mappings.
+     *
+     * @return the number of valid mappings in the alias registry.
+     */
+    public int loadedAliasCount() {
+        return aliases.size();
+    }
 }

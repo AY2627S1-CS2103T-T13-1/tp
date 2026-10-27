@@ -3,10 +3,14 @@ package seedu.address;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -37,20 +41,40 @@ import seedu.address.ui.UiManager;
  */
 public class MainApp extends Application {
 
-    public static final String VERSION = "V1.3";
+    public static final String VERSION = "V1.5";
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "addressbook.json");
     private static final Path ALIAS_FILE_PATH = Paths.get("data", "aliases.json");
 
+    private static final int MAX_ALIAS_LOADING_ERRORS = 5;
+
+    private static final String MESSAGE_ALIAS_PARTIAL_LOAD_WARNING =
+            "Alias file: %s\nLoaded %d alias(es). Skipped %d invalid entries.\n\n%s";
+
+    private static final String MESSAGE_ADDITIONAL_ALIAS_ISSUES =
+            "\n\n…and %d more issue(s). See the log for details.";
+
     private static final String MESSAGE_ALIAS_LOAD_FAILED =
             "Alias file at %s could not be loaded. Starting with empty aliases.";
+
+    private static final String MESSAGE_ALIAS_READ_ACCESS_DENIED =
+            "The file could not be read because access was denied.";
+
+    private static final String MESSAGE_ALIAS_LOAD_REASON_UNKNOWN =
+            "The file could not be read or has an invalid format.";
+
+    private static final String MESSAGE_ALIAS_LOAD_FAILURE_DETAILS =
+            "%s\n\nReason: %s"
+                    + "\n\nCorrect the file or resolve the read error, "
+                    + "then restart the application.";
 
     protected Ui ui;
     protected Logic logic;
     protected Storage storage;
     protected Model model;
+    private String aliasLoadingWarning = "";
 
     @Override
     public void init() throws Exception {
@@ -152,5 +176,52 @@ public class MainApp extends Application {
         } catch (IOException e) {
             logger.severe("Failed to save preferences " + StringUtil.getDetails(e));
         }
+    }
+
+    /**
+     * Formats a loading summary with up to five skipped-entry warnings and the remaining issue count.
+     */
+    private String formatAliasLoadingWarning(AliasLoadResult result, Path path) {
+        List<String> warnings = result.warnings();
+        if (warnings.isEmpty()) {
+            return "";
+        }
+
+        // prepare only warning items to display
+        int displayedCount = Math.min(MAX_ALIAS_LOADING_ERRORS, warnings.size());
+        String details = String.join("\n\n", warnings.subList(0, displayedCount));
+
+        int remaining = warnings.size() - displayedCount;
+        if (remaining > 0) {
+            details += String.format(MESSAGE_ADDITIONAL_ALIAS_ISSUES, remaining);
+        }
+
+        return String.format(MESSAGE_ALIAS_PARTIAL_LOAD_WARNING, path, result.loadedAliasCount(),
+                warnings.size(), details);
+    }
+
+    /**
+     * Extracts the underlying loading failure reason.
+     */
+    private String getAliasLoadingReason(DataLoadingException exception) {
+        Throwable cause = exception;
+
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+
+        if (cause instanceof AccessDeniedException) {
+            return MESSAGE_ALIAS_READ_ACCESS_DENIED;
+        }
+
+        if (cause instanceof JsonProcessingException jsonException) {
+            return jsonException.getOriginalMessage();
+        }
+
+        String message = cause.getMessage();
+        if (message == null || message.isBlank()) {
+            return MESSAGE_ALIAS_LOAD_REASON_UNKNOWN;
+        }
+        return message;
     }
 }
