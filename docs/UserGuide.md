@@ -226,7 +226,7 @@ Reverses the most recent command that changed your contact list.
 
 Format: `undo`
 
-* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin`, `unpin`, `import`, `sort`, `import`.
+* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin`, `unpin`, `import`, `sort`.
 * Other commands, such as `list`, `find`, `theme` and `alias`, are skipped. `undo` reverses the most recent command that changed your contact list.
   * Using undo after a sort restores the previous sorting criteria, even if the contact list itself was unchanged.
 * You can use `undo` several times in a row to reverse earlier changes one at a time.
