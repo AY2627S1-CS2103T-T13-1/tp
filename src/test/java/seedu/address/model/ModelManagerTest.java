@@ -18,6 +18,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.PersonComparatorFactory;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
@@ -48,6 +49,18 @@ public class ModelManagerTest {
         UserPrefs oldUserPrefs = new UserPrefs(userPrefs);
         userPrefs.setGuiSettings(new GuiSettings(5, 6, 7, 8));
         assertEquals(oldUserPrefs, modelManager.getUserPrefs());
+    }
+
+    @Test
+    public void constructor_validAliases_copiesAliases() {
+        AliasRegistry aliases = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        aliases.register("find", "f");
+        modelManager = new ModelManager(new AddressBook(), new UserPrefs(), BUILT_IN_COMMAND_WORDS, aliases);
+
+        assertEquals(Map.of("f", "find"), modelManager.getAliases());
+
+        aliases.deleteAlias("f");
+        assertEquals(Map.of("f", "find"), modelManager.getAliases());
     }
 
     @Test
@@ -299,10 +312,11 @@ public class ModelManagerTest {
         AddressBook differentAddressBook = new AddressBook();
         UserPrefs userPrefs = new UserPrefs();
 
-        // same values -> returns true
+        // same values -> returns true and hash codes are equal
         modelManager = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
         ModelManager modelManagerCopy = new ModelManager(addressBook, userPrefs, BUILT_IN_COMMAND_WORDS);
         assertTrue(modelManager.equals(modelManagerCopy));
+        assertEquals(modelManager.hashCode(), modelManagerCopy.hashCode());
 
         // same object -> returns true
         assertTrue(modelManager.equals(modelManager));
@@ -333,8 +347,9 @@ public class ModelManagerTest {
         modelManager.registerAlias("find", "f");
         assertFalse(modelManager.equals(modelManagerCopy));
 
-        // same alias mappings in separate registries -> returns true
+        // same alias mappings in separate registries -> returns true and hash codes are equal
         modelManagerCopy.registerAlias("find", "f");
         assertTrue(modelManager.equals(modelManagerCopy));
+        assertEquals(modelManager.hashCode(), modelManagerCopy.hashCode());
     }
 }

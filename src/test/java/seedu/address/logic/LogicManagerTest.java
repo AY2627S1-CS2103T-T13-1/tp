@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
@@ -39,6 +40,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -47,8 +49,10 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
+import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.AddressBookBuilder;
@@ -69,7 +73,8 @@ public class LogicManagerTest {
         JsonAddressBookStorage addressBookStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS));
         logic = new LogicManager(model, storage);
     }
 
@@ -192,32 +197,20 @@ public class LogicManagerTest {
     public void execute_clearAfterSaveFailure_retriesSavingUnchangedContacts() throws Exception {
         model.addPerson(AMY);
         AddressBook originalContacts = new AddressBook(model.getAddressBook());
-        JsonAddressBookStorage addressBookStorage =
-                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        addressBookStorage.saveAddressBook(originalContacts);
-        JsonUserPrefsStorage userPrefsStorage =
-                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
-        boolean[] storageUnwritable = {true};
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
-                if (storageUnwritable[0]) {
-                    throw DUMMY_AD_EXCEPTION;
-                }
-                super.saveAddressBook(addressBook);
-            }
-        };
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAddressBook(originalContacts);
+        storage.contactSaveException = DUMMY_AD_EXCEPTION;
         logic = new LogicManager(model, storage);
 
         assertThrows(CommandException.class, () -> logic.execute(ClearCommand.COMMAND_WORD));
         assertEquals(new AddressBook(), model.getAddressBook());
-        assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
+        assertEquals(originalContacts, storage.readAddressBook().orElseThrow());
 
-        storageUnwritable[0] = false;
+        storage.contactSaveException = null;
         CommandResult result = logic.execute(ClearCommand.COMMAND_WORD);
 
         assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
-        assertEquals(new AddressBook(), addressBookStorage.readAddressBook().orElseThrow());
+        assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -226,22 +219,8 @@ public class LogicManagerTest {
         model.registerAlias("find", "f");
         AddressBook originalContacts = new AddressBook(model.getAddressBook());
 
-        JsonAddressBookStorage addressBookStorage =
-                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        JsonUserPrefsStorage userPrefsStorage =
-                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
-
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) {
-                throw new AssertionError("Deleting an alias must not save contacts.");
-            }
-
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
-                throw new AssertionError("Deleting an alias must not export contacts.");
-            }
-        };
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAliases(model.getAliasRegistry());
         logic = new LogicManager(model, storage);
 
         CommandResult result = logic.execute("delete_alias f");
@@ -250,7 +229,76 @@ public class LogicManagerTest {
                 new CommandResult(String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f")),
                 result);
         assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(0, storage.contactSaveAttempts);
+    }
+
+    @Test
+    public void execute_aliasSaveFails_retriesOnNextCommandAndStopsAfterSuccess() throws Exception {
+        model.addPerson(AMY);
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+        logic = new LogicManager(model, storage);
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("alias find f"));
+        assertEquals(Map.of("f", "find"), model.getAliases());
+        assertEquals(1, storage.aliasSaveAttempts);
+
+        // An unrelated, non-mutating command must still return success while the retry fails.
+        CommandResult failedRetryResult = logic.execute(ListCommand.COMMAND_WORD);
+        assertTrue(failedRetryResult.getFeedbackToUser().contains(ListCommand.MESSAGE_SUCCESS));
+        assertTrue(failedRetryResult.getFeedbackToUser().contains(
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage())));
+        assertEquals(2, storage.aliasSaveAttempts);
+
+        storage.aliasSaveException = null;
+        CommandResult recoveredResult = logic.execute(ListCommand.COMMAND_WORD);
+
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), recoveredResult);
+        assertEquals(3, storage.aliasSaveAttempts);
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute(ListCommand.COMMAND_WORD));
+        assertEquals(3, storage.aliasSaveAttempts);
+    }
+
+    @Test
+    public void execute_deleteWhileAliasSaveFails_returnsSuccessAndWarningAndPersistsDeletion() throws Exception {
+        model.addPerson(AMY);
+        model.addPerson(BOB);
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAddressBook(model.getAddressBook());
+        storage.aliasSaveException = DUMMY_AD_EXCEPTION;
+        logic = new LogicManager(model, storage);
+        assertThrows(CommandException.class, () -> logic.execute("alias find f"));
+
+        CommandResult result = logic.execute("delete 1");
+
+        assertTrue(result.getFeedbackToUser().contains(
+                String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY))));
+        assertTrue(result.getFeedbackToUser().contains(String.format(
+                LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage())));
+        assertEquals(List.of(BOB), model.getAddressBook().getPersonList());
+        assertEquals(List.of(BOB), storage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(2, storage.aliasSaveAttempts);
+    }
+
+    @Test
+    public void execute_themeWhileAliasSaveFails_preservesThemeAndSuccessFeedbackWithWarning() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+        logic = new LogicManager(model, storage);
+        assertThrows(CommandException.class, () -> logic.execute("alias find f"));
+
+        CommandResult result = logic.execute("theme light");
+
+        assertTrue(result.getFeedbackToUser().contains(ThemeCommand.getSuccessMessage(Theme.LIGHT)));
+        assertTrue(result.getFeedbackToUser().contains(
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage())));
+        assertEquals(Theme.LIGHT, result.getTheme().orElseThrow());
     }
 
     @Test
@@ -264,7 +312,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("exportAddressBook.json"));
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("exportUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
                 exportedAddressBooks.add(addressBook);
@@ -386,21 +435,8 @@ public class LogicManagerTest {
         Path importFilePath = temporaryFolder.resolve("contactsToRetry.json");
         new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
 
-        Path addressBookFilePath = temporaryFolder.resolve("addressBookToRetry.json");
-        int[] regularSaveAttempts = {0};
-        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(addressBookFilePath);
-        JsonUserPrefsStorage userPrefsStorage =
-                new JsonUserPrefsStorage(temporaryFolder.resolve("retryUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
-                regularSaveAttempts[0]++;
-                if (regularSaveAttempts[0] == 1) {
-                    throw DUMMY_IO_EXCEPTION;
-                }
-                super.saveAddressBook(addressBook);
-            }
-        };
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.contactSaveException = DUMMY_IO_EXCEPTION;
         logic = new LogicManager(model, storage);
 
         Model expectedModel = new ModelManager(
@@ -412,14 +448,15 @@ public class LogicManagerTest {
                 CommandException.class,
                 String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
                 expectedModel);
-        assertEquals(1, regularSaveAttempts[0]);
+        assertEquals(1, storage.contactSaveAttempts);
 
+        storage.contactSaveException = null;
         CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
 
         assertEquals(ListCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
-        assertEquals(2, regularSaveAttempts[0]);
+        assertEquals(2, storage.contactSaveAttempts);
         assertEquals(importedAddressBook,
-                new AddressBook(addressBookStorage.readAddressBook().orElseThrow()));
+                new AddressBook(storage.readAddressBook().orElseThrow()));
     }
 
     @Test
@@ -532,20 +569,8 @@ public class LogicManagerTest {
      * @param expectedMessage the message expected inside exception thrown by the Logic component
      */
     private void assertCommandFailureForExceptionFromStorage(IOException e, String expectedMessage) {
-        Path prefPath = temporaryFolder.resolve("ExceptionUserPrefs.json");
-
-        // Inject LogicManager with a JsonAddressBookStorage that throws the IOException e when saving
-        JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(prefPath) {
-            @Override
-            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
-                throw e;
-            }
-        };
-
-        JsonUserPrefsStorage userPrefsStorage =
-                new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
-
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.contactSaveException = e;
         logic = new LogicManager(model, storage);
 
         // Triggers the saveAddressBook method by executing an add command
@@ -565,7 +590,8 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("exportExceptionAddressBook.json"));
         JsonUserPrefsStorage userPrefsStorage =
                 new JsonUserPrefsStorage(temporaryFolder.resolve("exportExceptionUserPrefs.json"));
-        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage) {
+        StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage,
+                new JsonAliasStorage(temporaryFolder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS)) {
             @Override
             public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException {
                 throw exception;
@@ -577,5 +603,44 @@ public class LogicManagerTest {
             }
         };
         logic = new LogicManager(model, storage);
+    }
+
+    /**
+     * Tracks save attempts and simulates write failures while retaining real JSON persistence.
+     */
+    private static class TestStorageManager extends StorageManager {
+        private int contactSaveAttempts;
+        private int aliasSaveAttempts;
+        private IOException contactSaveException;
+        private IOException aliasSaveException;
+
+        TestStorageManager(Path folder) {
+            super(new JsonAddressBookStorage(folder.resolve("addressBook.json")),
+                    new JsonUserPrefsStorage(folder.resolve("userPrefs.json")),
+                    new JsonAliasStorage(folder.resolve("aliases.json"), BUILT_IN_COMMAND_WORDS));
+        }
+
+        @Override
+        public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+            contactSaveAttempts++;
+            if (contactSaveException != null) {
+                throw contactSaveException;
+            }
+            super.saveAddressBook(addressBook);
+        }
+
+        @Override
+        public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
+            throw new AssertionError("These commands must not export contacts.");
+        }
+
+        @Override
+        public void saveAliases(AliasRegistry aliases) throws IOException {
+            aliasSaveAttempts++;
+            if (aliasSaveException != null) {
+                throw aliasSaveException;
+            }
+            super.saveAliases(aliases);
+        }
     }
 }
