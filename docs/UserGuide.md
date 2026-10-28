@@ -141,9 +141,9 @@ Examples:
 
 ### Deleting a person or multiple people: `delete`
 
-Deletes either the specified person (based on list index), or people matching the supplied tag set from the address book.
+Deletes either the specified person (based on list index), or removes all instances of the specified tags.
 
-Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
+Format: `delete INDEX` | `delete -t TAG_CATEGORY TAG_NAME...`
 
 <ins>__Index-based deletion:__</ins>
 
@@ -152,18 +152,17 @@ Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 * The index **must be a positive integer** 1, 2, 3, ...
 
 <ins>__Tag-based deletion:__</ins>
-
-* Deletes people whose __complete set of tags exactly matches the supplied tags__. 
+* Deletes a person if the supplied tags cover all existing tags. Additional supplied tags do not prevent deletion.
+* Removes matching tag instances from each person and retains the person if other tags still remain after removal.
 * One or more tags can be specified.
-* Matching people not displayed in the active filter will still be deleted.
+* Matching people not displayed in the active filter can still be deleted, or have their tags removed.
 * Tag categories and tag names are compared case-insensitively. 
-* If there are no matches, no deletion will occur.
 
 Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
-* `delete -t faculty Science` deletes all people with only the faculty tag `Science`.
-* `delete -t module TJ3000 -t others Badminton` deletes all people with only the module tag `TJ3000` and others tag `Badminton`. (Persons missing any of the exact tags OR having extra tags will __not__ be matched)
+* `delete -t faculty Science` deletes all people with only the faculty tag `Science`, and removes only tag `Science` from people with the tag, provided other tags still remain.
+* `delete -t module TJ3000 -t others Badminton` deletes all people with only module Tag `TJ3000`, only others Tag `Badminton`, and people with both. Instances of both tags are also removed.
 
 ### Pinning and unpinning a person
 
@@ -254,7 +253,7 @@ Examples:
 
 Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
 
-Format: `theme dark` or `theme light`
+Format: `theme dark` | `theme light`
 
 * The theme name is not case-sensitive. For example, `theme LIGHT` works the same as `theme light`.
 * You can also click the **Dark** / **Light** button at the right end of the menu bar to switch to the other theme.
@@ -315,13 +314,13 @@ Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
 **Clear**  | `clear`
-**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`
+**Delete** | `delete INDEX` \| `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
 **Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **Pin**    | `pin INDEX`
 **Unpin**  | `unpin INDEX`
 **List**   | `list`
-**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
+**Theme**  | `theme dark` \| `theme light`<br> e.g., `theme light`
 **Undo**   | `undo`
 **Redo**   | `redo`
 **Help**   | `help`
