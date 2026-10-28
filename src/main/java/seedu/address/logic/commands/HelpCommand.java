@@ -12,6 +12,10 @@ public class HelpCommand extends Command {
 
     public static final String COMMAND_DESCRIPTION = "Displays this help menu.";
 
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
+            + COMMAND_DESCRIPTION + "\n"
+            + "Example: " + COMMAND_WORD;
+
     public static final String SHOWING_HELP_MESSAGE = "Help Menu\n========\n"
             + String.join("\n\n",
             formatHelpEntry(
