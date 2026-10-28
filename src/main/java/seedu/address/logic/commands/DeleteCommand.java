@@ -33,12 +33,12 @@ public class DeleteCommand extends Command {
     public static final String COMMAND_WORD = "delete";
 
     public static final String COMMAND_DESCRIPTION = "Deletes a contact either by its displayed index, "
-            + "or removes the specified tags from all contacts.\nContacts with no remaining tags are deleted.";
+            + "or removes the specified tags from all contacts.\nContacts that lose their last tag are deleted.";
 
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
             + "| -t TAG_CATEGORY TAG_NAME...";
 
-    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1; "
+    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1\nAnother Example: "
             + COMMAND_WORD + " -t others Friend -t faculty FASS";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
