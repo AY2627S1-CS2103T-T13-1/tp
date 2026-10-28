@@ -9,6 +9,7 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import java.util.Optional;
 import java.util.Set;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.tag.Tag;
 
@@ -31,6 +32,7 @@ public class SearchCriteriaParser {
 
     /**
      * Parses contact search criteria from tokenized command arguments.
+     * Normalizes Unicode whitespace in the name criterion to single spaces before validation.
      *
      * @param arguments the tokenized command arguments containing the search
      *                  criteria
@@ -41,7 +43,7 @@ public class SearchCriteriaParser {
             throws ParseException {
 
         Optional<String> name = arguments.getValue(PREFIX_NAME)
-                .map(value -> value.trim().replaceAll("\\s+", " "));
+                .map(value -> StringUtil.stripWhitespace(value).replaceAll("(?U)\\s+", " "));
 
         Optional<String> phone = arguments.getValue(PREFIX_PHONE);
         Optional<String> email = arguments.getValue(PREFIX_EMAIL);
