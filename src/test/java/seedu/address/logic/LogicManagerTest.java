@@ -29,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.commons.core.Theme;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
@@ -39,6 +40,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.ThemeCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -245,14 +247,58 @@ public class LogicManagerTest {
         assertEquals(Map.of("f", "find"), model.getAliases());
         assertEquals(1, storage.aliasSaveAttempts);
 
-        storage.aliasSaveException = null;
-        logic.execute(ListCommand.COMMAND_WORD);
-
+        // An unrelated, non-mutating command must still return success while the retry fails.
+        CommandResult failedRetryResult = logic.execute(ListCommand.COMMAND_WORD);
+        assertTrue(failedRetryResult.getFeedbackToUser().contains(ListCommand.MESSAGE_SUCCESS));
+        assertTrue(failedRetryResult.getFeedbackToUser().contains(
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage())));
         assertEquals(2, storage.aliasSaveAttempts);
+
+        storage.aliasSaveException = null;
+        CommandResult recoveredResult = logic.execute(ListCommand.COMMAND_WORD);
+
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), recoveredResult);
+        assertEquals(3, storage.aliasSaveAttempts);
         assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
 
-        logic.execute(ListCommand.COMMAND_WORD);
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute(ListCommand.COMMAND_WORD));
+        assertEquals(3, storage.aliasSaveAttempts);
+    }
+
+    @Test
+    public void execute_deleteWhileAliasSaveFails_returnsSuccessAndWarningAndPersistsDeletion() throws Exception {
+        model.addPerson(AMY);
+        model.addPerson(BOB);
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAddressBook(model.getAddressBook());
+        storage.aliasSaveException = DUMMY_AD_EXCEPTION;
+        logic = new LogicManager(model, storage);
+        assertThrows(CommandException.class, () -> logic.execute("alias find f"));
+
+        CommandResult result = logic.execute("delete 1");
+
+        assertTrue(result.getFeedbackToUser().contains(
+                String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY))));
+        assertTrue(result.getFeedbackToUser().contains(String.format(
+                LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, DUMMY_AD_EXCEPTION.getMessage())));
+        assertEquals(List.of(BOB), model.getAddressBook().getPersonList());
+        assertEquals(List.of(BOB), storage.readAddressBook().orElseThrow().getPersonList());
         assertEquals(2, storage.aliasSaveAttempts);
+    }
+
+    @Test
+    public void execute_themeWhileAliasSaveFails_preservesThemeAndSuccessFeedbackWithWarning() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+        logic = new LogicManager(model, storage);
+        assertThrows(CommandException.class, () -> logic.execute("alias find f"));
+
+        CommandResult result = logic.execute("theme light");
+
+        assertTrue(result.getFeedbackToUser().contains(ThemeCommand.getSuccessMessage(Theme.LIGHT)));
+        assertTrue(result.getFeedbackToUser().contains(
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage())));
+        assertEquals(Theme.LIGHT, result.getTheme().orElseThrow());
     }
 
     @Test
