@@ -10,19 +10,32 @@ public class HelpCommand extends Command {
 
     public static final String COMMAND_WORD = "help";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Shows program usage instructions.\n"
-            + "Example: " + COMMAND_WORD;
+    public static final String COMMAND_DESCRIPTION = "Displays this help menu.";
 
     public static final String SHOWING_HELP_MESSAGE = "Help Menu\n========\n"
             + String.join("\n\n",
+            formatHelpEntry(
+                    HelpCommand.COMMAND_WORD,
+                    HelpCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
                     AddCommand.COMMAND_SYNTAX,
                     AddCommand.COMMAND_DESCRIPTION,
                     AddCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
+                    ListCommand.COMMAND_WORD,
+                    ListCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
+                    EditCommand.COMMAND_SYNTAX,
+                    EditCommand.COMMAND_DESCRIPTION,
+                    EditCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
                     DeleteCommand.COMMAND_SYNTAX,
                     DeleteCommand.COMMAND_DESCRIPTION,
                     DeleteCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
+                    FindCommand.COMMAND_SYNTAX,
+                    FindCommand.COMMAND_DESCRIPTION,
+                    FindCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
                     PinCommand.COMMAND_SYNTAX,
                     PinCommand.COMMAND_DESCRIPTION,
@@ -32,16 +45,9 @@ public class HelpCommand extends Command {
                     UnpinCommand.COMMAND_DESCRIPTION,
                     UnpinCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
-                    ListCommand.COMMAND_WORD,
-                    ListCommand.COMMAND_DESCRIPTION),
-            formatHelpEntry(
-                    FindCommand.COMMAND_SYNTAX,
-                    FindCommand.COMMAND_DESCRIPTION,
-                    FindCommand.COMMAND_SAMPLE_USAGE),
-            formatHelpEntry(
-                    EditCommand.COMMAND_SYNTAX,
-                    EditCommand.COMMAND_DESCRIPTION,
-                    EditCommand.COMMAND_SAMPLE_USAGE),
+                    SortCommand.COMMAND_SYNTAX,
+                    SortCommand.COMMAND_DESCRIPTION,
+                    SortCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
                     AliasCommand.COMMAND_SYNTAX,
                     AliasCommand.COMMAND_DESCRIPTION,
@@ -60,27 +66,22 @@ public class HelpCommand extends Command {
                     RedoCommand.COMMAND_WORD,
                     RedoCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
-                    ClearCommand.COMMAND_WORD,
-                    ClearCommand.COMMAND_DESCRIPTION),
-            formatHelpEntry(
-                    ThemeCommand.COMMAND_SYNTAX,
-                    ThemeCommand.COMMAND_DESCRIPTION),
-            formatHelpEntry(
-                    ExitCommand.COMMAND_WORD,
-                    ExitCommand.COMMAND_DESCRIPTION),
-            formatHelpEntry(
                     ExportCommand.COMMAND_SYNTAX,
                     ExportCommand.COMMAND_DESCRIPTION,
                     ExportCommand.COMMAND_SAMPLE_USAGE),
             formatHelpEntry(
-                    SortCommand.COMMAND_SYNTAX,
-                    SortCommand.COMMAND_DESCRIPTION,
-                    SortCommand.COMMAND_SAMPLE_USAGE),
-            formatHelpEntry(
                     ImportCommand.COMMAND_SYNTAX,
                     ImportCommand.COMMAND_DESCRIPTION,
-                    ImportCommand.COMMAND_SAMPLE_USAGE
-            ),
+                    ImportCommand.COMMAND_SAMPLE_USAGE),
+            formatHelpEntry(
+                    ThemeCommand.COMMAND_SYNTAX,
+                    ThemeCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
+                    ClearCommand.COMMAND_WORD,
+                    ClearCommand.COMMAND_DESCRIPTION),
+            formatHelpEntry(
+                    ExitCommand.COMMAND_WORD,
+                    ExitCommand.COMMAND_DESCRIPTION),
             formatHelpEntry(
                     "User Guide Link: " + AppConstants.USERGUIDE_URL));
 
