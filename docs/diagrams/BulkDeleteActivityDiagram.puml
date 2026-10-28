@@ -1,0 +1,29 @@
+@startuml
+skin rose
+skinparam ActivityFontSize 15
+skinparam ArrowFontSize 12
+
+start
+:Receive valid tags to remove;
+note right
+  Match tags by category and name,
+  ignoring case. Consider all contacts,
+  including those hidden by a filter.
+end note
+
+while () is ([Contacts left to check])
+    :Select next contact;
+    if () then ([Contact has matching tags])
+        if () then ([Supplied tags cover\n all of contact's tags])
+            :Delete the contact;
+        else ([No])
+            :Remove matching tag instances\nand retain the contact;
+        endif
+    else ([No])
+        :Leave contact unchanged;
+    endif
+endwhile ([No])
+
+:Display command result;
+stop
+@enduml

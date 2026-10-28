@@ -189,6 +189,19 @@ The pin feature makes use of sorting to ensure pinned contacts are displayed on 
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
 
+### Bulk deletion by tags
+
+Users can remove specified tags from all contacts using `delete -t TAG_CATEGORY TAG_NAME...`. Contacts with no remaining tags are deleted. The effect is that all instances of tags specified will be removed.
+
+<puml src="diagrams/BulkDeleteActivityDiagram.puml" alt="Activity of bulk deletion by tags" />
+
+The `bulk deletion` feature:
+* matches tags by category and name, ignoring case.
+* considers all contacts in the address book, including those hidden by the current filter.
+* deletes a contact if the supplied tags cover all of its existing tags. Additional supplied tags do not prevent deletion.
+* removes matching tag instances and retains the contact if other tags still remain.
+* leaves contacts with no matching tags unchanged, including contacts that initially have no tags.
+
 ### Setting an `alias` for a command
 
 Users are able to set aliases for commands, enabling a more customized experience when using coNnectUS.
