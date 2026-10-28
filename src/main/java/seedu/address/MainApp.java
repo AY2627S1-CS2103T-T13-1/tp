@@ -1,10 +1,16 @@
 package seedu.address;
 
+import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
+
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -13,15 +19,18 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.Logic;
 import seedu.address.logic.LogicManager;
-import seedu.address.logic.commands.CommandCatalog;
+import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.util.SampleDataUtil;
+import seedu.address.storage.AliasLoadResult;
 import seedu.address.storage.JsonAddressBookStorage;
+import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.Storage;
 import seedu.address.storage.StorageManager;
@@ -33,16 +42,39 @@ import seedu.address.ui.UiManager;
  */
 public class MainApp extends Application {
 
-    public static final String VERSION = "V1.3";
+    public static final String VERSION = "V1.5";
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     private static final Path ADDRESS_BOOK_FILE_PATH = Paths.get("data", "addressbook.json");
+    private static final Path ALIAS_FILE_PATH = Paths.get("data", "aliases.json");
+
+    private static final int MAX_ALIAS_LOADING_ERRORS = 5;
+
+    private static final String MESSAGE_ALIAS_PARTIAL_LOAD_WARNING =
+            "Alias file: %s\nLoaded %d alias(es). Skipped %d invalid entries.\n%s";
+
+    private static final String MESSAGE_ADDITIONAL_ALIAS_ISSUES =
+            "\n\n…and %d more issue(s). See the execution log for details.";
+
+    private static final String MESSAGE_ALIAS_LOAD_FAILED =
+            "Alias file at %s could not be loaded. Starting with empty aliases.";
+
+    private static final String MESSAGE_ALIAS_READ_ACCESS_DENIED =
+            "The file could not be read because access was denied.";
+
+    private static final String MESSAGE_ALIAS_LOAD_REASON_UNKNOWN =
+            "The file could not be read or has an invalid format.";
+
+    private static final String MESSAGE_ALIAS_LOAD_FAILURE_DETAILS =
+            String.join("\n", "%s", "Reason: %s" ,
+                    "Correct the file or resolve the read error, then restart the application.");
 
     protected Ui ui;
     protected Logic logic;
     protected Storage storage;
     protected Model model;
+    private String aliasLoadingWarning = "";
 
     @Override
     public void init() throws Exception {
@@ -52,19 +84,23 @@ public class MainApp extends Application {
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
         JsonAddressBookStorage addressBookStorage = new JsonAddressBookStorage(ADDRESS_BOOK_FILE_PATH);
-        storage = new StorageManager(addressBookStorage, userPrefsStorage);
+        JsonAliasStorage aliasStorage = new JsonAliasStorage(ALIAS_FILE_PATH, BUILT_IN_COMMAND_WORDS);
+        storage = new StorageManager(addressBookStorage, userPrefsStorage, aliasStorage);
 
         model = initModelManager(storage, userPrefs);
 
         logic = new LogicManager(model, storage);
 
-        ui = new UiManager(logic, storage.getAddressBookFilePath());
+        ui = new UiManager(logic, storage.getAddressBookFilePath(), aliasLoadingWarning);
     }
 
     /**
-     * Returns a {@code ModelManager} with the data from {@code storage}'s address book and {@code userPrefs}. <br>
-     * The data from the sample address book will be used instead if {@code storage}'s address book is not found,
-     * or an empty address book will be used instead if errors occur when reading {@code storage}'s address book.
+     * Returns a {@code ModelManager} initialized with stored contacts, aliases and {@code userPrefs}.
+     * Uses sample contacts if the address book file is not found, or an empty address book
+     * if loading fails.
+     * Uses empty aliases if the alias file is missing or cannot be loaded.
+     * Invalid alias mappings are skipped, while valid mappings are retained.
+     * Prepares an alias-loading warning if loading issues occur.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getAddressBookFilePath());
@@ -84,7 +120,26 @@ public class MainApp extends Application {
             initialData = new AddressBook();
         }
 
-        return new ModelManager(initialData, userPrefs, CommandCatalog.BUILT_IN_COMMAND_WORDS);
+        AliasRegistry initialAliases;
+        try {
+            // load the aliases
+            AliasLoadResult result = storage.readAliases().orElseGet(() ->
+                    new AliasLoadResult(new AliasRegistry(BUILT_IN_COMMAND_WORDS), List.of()));
+            initialAliases = result.aliases();
+
+            aliasLoadingWarning = formatAliasLoadingWarning(result, storage.getAliasPath());
+        } catch (DataLoadingException exception) {
+            // log the failure
+            String warning = String.format(MESSAGE_ALIAS_LOAD_FAILED, storage.getAliasPath());
+            logger.warning(warning);
+
+            aliasLoadingWarning = String.format(MESSAGE_ALIAS_LOAD_FAILURE_DETAILS, warning,
+                    getAliasLoadingReason(exception));
+
+            // initialize new empty alias registry on failure
+            initialAliases = new AliasRegistry(BUILT_IN_COMMAND_WORDS);
+        }
+        return new ModelManager(initialData, userPrefs, BUILT_IN_COMMAND_WORDS, initialAliases);
     }
 
     /**
@@ -129,9 +184,63 @@ public class MainApp extends Application {
     public void stop() {
         logger.info("============================ [ Stopping coNnectUS ] =============================");
         try {
+            logic.savePendingAliasChanges();
+        } catch (CommandException exception) {
+            logger.severe("Failed to save pending aliases during shutdown: " + exception.getMessage());
+        }
+
+        try {
             storage.saveUserPrefs(model.getUserPrefs());
         } catch (IOException e) {
             logger.severe("Failed to save preferences " + StringUtil.getDetails(e));
         }
+    }
+
+    /**
+     * Formats an alias-loading summary.
+     */
+    private String formatAliasLoadingWarning(AliasLoadResult result, Path path) {
+        List<String> warnings = result.warnings();
+        if (warnings.isEmpty()) {
+            return "";
+        }
+
+        // prepare only warning items to display
+        int displayedCount = Math.min(MAX_ALIAS_LOADING_ERRORS, warnings.size());
+        String details = "- " + String.join(
+                "\n- ", warnings.subList(0, displayedCount));
+
+        int remaining = warnings.size() - displayedCount;
+        if (remaining > 0) {
+            details += String.format(MESSAGE_ADDITIONAL_ALIAS_ISSUES, remaining);
+        }
+
+        return String.format(MESSAGE_ALIAS_PARTIAL_LOAD_WARNING, path, result.loadedAliasCount(),
+                warnings.size(), details);
+    }
+
+    /**
+     * Extracts the underlying loading failure reason and uses a fallback if no message is available.
+     */
+    private String getAliasLoadingReason(DataLoadingException exception) {
+        Throwable cause = exception;
+
+        while (cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+
+        if (cause instanceof AccessDeniedException) {
+            return MESSAGE_ALIAS_READ_ACCESS_DENIED;
+        }
+
+        if (cause instanceof JsonProcessingException jsonException) {
+            return jsonException.getOriginalMessage();
+        }
+
+        String message = cause.getMessage();
+        if (message == null || message.isBlank()) {
+            return MESSAGE_ALIAS_LOAD_REASON_UNKNOWN;
+        }
+        return message;
     }
 }

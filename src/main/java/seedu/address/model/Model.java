@@ -105,7 +105,7 @@ public interface Model {
     void redo();
 
     /**
-     * Returns the alias registry of the current application session.
+     * Returns the alias registry managed by this model.
      */
     AliasRegistry getAliasRegistry();
 

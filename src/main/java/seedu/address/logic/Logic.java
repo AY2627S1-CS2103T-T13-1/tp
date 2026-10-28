@@ -32,4 +32,11 @@ public interface Logic {
      * Set the user prefs' GUI settings.
      */
     void setGuiSettings(GuiSettings guiSettings);
+
+    /**
+     * Saves pending alias changes.
+     *
+     * @throws CommandException if pending changes cannot be saved.
+     */
+    void savePendingAliasChanges() throws CommandException;
 }
