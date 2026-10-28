@@ -38,7 +38,7 @@ public class DeleteCommand extends Command {
     public static final String COMMAND_SYNTAX = COMMAND_WORD + " LIST_INDEX "
             + "| -t TAG_CATEGORY TAG_NAME...";
 
-    public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1\nAnother Example: "
+    public static final String COMMAND_SAMPLE_USAGE = "Examples:\n   " + COMMAND_WORD + " 1\n   "
             + COMMAND_WORD + " -t others Friend -t faculty FASS";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
