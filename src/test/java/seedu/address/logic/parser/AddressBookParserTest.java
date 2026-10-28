@@ -113,6 +113,16 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_unicodeWhitespace_returnsFindCommandWithHyphenatedTag() throws Exception {
+        FindCommand expected = new FindCommand(new PersonMatchesCriteriaPredicate(
+                Optional.of("Alice"), Optional.empty(), Optional.empty(), Optional.empty(),
+                Set.of(new OthersTag("-archived"))));
+
+        assertEquals(expected, parser.parseCommand(
+                "\u00a0find\u2003-n\u00a0Alice\u2028-t\u2003others -archived\u00a0"));
+    }
+
+    @Test
     public void parseCommand_help() throws Exception {
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD) instanceof HelpCommand);
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD + " 3") instanceof HelpCommand);

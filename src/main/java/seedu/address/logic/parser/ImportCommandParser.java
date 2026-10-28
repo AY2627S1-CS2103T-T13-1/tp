@@ -6,6 +6,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.commands.ImportCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
@@ -53,7 +54,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
                             + ImportCommand.MESSAGE_USAGE);
         }
 
-        String trimmedFilePath = filePath.get().trim();
+        String trimmedFilePath = StringUtil.stripWhitespace(filePath.get());
 
         try {
             return new ImportCommand(Path.of(trimmedFilePath));

@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -72,7 +73,7 @@ public class ArgumentStructureValidator {
      * @throws ParseException if the text contains an unknown parameter
      */
     private static void validateUnknownParameters(String text, String commandName) throws ParseException {
-        for (String token : text.trim().split("\\s+")) {
+        for (String token : StringUtil.stripWhitespace(text).split("(?U)\\s+")) {
             if (token.startsWith("-") && token.length() > 1) {
                 throw new ParseException("Unknown " + commandName + " parameter: '" + token + "'.");
             }

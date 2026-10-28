@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import seedu.address.commons.util.StringUtil;
+
 /**
  * Tokenizes arguments string of the form: {@code preamble <prefix> value <prefix> value ...}<br>
  *     e.g. {@code some preamble text -t 11.00 -t 12.00 -k -m July}  where prefixes are {@code -t -k -m}.<br>
@@ -15,8 +17,7 @@ import java.util.stream.Collectors;
  * 3. An argument may be repeated and all its values will be accumulated e.g. the value of {@code -t}
  *    in the above example.<br>
  * 4. A prefix is only recognised if it is preceded by whitespace and followed by whitespace
- *    or the end of the string. Leading whitespace uses {@code \s}, including spaces and tabs;
- *    trailing whitespace follows {@link Character#isWhitespace(char)}.<br>
+ *    or the end of the string. Both boundaries use Unicode whitespace.<br>
  */
 public class ArgumentTokenizer {
 
@@ -51,15 +52,12 @@ public class ArgumentTokenizer {
      */
     private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
         List<PrefixPosition> positions = new ArrayList<>();
-        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()));
+        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
+                Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(argsString);
 
         while (matcher.find()) {
-            int endIndex = matcher.end();
-            if (endIndex == argsString.length()
-                    || Character.isWhitespace(argsString.charAt(endIndex))) {
-                positions.add(new PrefixPosition(prefix, matcher.start()));
-            }
+            positions.add(new PrefixPosition(prefix, matcher.start()));
         }
 
         return positions;
@@ -111,7 +109,7 @@ public class ArgumentTokenizer {
         int valueStartPos = currentPrefixPosition.getStartPosition() + prefix.getPrefix().length();
         String value = argsString.substring(valueStartPos, nextPrefixPosition.getStartPosition());
 
-        return value.trim();
+        return StringUtil.stripWhitespace(value);
     }
 
     /**

@@ -1,5 +1,6 @@
 package seedu.address.commons.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -9,6 +10,23 @@ import java.io.FileNotFoundException;
 import org.junit.jupiter.api.Test;
 
 public class StringUtilTest {
+
+    @Test
+    public void stripWhitespace_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> StringUtil.stripWhitespace(null));
+    }
+
+    @Test
+    public void stripWhitespace_unicodeWhitespace_preservesInternalWhitespace() {
+        assertEquals("my\u00a0contacts\u2003file.json",
+                StringUtil.stripWhitespace(" \t\u00a0my\u00a0contacts\u2003file.json\u2003\n"));
+    }
+
+    @Test
+    public void stripWhitespace_whitespaceOnly_returnsEmptyString() {
+        assertEquals("", StringUtil.stripWhitespace(" \t\u00a0\u2003"));
+        assertEquals("", StringUtil.stripWhitespace(""));
+    }
 
     //---------------- Tests for isNonZeroUnsignedInteger --------------------------------------
 

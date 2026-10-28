@@ -39,6 +39,16 @@ public class ArgumentStructureValidatorTest {
     }
 
     @Test
+    public void validate_unknownParameterAfterUnicodeWhitespace_throwsParseException() {
+        String args = "\u2003-n\u00a0Alice\u202f-x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, () -> validate(arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
     public void validate_singleHyphenToken_doesNotThrow() {
         String args = " -n -";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);

@@ -137,12 +137,11 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
-    public void tokenize_unicodeWhitespaceAfterPrefix_recognizesPrefixAndPreservesValue() {
-        String argsString = " p/\u2003value";
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(argsString, pSlash);
+    public void tokenize_unicodeWhitespaceAroundPrefix_recognizesPrefixAndTrimsValue() {
+        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize("\u2003p/\u00a0value\u2003", pSlash);
 
         assertPreambleEmpty(argMultimap);
-        assertArgumentPresent(argMultimap, pSlash, "\u2003value");
+        assertArgumentPresent(argMultimap, pSlash, "value");
     }
 
     @Test
