@@ -206,6 +206,18 @@ The `alias` feature:
 When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
 </box>
 
+### Tags for contacts
+
+#### Implementation
+
+<puml src="diagrams/TagClassDiagram.puml" alt="Class diagram for Tag"/>
+
+* The different tag categories are implemented as subclasses of an abstract `Tag` class
+* When adding a new tag category, the following changes are recommended
+  * Create a new subclass of `Tag`
+  * Modify `src/main/reosurces/Base.css`, adding a new rule for a background color for `#tags .label.tags-NEW_TAG_CATEGORY` and `#tagLegend .label.tag-NEW_TAG_CATEGORY`
+  * Then, modify `MainWindow`, adding a new `TagCategoryLegendLabel` to `tagLegend` to represent the new tag category
+* The recommended changes ensure that the new tag category is assigned a background color and displayed in the legend at the bottom of the Ui
 
 ### Undo/redo feature
 
