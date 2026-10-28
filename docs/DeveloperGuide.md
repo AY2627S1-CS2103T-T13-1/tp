@@ -191,7 +191,7 @@ As for unpinning a contact, the only difference is using `unpinPerson()` instead
 
 ### Bulk deletion by tags
 
-Users can remove specified tags from all contacts using `delete -t TAG_CATEGORY TAG_NAME...`. Contacts with no remaining tags are deleted. The effect is that all instances of tags specified will be removed.
+Users can remove specified tags from all contacts using `delete -t TAG_CATEGORY TAG_NAME...`. Contacts whose entire non-empty tag set is covered by the specified tags are deleted. The effect is that all instances of tags specified will be removed.
 
 <puml src="diagrams/BulkDeleteActivityDiagram.puml" alt="Activity of bulk deletion by tags" />
 
