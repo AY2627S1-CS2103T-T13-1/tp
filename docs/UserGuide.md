@@ -314,7 +314,7 @@ Action     | Format, Examples
 -----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 **Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
 **Clear**  | `clear`
-**Delete** | `delete INDEX` \| `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`
+**Delete** | `delete INDEX` \| `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE -t others Intern`
 **Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
 **Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
 **Pin**    | `pin INDEX`
