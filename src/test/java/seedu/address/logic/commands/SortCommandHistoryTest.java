@@ -256,7 +256,7 @@ public class SortCommandHistoryTest {
     private void executeAndCommit(Model targetModel, Command... commands) throws CommandException {
         for (Command command : commands) {
             command.execute(targetModel);
-            if (!(command instanceof UndoCommand)) {
+            if (!(command instanceof UndoCommand || command instanceof RedoCommand)) {
                 targetModel.commit();
             }
         }
