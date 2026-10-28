@@ -136,7 +136,7 @@ Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGO
 Examples:
 * `find -n john` returns `John`, `Johnny`.
 * `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
-* `find -p 92` returns `9200 5000`, `8892 2301`
+* `find -p 92` returns `92005000`, `88922301`
 * `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
   ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
