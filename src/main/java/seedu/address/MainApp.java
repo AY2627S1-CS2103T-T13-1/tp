@@ -55,7 +55,7 @@ public class MainApp extends Application {
             "Alias file: %s\nLoaded %d alias(es). Skipped %d invalid entries.\n%s";
 
     private static final String MESSAGE_ADDITIONAL_ALIAS_ISSUES =
-            "\n\n…and %d more issue(s). See the log for details.";
+            "\n\n…and %d more issue(s). See the execution log for details.";
 
     private static final String MESSAGE_ALIAS_LOAD_FAILED =
             "Alias file at %s could not be loaded. Starting with empty aliases.";
