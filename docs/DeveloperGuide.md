@@ -418,7 +418,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
 2. User specifies delete command with a list index corresponding to a contact.
 3. coNnectUS deletes the contact.
 4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
@@ -470,7 +470,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
 2. User requests to edit a specific contact in the list, providing new values for one or more fields.
 3. coNnectUS updates the contact with the new values and shows the updated details.
 
@@ -525,6 +525,42 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 2h1. coNnectUS removes the contact's address.
 
       Use case resumes at step 3.
+
+#### Use Case: UC06 - Pin Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
+2. User specifies an index corresponding to a contact to be pinned.
+3. coNnectUS pins the contact, displaying the pinned contact above other unpinned contacts.
+
+   Use case ends.
+
+**Extensions:**
+
+* 2a. coNnectUS detects an illegal or missing list index (List index is negative, 0, missing or non-numeric).
+    * 2a1. coNnectUS displays an error message informing the user of the correct usage of pin command.
+
+      Use case ends.
+
+* 2b. coNnectUS detects an out-of-bounds index (List has n contacts, user specifies index of n + 1).
+    * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
+
+      Use case ends.
+  
+* 2b. conNectUS detects that the contact at the user-specified index is already pinned
+    * 2b1. coNnectUS displays an error message informing the user that the contact is already pinned.
+
+      Use case ends.
+
+
+#### Use case: UC07 - Unpin contacts
+**Actor: User**
+
+The use case for `UC07` is identical to ([UC06](#use-case-uc06-pin-contacts)), where `pin` can be replaced with `unpin`, 
+`pinned contact` replaced with `unpinned contact` and vice versa.
+
 
 ### Non-Functional Requirements
 
