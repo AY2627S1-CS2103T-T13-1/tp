@@ -84,6 +84,28 @@ public class CommandResult {
         this.theme = null;
     }
 
+    /**
+     * Copies a command result with replacement feedback, while preserving its actions.
+     */
+    private CommandResult(CommandResult original, String feedbackToUser) {
+        requireAllNonNull(original, feedbackToUser);
+        this.feedbackToUser = feedbackToUser;
+        this.exportRequest = original.exportRequest;
+        this.importRequest = original.importRequest;
+        this.exit = original.exit;
+        this.theme = original.theme;
+    }
+
+    /**
+     * Returns a copy of the {@code CommandResult} with additional feedback provided.
+     *
+     * @param additionalFeedback the additional feedback provided.
+     */
+    public CommandResult appendAdditionalFeedback(String additionalFeedback) {
+        requireNonNull(additionalFeedback);
+        return new CommandResult(this, String.join("\n", feedbackToUser, additionalFeedback));
+    }
+
     public String getFeedbackToUser() {
         return feedbackToUser;
     }

@@ -41,6 +41,9 @@ public class LogicManager implements Logic {
     public static final String FILE_INVALID_FORMAT =
             "The file is not a valid address book JSON file.";
 
+    public static final String ALIAS_SAVE_WARNING_FORMAT =
+            "Warning: Alias changes remain unsaved and will be retried after a successful command. %s";
+
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
     private final Model model;
@@ -96,7 +99,15 @@ public class LogicManager implements Logic {
                 hasUnsavedContactChanges = false;
             }
 
-            savePendingAliasChanges();
+            try {
+                savePendingAliasChanges();
+            } catch (CommandException exception) {
+                if (aliasChanged) {
+                    throw exception;
+                }
+                commandResult = commandResult.appendAdditionalFeedback(
+                        String.format(ALIAS_SAVE_WARNING_FORMAT, exception.getMessage()));
+            }
 
         } catch (DataLoadingException e) {
             throw new CommandException(
