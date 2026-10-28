@@ -251,7 +251,7 @@ public class SortCommandHistoryTest {
     }
 
     /**
-     * Executes commands with the same commit policy as LogicManager: undo skips committing; redo commits.
+     * Executes commands with the same commit policy as LogicManager: undo and redo skips committing.
      */
     private void executeAndCommit(Model targetModel, Command... commands) throws CommandException {
         for (Command command : commands) {
