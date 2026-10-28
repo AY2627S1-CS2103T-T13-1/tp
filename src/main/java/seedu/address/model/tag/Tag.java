@@ -18,7 +18,7 @@ public abstract class Tag {
     public static final String MESSAGE_TOO_MANY_TAGS = "A contact should not have more than "
             + Tag.MAX_TAGS_PER_PERSON + " tags!";
 
-    public static final String VALIDATION_REGEX = "^[A-Za-z0-9 '-]{1,30}$";
+    public static final String VALIDATION_REGEX = "^[A-Za-z0-9 ']{1,30}$";
 
     public static final int MAX_TAGS_PER_PERSON = 5;
 
