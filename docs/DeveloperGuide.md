@@ -442,7 +442,35 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   
         Use case resumes from Step 2.
 
-#### Use Case: UC04 - Find Contacts
+#### Use Case: UC04 - Delete Multiple Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User specifies delete command with one or more tags to delete.
+2. coNnectUS deletes all instances of the tag.
+3. coNnectUS displays a status message with the number of deleted contacts, and the tag(s) deleted.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects that the address book is empty.
+    * 1a1. coNnectUS displays an error message informing the user about the empty contact list.
+
+      Use case ends.
+
+* 1b. coNnectUS detects that an invalid tag was entered.
+    * 1b1. coNnectUS displays an error message with the expected usage instructions
+
+      Use case resumes from Step 1.
+
+* 1c. coNnectUS detects that there are no matching instances of the tag.
+    * 1c1. coNnectUS displays a status message informing the user that no matching persons was found.
+
+      Use case ends.
+
+#### Use Case: UC05 - Find Contacts
 
 **Actor: User**
 
@@ -464,7 +492,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 1.
     
-#### Use Case: UC05 - Edit Contacts
+#### Use Case: UC06 - Edit Contacts
 
 **Actor: User**
 
