@@ -264,4 +264,18 @@ public class AliasRegistryTest {
 
         assertEquals(registry.hashCode(), otherRegistry.hashCode());
     }
+
+    @Test
+    public void size_addAndRemoveAliases_returnsAliasCount() {
+        assertEquals(0, registry.size());
+
+        registry.register("find", "f");
+        assertEquals(1, registry.size());
+
+        registry.register("find", "search");
+        assertEquals(2, registry.size());
+
+        registry.deleteAlias("f");
+        assertEquals(1, registry.size());
+    }
 }
