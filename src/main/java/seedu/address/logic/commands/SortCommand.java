@@ -20,7 +20,8 @@ public class SortCommand extends Command {
 
     public static final String COMMAND_WORD = "sort";
 
-    public static final String COMMAND_DESCRIPTION = "Sorts contacts according to specified criteria and order.";
+    public static final String COMMAND_DESCRIPTION = "Sorts contacts according to specified criteria and order.\n"
+            + "Criteria: name, email, phone. Order: asc, desc.";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " name asc";
 

@@ -46,12 +46,12 @@ public class EditCommand extends Command {
             + "[" + PREFIX_TAG + " TAG_CATEGORY TAG_NAME]...";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 4 "
-            + PREFIX_PHONE + " 92008100 "
-            + PREFIX_TAG + " Others CS1001 Groupmate";
+            + PREFIX_PHONE + " 92008101 "
+            + PREFIX_TAG + " others CS1001 Groupmate";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": "
             + COMMAND_DESCRIPTION + "\n"
-            + "Parameters: INDEX (must be a positive integer) "
+            + "Parameters: LIST_INDEX (must be a positive integer) "
             + "[" + PREFIX_NAME + " NAME] "
             + "[" + PREFIX_PHONE + " PHONE_NUMBER] "
             + "[" + PREFIX_EMAIL + " EMAIL] "

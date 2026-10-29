@@ -27,7 +27,8 @@ public class ExportCommand extends Command {
 
     public static final String COMMAND_WORD = "export";
 
-    public static final String COMMAND_DESCRIPTION = "Exports contact(s) to a .json file";
+    public static final String COMMAND_DESCRIPTION = "Exports contact(s) to a .json file with the "
+            + "specified filename.";
 
     public static final String EXPORT_APPEND_FILETYPE = ".json";
 
