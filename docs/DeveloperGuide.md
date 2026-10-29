@@ -566,14 +566,36 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User creates an alias for a specified command word.
-2. coNnectUS creates a mapping of the alias to its respective command word and notifies the user about successful alias creation.
+1. User requests to register an alias for a specified built-in command word.
+2. coNnectUS registers the mapping of the alias to the command word and notifies the user about successful alias creation.
 
     Use case ends.
 
 **Extensions:**
-* 1a. coNnectUS detects that the command word/alias are not letters (i.e. `a-zA-Z`).
-  * 1ai. 
+* 1a. coNnectUS detects that the command is not in the right format (i.e. missing arguments, too many arguments or multi-word alias).
+  * 1a1. coNnectUS displays an error message warning the user of the invalid command format, followed by command usage instructions.
+
+    Use case resumes at Step 1.
+
+* 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
+  * 1b1. coNnectUS displays an error message warning the user that the alias must contain only upper or lower-case ASCII letters (i.e. `a-z` or `A-Z`).
+
+    Use case resumes at Step 1.
+
+* 1c. coNnectUS detects that an unknown command word has been supplied (i.e. wrong case for an existing command word, an existing alias or an undefined command word).
+  * 1c1. coNnectUS displays an error message warning the user that the command word is unknown.
+
+    Use case resumes at Step 1.
+
+* 1d. coNnectUS detects that the supplied alias conflicts with a built-in command word.
+  * 1d1. coNnectUS displays an error message warning the user of a conflict with the existing command word.
+
+    Use case resumes at Step 1.
+
+* 1e. coNnectUS detects that the alias supplied is already registered, utilizing a case-sensitive comparison.
+  * 1e1. coNnectUS displays an error message warning the user about the existing alias. 
+  
+    Use case resumes at Step 1.
 
 
 
