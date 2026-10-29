@@ -202,17 +202,20 @@ The pin feature makes use of sorting to ensure pinned contacts are displayed on 
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
 
-### Setting an `alias` for a command
+### Registering an `alias` for a command
 
-Users are able to set aliases for commands, enabling a more customized experience when using coNnectUS.
+Users are able to register aliases for commands, enabling a more customized experience when using coNnectUS.
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
 The `alias` feature:
-* stores mappings from aliases to built-in commands offered by coNnectUS in a map in `AliasRegistry`.
-* requires `alias` to contain one or more ASCII lower- and upper-case letters (i.e. `a-z` or `A-Z`). Aliases are case-sensitive, _should not conflict_ with existing built-in command words (e.g. `alias find delete` is **not allowed**) and existing aliases.
-* resolves aliases to their corresponding built-in commands before parsing of commands.
-* 🚧 (WIP) will support storing created aliases across sessions to enable easy import/export by users.
+* maintains alias-to-command-word mappings in `AliasRegistry`.
+* supports registration of built-in command words only.
+* requires `alias` to consist of one or more ASCII lowercase or uppercase ASCII letters (i.e. `a-z` or `A-Z`), with **no whitespace**.
+* treats aliases as **case-sensitive**,  allowing for names such as `f` and `F` to be registered separately.
+*  rejects alias names that conflict with a built-in command word, ignoring case, or an already-registered alias, using a case-sensitive comparison.
+* resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
+* persists alias mappings across sessions using `data/aliases.json` and restores valid saved mappings at startup.
 
 <box type="warning" header="**Important Note**" seamless>
 
