@@ -308,6 +308,39 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_aliasCommands_preserveUndoRedoHistoryAndMappings() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+
+        logic.execute("undo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("f", "find"), model.getAliases());
+
+        logic.execute("delete_alias f");
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES), logic.execute("list_alias"));
+        logic.execute("redo");
+
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+        assertEquals(Map.of(), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasedDelete_supportsUndoAndRedo() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias delete d");
+
+        logic.execute("d 1");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+
+        logic.execute("undo");
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+
+        logic.execute("redo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("d", "delete"), model.getAliases());
+    }
+
+    @Test
     public void execute_aliasLifecycle_reusesDeletedAliasForDifferentCommand() throws Exception {
         model.addPerson(AMY);
         model.addPerson(BOB);
