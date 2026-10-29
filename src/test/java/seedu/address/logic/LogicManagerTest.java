@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.commons.core.Theme;
+import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
@@ -37,6 +38,7 @@ import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
@@ -306,6 +308,101 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_aliasCommands_preserveUndoRedoHistoryAndMappings() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+
+        logic.execute("undo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("f", "find"), model.getAliases());
+
+        logic.execute("delete_alias f");
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES), logic.execute("list_alias"));
+        logic.execute("redo");
+
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+        assertEquals(Map.of(), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasedDelete_supportsUndoAndRedo() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias delete d");
+
+        logic.execute("d 1");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+
+        logic.execute("undo");
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+
+        logic.execute("redo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("d", "delete"), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasLifecycle_reusesDeletedAliasForDifferentCommand() throws Exception {
+        model.addPerson(AMY);
+        model.addPerson(BOB);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+
+        logic.execute("alias find f");
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX + "\nfind: f"),
+                logic.execute("list_alias"));
+
+        logic.execute("delete_alias f");
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+
+        logic.execute("alias list f");
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("f"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
+    public void execute_aliasManagementAliases_supportAliasedCommandsAndSelfDeletion() throws Exception {
+        logic.execute("alias list_alias shortcuts");
+        CommandResult expectedListing = new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX
+                + "\nlist_alias: shortcuts");
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+
+        logic.execute("alias alias shortcut");
+        logic.execute("shortcut delete_alias removeShortcut");
+        logic.execute("removeShortcut shortcut");
+        logic.execute("removeShortcut removeShortcut");
+
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+    }
+
+    @Test
+    public void execute_aliasesAcrossReloads_restoresMappingsAndPersistsDeletion() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        logic.execute("alias find f");
+        logic.execute("alias list L");
+
+        // Use aliases read from disk, not the old registry.
+        reloadPersistedSession();
+
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+
+        logic.execute("delete_alias f");
+        reloadPersistedSession();
+
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
     public void execute_deleteAlias_deletesAliasWithoutSavingContacts() throws Exception {
         model.addPerson(AMY);
         model.registerAlias("find", "f");
@@ -324,6 +421,30 @@ public class LogicManagerTest {
         assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(0, storage.contactSaveAttempts);
+    }
+
+    @Test
+    public void execute_deleteAliasSaveFails_retriesDeletionOnNextCommandAndStopsAfterSuccess() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("delete_alias f"));
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+
+        storage.aliasSaveException = null;
+        CommandResult expectedResult = new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES);
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(3, storage.aliasSaveAttempts);
+
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(3, storage.aliasSaveAttempts);
     }
 
     @Test
@@ -554,6 +675,16 @@ public class LogicManagerTest {
     @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
+    }
+
+    /**
+     * Rebuilds the model and logic, including its parser, from saved contacts and aliases.
+     */
+    private void reloadPersistedSession() throws DataLoadingException {
+        StorageManager storage = new TestStorageManager(temporaryFolder);
+        model = new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs(), BUILT_IN_COMMAND_WORDS,
+                storage.readAliases().orElseThrow().aliases());
+        logic = new LogicManager(model, storage);
     }
 
     /**
