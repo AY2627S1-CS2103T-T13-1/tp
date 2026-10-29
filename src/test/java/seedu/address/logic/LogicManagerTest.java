@@ -424,6 +424,30 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_deleteAliasSaveFails_retriesDeletionOnNextCommandAndStopsAfterSuccess() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("delete_alias f"));
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+
+        storage.aliasSaveException = null;
+        CommandResult expectedResult = new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES);
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(3, storage.aliasSaveAttempts);
+
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(3, storage.aliasSaveAttempts);
+    }
+
+    @Test
     public void execute_aliasSaveFails_retriesOnNextCommandAndStopsAfterSuccess() throws Exception {
         model.addPerson(AMY);
         TestStorageManager storage = new TestStorageManager(temporaryFolder);
