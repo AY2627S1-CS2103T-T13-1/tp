@@ -624,6 +624,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Import**: Using information from an existing data file to create contacts previously specified.
 * **Context**: Where/how a user of coNnectUS met the corresponding contact.
 * **Tag**: A string label attached to a contact item, as a means to identify attributes related to the contact or group contacts with similar associations.
+* **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
 
 
 --------------------------------------------------------------------------------------------------------------------
