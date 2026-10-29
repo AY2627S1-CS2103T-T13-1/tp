@@ -1,0 +1,83 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":SortCommandParser" as SortCommandParser LOGIC_COLOR
+participant "d:SortCommand" as SortCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "PersonComparatorFactory" as PersonComparatorFactory MODEL_COLOR
+participant "m:ModelManager" as Model MODEL_COLOR
+end box
+
+[-> LogicManager : execute("sort name asc")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("sort name asc")
+activate AddressBookParser
+
+create SortCommandParser
+AddressBookParser -> SortCommandParser
+activate SortCommandParser
+
+SortCommandParser --> AddressBookParser
+deactivate SortCommandParser
+
+AddressBookParser -> SortCommandParser : parse("name asc")
+activate SortCommandParser
+
+create SortCommand
+SortCommandParser -> SortCommand : SortCommand(NAME, ASC)
+activate SortCommand
+
+SortCommand --> SortCommandParser :
+deactivate SortCommand
+
+SortCommandParser --> AddressBookParser : d
+deactivate SortCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+SortCommandParser -[hidden]-> AddressBookParser
+destroy SortCommandParser
+
+AddressBookParser --> LogicManager : d
+deactivate AddressBookParser
+
+LogicManager -> SortCommand : execute(m)
+activate SortCommand
+
+SortCommand -> PersonComparatorFactory : createComparator(NAME, ASC)
+activate PersonComparatorFactory
+note right of PersonComparatorFactory
+Pinned contacts first, then
+case-insensitive name order.
+end note
+PersonComparatorFactory --> SortCommand : comparator
+deactivate PersonComparatorFactory
+
+SortCommand -> Model : sortAddressBook(comparator)
+activate Model
+note left of Model
+activeComparator = comparator
+Retained for subsequent updates.
+end note
+Model --> SortCommand
+deactivate Model
+
+create CommandResult
+SortCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> SortCommand
+deactivate CommandResult
+
+SortCommand --> LogicManager : r
+deactivate SortCommand
+
+[<--LogicManager : r
+deactivate LogicManager
+@enduml

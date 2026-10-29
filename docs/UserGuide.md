@@ -173,16 +173,33 @@ Format: `pin INDEX`, `unpin INDEX`
 
 * Pins the person at the specified `INDEX`.
 * The index refers to the index number specified in the displayed person list (either using `find` or `list`).
+* Regardless of sort order, a pinned contact will always appear on top of an unpinned contact.
 * The index **must be a positive integer**.
   * If using `pin`, the person specified at `INDEX` **must be** an unpinned person.
   * If using `unpin`, the person specified at `INDEX`  **must be** a pinned person.
-
 
 
 Examples:
 * `list` followed by `pin 3` pins the 3rd person in the address book.
 * `find -n Bob` followed by `pin 5` pins the 5th person in the results of the `find` command. 
 * `find -e mary@gmail.com` followed by `unpin 1` unpins the 1st person in the results of the `find` command.
+
+### Sorting contacts
+
+Persons can be sorted according to some attributes, such as their name.
+
+Format: `sort (name | email | phone) (asc | desc)`
+
+* Attribute for sorting and sorting order are not case-sensitive (`sort nAmE dEsC` has the same effect as `sort name desc`).
+* The specified sorting order is retained after contacts are added/edited - the sort will be automatically reapplied.
+* Currently supported attributes for sorting:
+  * Name (Ascending = `A-Z`, Descending = `Z-A`).
+  * Email (Ascending = `A-Z`, Descending = `Z-A`).
+  * Phone (Ascending = Smaller numbers first, Descending = Larger numbers first).
+
+Examples:
+* `sort name desc` sorts the contacts by their name, in reverse alphabetical order (Z-A).
+* `sort phone asc` sorts the contacts by their phone number, displaying smaller phone numbers first
 
 ### Tagging a person
 
@@ -209,8 +226,9 @@ Reverses the most recent command that changed your contact list.
 
 Format: `undo`
 
-* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin`, `unpin`, `import`.
+* Commands that can be undone: `add`, `edit`, `delete`, `clear`, `pin`, `unpin`, `import`, `sort`.
 * Other commands, such as `list`, `find`, `theme` and `alias`, are skipped. `undo` reverses the most recent command that changed your contact list.
+  * Using undo after a sort restores the previous sorting criteria, even if the contact list itself was unchanged.
 * You can use `undo` several times in a row to reverse earlier changes one at a time.
 * After an undo, all contacts are shown, with pinned contacts at the top.
 * The undo history is cleared when you close coNnectUS.
@@ -311,18 +329,19 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 
 ## Command summary
 
-Action     | Format, Examples
------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
-**Clear**  | `clear`
-**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`
-**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
-**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
-**Pin**    | `pin INDEX`
-**Unpin**  | `unpin INDEX`
-**List**   | `list`
-**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`
-**Undo**   | `undo`
-**Redo**   | `redo`
-**Help**   | `help`
-**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`
+Action     | Format, Examples                                                                                                                                                                                                     
+-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague` 
+**Clear**  | `clear`                                                                                                                                                                                                              
+**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`                                                                                                                 
+**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`                                                               
+**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`                                                                          
+**Pin**    | `pin INDEX`                                                                                                                                                                                                          
+**Unpin**  | `unpin INDEX`                                                                                                                                                                                                        
+**List**   | `list`                                                                                                                                                                                                               
+**Sort**   | `sort (name \| email \| phone) (asc \| desc)`                                                                                                                                                                         |
+**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`                                                                                                                                                                
+**Undo**   | `undo`                                                                                                                                                                                                               
+**Redo**   | `redo`                                                                                                                                                                                                               
+**Help**   | `help`                                                                                                                                                                                                               
+**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`                                                                                                                                                
