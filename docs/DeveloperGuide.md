@@ -472,23 +472,33 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User searches for a contact using its name.
-2. coNnectUS returns a list containing the contacts matching the keyword provided. 
+1. User searches for a contact using any of its fields.
+2. coNnectUS returns a list containing the contacts matching all the fields provided. 
 
    Use case ends.
 
 **Extensions:**
 
-* 1a. coNnectUS detects that no contacts match the keyword.
-    * 1a1. coNnectUS displays an error message informing the user that no matching contacts were found.
+* 1a. coNnectUS detects that no contacts match all the fields provided.
+    * 1a1. coNnectUS displays a message informing the user that no contacts were found.
     
-      Use case ends.
+      Use case resumes at step 1.
 
-* 1b. coNnectUS detects that no keyword was provided. 
+* 1b. coNnectUS detects that no fields were provided. 
     * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
 
       Use case resumes at step 1.
-    
+
+* 1c. coNnectUS detects duplicates of fields other than tags were provided.
+    * 1c1. coNnectUS displays a warning message of the duplicated fields.
+
+      Use case resumes at step 1.
+
+* 1d. coNnectUS detects that an unknown field was entered.
+    * 1d1. coNnectUS displays a warning message of the unknown field being entered.
+
+      Use case resumes at step 1.
+
 #### Use Case: UC05 - Edit Contacts
 
 **Actor: User**

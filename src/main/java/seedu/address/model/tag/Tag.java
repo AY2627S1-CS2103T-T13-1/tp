@@ -10,7 +10,7 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 public abstract class Tag {
 
     public static final String MESSAGE_CONSTRAINTS = "Tag names should be alphanumeric, "
-            + "only allowed to have apostrophes and hyphens and should be within 30 characters";
+            + "only allowed to have apostrophes and should be within 30 characters";
     public static final String MESSAGE_UNKNOWN_TAG_CATEGORY =
             "The provided tag category is currently not supported! Supported tag categories: module, faculty, others";
     public static final String MESSAGE_MISSING_TAG_FIELD = "A valid tag category and tag name is required! "
