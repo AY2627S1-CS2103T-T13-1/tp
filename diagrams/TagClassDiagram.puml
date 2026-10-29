@@ -1,0 +1,17 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor MODEL_COLOR
+skinparam classBackgroundColor MODEL_COLOR
+
+
+Class "{abstract}\nTag" as Tag
+Class "FacultyTag" as FacultyTag
+Class "ModuleTag" as ModuleTag
+Class "OthersTag" as OthersTag
+
+FacultyTag -up-|> Tag
+ModuleTag -up-|> Tag
+OthersTag -up-|> Tag
+
+@enduml
