@@ -567,12 +567,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS:**
 1. User requests to register an alias for a specified built-in command word.
-2. coNnectUS registers the mapping of the alias to the command word and notifies the user about successful alias creation.
+2. coNnectUS registers the alias for the specified command and notifies the user about the alias' successful creation.
 
     Use case ends.
 
 **Extensions:**
-* 1a. coNnectUS detects that the command is not in the right format (i.e. missing arguments, too many arguments or multi-word alias).
+* 1a. coNnectUS detects that the registration request has an invalid format (e.g. missing arguments or too many arguments).
   * 1a1. coNnectUS displays an error message warning the user of the invalid command format, followed by command usage instructions.
 
     Use case resumes at Step 1.
@@ -582,17 +582,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case resumes at Step 1.
 
-* 1c. coNnectUS detects that an unknown command word has been supplied (i.e. wrong case for an existing command word, an existing alias or an undefined command word).
-  * 1c1. coNnectUS displays an error message warning the user that the command word is unknown.
+* 1c. coNnectUS detects that an unsupported command word has been supplied (e.g. wrong case for an existing command word, an existing alias or an undefined command word).
+  * 1c1. coNnectUS displays an error message warning the user that the supplied command word is unknown.
 
     Use case resumes at Step 1.
 
-* 1d. coNnectUS detects that the supplied alias conflicts with a built-in command word.
+* 1d. coNnectUS detects that the supplied alias conflicts with a built-in command word, ignoring case.
   * 1d1. coNnectUS displays an error message warning the user of a conflict with the existing command word.
 
     Use case resumes at Step 1.
 
-* 1e. coNnectUS detects that the alias supplied is already registered, utilizing a case-sensitive comparison.
+* 1e. coNnectUS detects that the alias supplied is already registered, using a case-sensitive comparison.
   * 1e1. coNnectUS displays an error message warning the user about the existing alias. 
   
     Use case resumes at Step 1.
