@@ -567,7 +567,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 3.
 
-#### Use Case: UC10 - Create an alias
+#### Use Case: UC11 - Create an alias
 
 **Actor: User**
 
@@ -603,7 +603,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   
     Use case resumes at Step 1.
 
-#### Use Case: UC11 - List available aliases
+#### Use Case: UC12 - List available aliases
 
 **Actor: User**
 
@@ -619,12 +619,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-#### Use Case: UC12 - Delete an alias
+#### Use Case: UC13 - Delete an alias
 
 **Actor: User**
 
 **MSS:**
-1. User <u>views their list of available aliases</u> ([UC11](#use-case-uc11-list-available-aliases)).
+1. User <u>views their list of available aliases</u> ([UC12](#use-case-uc12-list-available-aliases)).
 2. User requests to delete an alias by specifying its name.
 3. coNnectUS deletes the specified alias and notifies the user about its successful deletion.
 
