@@ -31,6 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.commons.core.Theme;
 import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
@@ -705,6 +706,37 @@ public class LogicManagerTest {
                         missingFilePath,
                         LogicManager.FILE_NOT_FOUND),
                 expectedModel);
+    }
+
+    @Test
+    public void execute_importMalformedJson_preservesContactsAliasesAndUndoHistory() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        Map<String, String> originalAliases = model.getAliases();
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+        Path importFilePath = temporaryFolder.resolve("malformedContacts.json");
+        FileUtil.writeToFile(importFilePath, "{\"persons\": [");
+
+        String expectedMessage = String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                importFilePath, LogicManager.FILE_INVALID_FORMAT);
+        assertThrows(CommandException.class, expectedMessage, () -> logic.execute("import -f " + importFilePath));
+
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(contactSaveAttempts, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+
+        assertEquals(new CommandResult(UndoCommand.MESSAGE_SUCCESS), logic.execute("undo"));
+        assertEquals(new AddressBook(), model.getAddressBook());
+        assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
     }
 
     @Test
