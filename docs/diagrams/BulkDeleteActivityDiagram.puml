@@ -5,25 +5,26 @@ skinparam ArrowFontSize 12
 
 start
 :Receive valid tags to remove;
-note right
+
+floating note right
   Match tags by category and name,
   ignoring case. Consider all contacts,
   including those hidden by a filter.
 end note
 
-while () is ([Contacts left to check])
+while () is ([Address book contains unprocessed contacts])
     :Select next contact;
     if () then ([Contact has matching tags])
         if () then ([Supplied tags cover\n all of contact's tags])
             :Delete the contact;
-        else ([No])
+        else ([else])
             :Remove matching tag instances\nand retain the contact;
         endif
-    else ([No])
+    else ([else])
         :Leave contact unchanged;
     endif
-endwhile ([No])
+endwhile ([else])
 
-:Display command result;
+
 stop
 @enduml
