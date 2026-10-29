@@ -567,7 +567,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS:**
 1. User requests to register an alias for a specified built-in command word.
-2. coNnectUS registers the alias for the specified command and notifies the user about the alias' successful creation.
+2. coNnectUS registers the alias for the specified command and notifies the user about the alias's successful creation.
 
     Use case ends.
 
@@ -612,6 +612,32 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. coNnectUS displays a message informing the user that no aliases are currently registered.
 
       Use case ends.
+
+#### Use Case: UC12 - Delete an alias
+
+**Actor: User**
+
+**MSS:**
+1. User requests to delete an alias by specifying its name.
+2. coNnectUS deletes the specified alias and notifies the user about its successful deletion.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that the deletion request has an invalid format (e.g. the alias is missing or the request has too many arguments).
+    * 1a1. coNnectUS displays an error message explaining the invalid command format, followed by command usage instructions.
+
+      Use case resumes at Step 1.
+
+* 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
+    * 1b1. coNnectUS displays an error message explaining that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+
+      Use case resumes at Step 1.
+
+* 1c. coNnectUS detects that the supplied alias name does not match any registered alias, using a case-sensitive comparison.
+    * 1c1. coNnectUS displays an error message identifying the alias that was not previously registered.
+
+      Use case resumes at Step 1.
 
 ### Non-Functional Requirements
 
