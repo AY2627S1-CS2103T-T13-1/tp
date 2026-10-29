@@ -17,15 +17,25 @@ public class AliasCommandParserTest {
     public void parse_validArgs_returnsAliasCommand() {
         assertParseSuccess(parser, "find search", new AliasCommand("find", "search"));
         assertParseSuccess(parser, "find F", new AliasCommand("find", "F"));
+        assertParseSuccess(parser, "  find \t Search  ",
+                new AliasCommand("find", "Search"));
     }
 
     @Test
     public void parse_invalidAlias_throwsParseException() {
         assertParseFailure(parser, "find 123", MESSAGE_REGEX_MISMATCH);
+        assertParseFailure(parser, "find f1", MESSAGE_REGEX_MISMATCH);
+        assertParseFailure(parser, "search s_h", MESSAGE_REGEX_MISMATCH);
+        assertParseFailure(parser, "find café", MESSAGE_REGEX_MISMATCH);
+        assertParseFailure(parser, "find 搜索", MESSAGE_REGEX_MISMATCH);
     }
 
     @Test
     public void parse_invalidArgumentCount_throwsParseException() {
+        assertParseFailure(parser, "",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AliasCommand.MESSAGE_USAGE));
+        assertParseFailure(parser, " \t ",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AliasCommand.MESSAGE_USAGE));
         assertParseFailure(parser, "find",
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AliasCommand.MESSAGE_USAGE));
 
