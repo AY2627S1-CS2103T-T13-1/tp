@@ -85,6 +85,7 @@ Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_
 - A person can have any number of tags, including zero.
 - Refer to [Tagging a person](#tagging-a-person) for more information on tags.
 - The address parameter is optional.
+- Each contact must have a phone number and email address that no other contact uses. Names do not need to be unique.
 
 </box>
 
@@ -108,6 +109,7 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* The new phone number or email address must not already be used by another contact.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `-t` without a tag after it.
 * To remove a person's address, enter `-a` without an address after it.
