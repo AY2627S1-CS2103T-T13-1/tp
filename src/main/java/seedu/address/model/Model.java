@@ -78,7 +78,8 @@ public interface Model {
     void sortAddressBook(Comparator<Person> comparator);
 
     /**
-     * Saves the current address book state to the history, if it has changed since the last saved state.
+     * Saves the current address book state and its sort order to the history, if either has changed since
+     * the last saved state.
      */
     void commit();
 
@@ -88,7 +89,7 @@ public interface Model {
     boolean canUndo();
 
     /**
-     * Restores the address book to its previous saved state.
+     * Restores the address book and its sort order to the previous saved state.
      * There must be a previous state to undo to.
      */
     void undo();
@@ -99,7 +100,7 @@ public interface Model {
     boolean canRedo();
 
     /**
-     * Restores the address book to its most recently undone state.
+     * Restores the address book and its sort order to the most recently undone state.
      * There must be an undone state to redo to.
      */
     void redo();
