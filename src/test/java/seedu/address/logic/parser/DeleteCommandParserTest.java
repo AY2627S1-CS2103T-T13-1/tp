@@ -41,33 +41,22 @@ public class DeleteCommandParserTest {
     }
 
     @Test
-    public void parse_hyphenLeadingWordInTagName_returnsDeleteCommand() {
-        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("coder -y value")));
-        assertParseSuccess(parser, " -t others coder -y value", expected);
-    }
-
-    @Test
-    public void parse_hyphenLeadingTagName_returnsDeleteCommand() {
-        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("-archived")));
-        assertParseSuccess(parser, " -t others -archived", expected);
-    }
-
-    @Test
-    public void parse_hyphenLeadingTagNameWithInvalidCharacter_throwsParseException() {
+    public void parse_hyphenInTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others coder -y value",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + DeleteCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t others -archived",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + DeleteCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -t others -archived!",
                 Tag.MESSAGE_CONSTRAINTS + "\n" + DeleteCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t others full-stack",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + DeleteCommand.MESSAGE_USAGE);
+
     }
 
     @Test
     public void parse_multipleTags_returnsDeleteCommand() {
         DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("coder"), new FacultyTag("Science")));
         assertParseSuccess(parser, " -t others coder -t faculty Science", expected);
-    }
-
-    @Test
-    public void parse_hyphenatedTagName_returnsDeleteCommand() {
-        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("full-stack")));
-        assertParseSuccess(parser, " -t others full-stack", expected);
     }
 
     @Test
