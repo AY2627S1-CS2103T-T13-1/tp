@@ -60,6 +60,13 @@ public class DeleteCommandParserTest {
     }
 
     @Test
+    public void parse_caseVariantDuplicateTags_returnsDeleteCommand() {
+        DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("Friends")));
+
+        assertParseSuccess(parser, " -t others Friends -t others friends", expected);
+    }
+
+    @Test
     public void parse_multiwordTagNameWithNumber_returnsDeleteCommand() {
         DeleteCommand expected = new DeleteCommand(Set.of(new OthersTag("coder 3")));
         assertParseSuccess(parser, " -t others coder 3", expected);
