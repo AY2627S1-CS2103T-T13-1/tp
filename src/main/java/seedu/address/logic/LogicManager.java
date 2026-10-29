@@ -46,6 +46,9 @@ public class LogicManager implements Logic {
     public static final String FILE_INVALID_FORMAT =
             "The file is not a valid address book JSON file.";
 
+    public static final String FILE_READ_PERMISSION_ERROR =
+            "The file could not be read because of insufficient permissions.";
+
     public static final String ALIAS_SAVE_WARNING_FORMAT =
             "Warning: Alias changes remain unsaved and will be retried after a successful command. %s";
 
@@ -153,6 +156,9 @@ public class LogicManager implements Logic {
     private String getImportErrorMessage(DataLoadingException exception) {
         Throwable cause = exception;
         while (cause != null) {
+            if (cause instanceof AccessDeniedException) {
+                return FILE_READ_PERMISSION_ERROR;
+            }
             if (cause instanceof IllegalValueException || cause instanceof IllegalArgumentException) {
                 return cause.getMessage();
             }
