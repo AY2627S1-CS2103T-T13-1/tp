@@ -330,6 +330,21 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_aliasManagementAliases_supportAliasedCommandsAndSelfDeletion() throws Exception {
+        logic.execute("alias list_alias shortcuts");
+        CommandResult expectedListing = new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX
+                + "\nlist_alias: shortcuts");
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+
+        logic.execute("alias alias shortcut");
+        logic.execute("shortcut delete_alias removeShortcut");
+        logic.execute("removeShortcut shortcut");
+        logic.execute("removeShortcut removeShortcut");
+
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+    }
+
+    @Test
     public void execute_aliasesAcrossReloads_restoresMappingsAndPersistsDeletion() throws Exception {
         logic.execute(PersonUtil.getAddCommand(AMY));
         logic.execute(PersonUtil.getAddCommand(BOB));
