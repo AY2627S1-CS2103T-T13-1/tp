@@ -23,7 +23,9 @@ public class ThemeTest {
         "/view/Base.css", "/view/Extensions.css", "/view/UserGuideAccessWindow.css"
     };
 
-    /** Matches a placeholder used as a value, e.g. "theme-bg" in "color: theme-bg;", but not ".theme-button". */
+    /**
+     * Matches a placeholder used as a value, e.g. "theme-bg" in "color: theme-bg;", but not ".theme-button".
+     */
     private static final Pattern USED_PLACEHOLDER = Pattern.compile("(?<![\\w.#-])(theme-[a-z-]+)");
 
     /** Matches a placeholder being defined, e.g. "theme-bg" in "theme-bg: #000000;". */
@@ -47,7 +49,8 @@ public class ThemeTest {
 
         for (Theme theme : Theme.values()) {
             Set<String> missingPlaceholders = new TreeSet<>(usedPlaceholders);
-            missingPlaceholders.removeAll(findAll(DEFINED_PLACEHOLDER, readResource(theme.getStylesheetPath())));
+            missingPlaceholders.removeAll(
+                    findAll(DEFINED_PLACEHOLDER, readResource(theme.getStylesheetPath())));
             assertTrue(missingPlaceholders.isEmpty(),
                     theme.getStylesheetPath() + " does not define " + missingPlaceholders);
         }

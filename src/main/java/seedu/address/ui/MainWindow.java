@@ -31,8 +31,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-    private static final String MESSAGE_MISSING_THEME = "Could not load the %1$s theme because its stylesheet "
-            + "is missing.";
+    private static final String MESSAGE_MISSING_THEME =
+            "Could not load the %1$s theme because its stylesheet is missing.";
 
     private static final String MESSAGE_SAVE_ERROR = "The application remains open because alias changes "
             + "could not be saved. Resolve the save error and try closing again.";
@@ -212,7 +212,7 @@ public class MainWindow extends UiPart<Stage> {
      * Switches between the dark and light themes when the theme button is clicked.
      */
     @FXML
-    private void handleThemeToggle() {
+    private void handleThemeButton() {
         Theme newTheme = currentTheme == Theme.DARK ? Theme.LIGHT : Theme.DARK;
         if (applyTheme(newTheme)) {
             resultDisplay.setFeedbackToUser(ThemeCommand.getSuccessMessage(newTheme));

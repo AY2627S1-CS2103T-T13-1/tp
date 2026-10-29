@@ -66,7 +66,8 @@ public class CommandResultTest {
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", true).hashCode());
 
         // different theme value -> returns different hashcode
-        assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, Theme.LIGHT).hashCode());
+        assertNotEquals(commandResult.hashCode(),
+                new CommandResult("feedback", false, Theme.LIGHT).hashCode());
 
         ExportRequest exportRequest = new ExportRequest(getTypicalAddressBook(), Path.of("export.json"));
         CommandResult exportCommandResult = new CommandResult("feedback", exportRequest);
