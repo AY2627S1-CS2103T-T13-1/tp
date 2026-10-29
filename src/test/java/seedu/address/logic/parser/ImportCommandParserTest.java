@@ -40,6 +40,7 @@ public class ImportCommandParserTest {
     @Test
     public void parse_emptyFilePath_throwsParseException() {
         assertParseFailure(" -f", "The value for '-f' cannot be empty.");
+        assertParseFailure("\u2003-f\u00a0", "The value for '-f' cannot be empty.");
     }
 
     @Test

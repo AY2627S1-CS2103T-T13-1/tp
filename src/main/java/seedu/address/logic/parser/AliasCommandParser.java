@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.model.alias.AliasRegistry.MESSAGE_REGEX_MISMATCH;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.alias.AliasRegistry;
@@ -30,7 +31,7 @@ public class AliasCommandParser implements Parser<AliasCommand> {
     }
 
     private String[] parseArguments(String args) throws ParseException {
-        String[] arguments = args.trim().split("\\s+", 3);
+        String[] arguments = StringUtil.stripWhitespace(args).split("(?U)\\s+", 3);
 
         if (arguments.length != 2) {
             throw new ParseException(

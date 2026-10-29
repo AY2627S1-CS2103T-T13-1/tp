@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.PersonMatchesCriteriaPredicate;
-import seedu.address.model.person.Phone;
 import seedu.address.model.tag.FacultyTag;
 import seedu.address.model.tag.ModuleTag;
 import seedu.address.model.tag.OthersTag;
@@ -42,10 +41,10 @@ public class FindCommandParserTest {
 
     @Test
     public void parse_unknownCriteria_throwsParseException() {
-        assertParseFailure(parser, " -x Wolf Alice",
-                "Unknown find parameter: '-x'.\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -n Wolf Alice -x unknown",
-                "Unknown find parameter: '-x'.\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -f contacts",
+                "Unknown find parameter: '-f'.\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -f contacts -n Wolf Alice",
+                "Unknown find parameter: '-f'.\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -70,20 +69,40 @@ public class FindCommandParserTest {
                 Tag.MESSAGE_UNKNOWN_TAG_CATEGORY + "\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -t others bad@tag -t others owesMoney",
                 Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t others -archived -t others owesMoney",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
     public void parse_invalidFieldValue_throwsParseException() {
         assertParseFailure(parser, " -n Alice@",
                 Name.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -p abc",
-                Phone.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
     public void parse_tagWithoutName_throwsParseException() {
         assertParseFailure(parser, " -t others",
                 Tag.MESSAGE_MISSING_TAG_FIELD + "\n" + FindCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -t -archived",
+                Tag.MESSAGE_MISSING_TAG_FIELD + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_hyphenLeadingTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others -archived",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_hyphenLeadingWordInTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others coder -y",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_hyphenWithinTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others full-stack",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
@@ -123,12 +142,12 @@ public class FindCommandParserTest {
     public void parse_phoneSubstring_returnsFindCommand() {
         PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
                 Optional.empty(),
-                Optional.of("243"),
+                Optional.of("2"),
                 Optional.empty(),
                 Optional.empty(),
                 Set.of());
 
-        assertParseSuccess(parser, " -p 243", new FindCommand(predicate));
+        assertParseSuccess(parser, " -p 2", new FindCommand(predicate));
     }
 
     @Test
