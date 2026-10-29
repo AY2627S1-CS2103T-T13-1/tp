@@ -13,7 +13,7 @@
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+* Adapted [this solution](https://stackoverflow.com/questions/5226212/how-to-open-url-in-default-webbrowser-using-java) to open the User Guide URL from the `UserGuideAccessWindow` in user's default browser.
 
 --------------------------------------------------------------------------------------------------------------------
 
