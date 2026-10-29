@@ -23,7 +23,8 @@ public class ThemeCommandParser implements Parser<ThemeCommand> {
         requireNonNull(args);
         Theme theme = Theme.fromName(args.trim());
         if (theme == null) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ThemeCommand.MESSAGE_USAGE));
+            throw new ParseException(
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ThemeCommand.MESSAGE_USAGE));
         }
         return new ThemeCommand(theme);
     }
