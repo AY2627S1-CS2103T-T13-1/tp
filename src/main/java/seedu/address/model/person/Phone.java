@@ -36,6 +36,10 @@ public class Phone {
         return test.matches(VALIDATION_REGEX);
     }
 
+    public Long convertToLong() {
+        return Long.parseLong(value);
+    }
+
     @Override
     public String toString() {
         return value;

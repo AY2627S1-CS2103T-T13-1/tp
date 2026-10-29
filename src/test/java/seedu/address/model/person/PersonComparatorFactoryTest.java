@@ -1,6 +1,8 @@
 package seedu.address.model.person;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.ALICE;
@@ -15,6 +17,55 @@ import org.junit.jupiter.api.Test;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonComparatorFactoryTest {
+
+    @Test
+    public void createComparator_sameCriteriaAndOrder_returnsEqualComparators() {
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                Comparator<Person> first = PersonComparatorFactory.createComparator(criteria, order);
+                Comparator<Person> second = PersonComparatorFactory.createComparator(criteria, order);
+                Comparator<Person> third = PersonComparatorFactory.createComparator(criteria, order);
+
+                assertNotSame(first, second);
+                assertEquals(first, first);
+                assertEquals(first, second);
+                assertEquals(second, first);
+                assertEquals(second, third);
+                assertEquals(first, third);
+                assertEquals(first.hashCode(), second.hashCode());
+            }
+        }
+    }
+
+    @Test
+    public void createComparator_differentSortSettings_returnsUnequalComparators() {
+        for (SortCriteria criteria : SortCriteria.values()) {
+            for (SortOrder order : SortOrder.values()) {
+                Comparator<Person> comparator = PersonComparatorFactory.createComparator(criteria, order);
+                assertNotEquals(comparator, null);
+                assertNotEquals(comparator, criteria);
+                assertNotEquals(comparator, PersonComparatorFactory.createDefaultComparator());
+                assertNotEquals(PersonComparatorFactory.createDefaultComparator(), comparator);
+                for (SortCriteria otherCriteria : SortCriteria.values()) {
+                    for (SortOrder otherOrder : SortOrder.values()) {
+                        if (criteria != otherCriteria || order != otherOrder) {
+                            assertNotEquals(comparator,
+                                    PersonComparatorFactory.createComparator(otherCriteria, otherOrder));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Test
+    public void createDefaultComparator_multipleCalls_returnsEqualComparators() {
+        Comparator<Person> first = PersonComparatorFactory.createDefaultComparator();
+        Comparator<Person> second = PersonComparatorFactory.createDefaultComparator();
+
+        assertEquals(first, second);
+        assertEquals(first.hashCode(), second.hashCode());
+    }
 
     @Test
     public void createComparator_allCriteriaAndOrders_sortsWithinPinGroups() {

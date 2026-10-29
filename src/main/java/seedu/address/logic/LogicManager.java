@@ -14,6 +14,8 @@ import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.ExportRequest;
 import seedu.address.logic.commands.ImportRequest;
+import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -78,7 +80,9 @@ public class LogicManager implements Logic {
                 commandResult = executeImport(commandResult.getImportRequest().get());
             }
 
-            model.commit();
+            if (!isHistoryNavigationCommand(command)) {
+                model.commit();
+            }
 
             boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
             boolean aliasChanged = !originalAliases.equals(model.getAliases());
@@ -149,6 +153,10 @@ public class LogicManager implements Logic {
 
         ImportSummary summary = model.mergeAddressBook(importedAddressBook);
         return new CommandResult(summary.getMessage());
+    }
+
+    private boolean isHistoryNavigationCommand(Command command) {
+        return command instanceof UndoCommand || command instanceof RedoCommand;
     }
 
     @Override

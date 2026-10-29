@@ -176,6 +176,20 @@ The theme feature,
 * keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
+### Sorting contacts
+<puml src="diagrams/SortSequenceDiagram.puml" alt="Sequence of sort command"/>
+
+Users are able to sort their contacts such as by name and by their phone numbers.
+
+The sort feature makes use of the `PersonComparatorFactory` class to create comparators for the various sorts.
+- `PersonComparatorFactory` provides `createComparator(SortCriteria, SortOrder)` to create the various comparators required to achieve the sorts.
+- `PersonComparatorFactory` also has a private `SortComparator` class with the intention to override `equals()` to provide a more accurate equality check.
+  - Ensuring `equals()` is accurate is needed to prevent `undo/redo` loops associated with `sort`.
+- `PersonComparatorFactory` also adopts the singleton design pattern for the default comparator (for pinned persons sorting) to ensure `equals()` is correct for it.
+- To ensure that user applied sorts are maintained, `ModelManager` stores the most recent comparator used as `activeComparator`
+  - `ModelManager` will call `sortAddressBook` internally after any change to the contacts such as adding or removing contacts
+
+
 ### Pinning a contact
 
 Users are able to pin contacts, placing them above other unpinned contacts.
@@ -184,7 +198,6 @@ Users are able to pin contacts, placing them above other unpinned contacts.
 
 The pin feature makes use of sorting to ensure pinned contacts are displayed on top of unpinned contacts.
 - The default sorting method from `PersonComparatorFactory` sorts persons by their pinned status.
-- When a person is pinned, `Model` uses `previousComparator` from `PersonComparatorFactory` to sort the contacts.
 - This sorts the list according to pinned status first, followed by the sorting method previously set by the user (such as by Name).
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
@@ -409,7 +422,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case resumes from Step 1.
   
 * 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
-    * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+    * 1b1. coNnectUS displays an error message, indicating whether the phone number, email address or both are already used by another contact.
 
       Use case ends.
 
@@ -514,7 +527,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2e. The new phone number or email is the same as that of another contact already in the list.
 
-    * 2e1. coNnectUS shows an error message stating that the contact already exists.
+    * 2e1. coNnectUS shows an error message stating whether the phone number, email address or both are already used by another contact.
 
       Use case resumes at step 2.
 

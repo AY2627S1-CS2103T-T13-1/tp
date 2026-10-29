@@ -2,6 +2,8 @@ package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_EMAIL;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_PHONE;
 import static seedu.address.logic.Messages.MESSAGE_EMPTY_LIST;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -30,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.commons.core.Theme;
+import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
@@ -37,6 +40,7 @@ import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
@@ -57,6 +61,7 @@ import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.AddressBookBuilder;
 import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.PersonUtil;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -157,6 +162,97 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_undoAfterSort_reachesCommandsBeforeSort() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        assertEquals(List.of(AMY, BOB), model.getFilteredPersonList());
+
+        // Undo must restore the exact pre-sort order, without committing the sorted state again.
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+
+        assertEquals(new AddressBook(),
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                        .readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_undoAfterMultipleSorts_restoresComparatorAndReachesEarlierCommands() throws Exception {
+        Person aaron = new PersonBuilder().withName("Aaron").build();
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("sort name desc");
+        logic.execute("delete 1");
+
+        assertUndoSuccess(BOB, AMY); // Undo delete while retaining descending sort.
+        assertUndoSuccess(AMY, BOB); // Undo descending sort, restoring ascending sort.
+
+        // A non-mutating command must not create a new history entry after undo.
+        logic.execute(ListCommand.COMMAND_WORD);
+        logic.execute(PersonUtil.getAddCommand(aaron));
+        assertEquals(List.of(aaron, AMY, BOB), model.getFilteredPersonList());
+
+        // A new command after undo must branch from the restored state.
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_undoAfterSortWithUnchangedOrder_restoresDefaultComparator() throws Exception {
+        Person aaron = new PersonBuilder().withName("Aaron").build();
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute("sort name asc");
+
+        // Changing the sort rule is undoable even when the visible order stays the same.
+        assertUndoSuccess(AMY, BOB);
+        logic.execute(PersonUtil.getAddCommand(aaron));
+        assertEquals(List.of(AMY, BOB, aaron), model.getFilteredPersonList());
+
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(AMY);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_repeatedIdenticalSort_doesNotSaveNewUndoState() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("sort name asc");
+
+        // The second sort changes neither the contacts nor the active sort rule.
+        assertUndoSuccess(BOB, AMY);
+        assertUndoSuccess(BOB);
+        assertUndoSuccess();
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
+    }
+
+    @Test
+    public void execute_repeatedIdenticalSortAfterUndo_preservesRedoHistory() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("sort name asc");
+        logic.execute("delete 1");
+        assertUndoSuccess(AMY, BOB);
+
+        logic.execute("sort name asc");
+        assertEquals(List.of(AMY, BOB), model.getFilteredPersonList());
+        logic.execute(RedoCommand.COMMAND_WORD);
+        assertEquals(List.of(BOB), model.getFilteredPersonList());
+        assertUndoSuccess(AMY, BOB);
+        assertUndoSuccess(BOB, AMY);
+    }
+
+    @Test
     public void execute_redoAfterUndo_restoresAddedPerson() throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
@@ -173,12 +269,12 @@ public class LogicManagerTest {
 
     @Test
     public void execute_duplicateEmailEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB);
+        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB, MESSAGE_DUPLICATE_EMAIL);
     }
 
     @Test
     public void execute_duplicatePhoneEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(PHONE_DESC_BOB);
+        assertDuplicateEditPreservesSession(PHONE_DESC_BOB, MESSAGE_DUPLICATE_PHONE);
     }
 
     @Test
@@ -214,6 +310,101 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_aliasCommands_preserveUndoRedoHistoryAndMappings() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+
+        logic.execute("undo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("f", "find"), model.getAliases());
+
+        logic.execute("delete_alias f");
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES), logic.execute("list_alias"));
+        logic.execute("redo");
+
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+        assertEquals(Map.of(), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasedDelete_supportsUndoAndRedo() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias delete d");
+
+        logic.execute("d 1");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+
+        logic.execute("undo");
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+
+        logic.execute("redo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("d", "delete"), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasLifecycle_reusesDeletedAliasForDifferentCommand() throws Exception {
+        model.addPerson(AMY);
+        model.addPerson(BOB);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+
+        logic.execute("alias find f");
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX + "\nfind: f"),
+                logic.execute("list_alias"));
+
+        logic.execute("delete_alias f");
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+
+        logic.execute("alias list f");
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("f"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
+    public void execute_aliasManagementAliases_supportAliasedCommandsAndSelfDeletion() throws Exception {
+        logic.execute("alias list_alias shortcuts");
+        CommandResult expectedListing = new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX
+                + "\nlist_alias: shortcuts");
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+
+        logic.execute("alias alias shortcut");
+        logic.execute("shortcut delete_alias removeShortcut");
+        logic.execute("removeShortcut shortcut");
+        logic.execute("removeShortcut removeShortcut");
+
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+    }
+
+    @Test
+    public void execute_aliasesAcrossReloads_restoresMappingsAndPersistsDeletion() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        logic.execute("alias find f");
+        logic.execute("alias list L");
+
+        // Use aliases read from disk, not the old registry.
+        reloadPersistedSession();
+
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+
+        logic.execute("delete_alias f");
+        reloadPersistedSession();
+
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
     public void execute_deleteAlias_deletesAliasWithoutSavingContacts() throws Exception {
         model.addPerson(AMY);
         model.registerAlias("find", "f");
@@ -232,6 +423,30 @@ public class LogicManagerTest {
         assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(0, storage.contactSaveAttempts);
+    }
+
+    @Test
+    public void execute_deleteAliasSaveFails_retriesDeletionOnNextCommandAndStopsAfterSuccess() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("delete_alias f"));
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+
+        storage.aliasSaveException = null;
+        CommandResult expectedResult = new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES);
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(3, storage.aliasSaveAttempts);
+
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(3, storage.aliasSaveAttempts);
     }
 
     @Test
@@ -476,6 +691,16 @@ public class LogicManagerTest {
     }
 
     /**
+     * Rebuilds the model and logic, including its parser, from saved contacts and aliases.
+     */
+    private void reloadPersistedSession() throws DataLoadingException {
+        StorageManager storage = new TestStorageManager(temporaryFolder);
+        model = new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs(), BUILT_IN_COMMAND_WORDS,
+                storage.readAliases().orElseThrow().aliases());
+        logic = new LogicManager(model, storage);
+    }
+
+    /**
      * Executes the command and confirms that
      * - no exceptions are thrown <br>
      * - the feedback message is equal to {@code expectedMessage} <br>
@@ -490,10 +715,11 @@ public class LogicManagerTest {
     }
 
     /**
-     * Verifies that a rejected identity-field edit leaves contacts and storage unchanged,
-     * and that subsequent list and undo commands still work without an extra history entry.
+     * Verifies that a rejected identity-field edit shows {@code expectedMessage}, leaves contacts and storage
+     * unchanged, and that subsequent list and undo commands still work without an extra history entry.
      */
-    private void assertDuplicateEditPreservesSession(String duplicateField) throws Exception {
+    private void assertDuplicateEditPreservesSession(String duplicateField, String expectedMessage)
+            throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_BOB + PHONE_DESC_BOB
@@ -503,8 +729,7 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
 
-        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField,
-                EditCommand.MESSAGE_DUPLICATE_PERSON);
+        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField, expectedMessage);
 
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
