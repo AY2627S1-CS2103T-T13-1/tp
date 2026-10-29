@@ -144,18 +144,19 @@ public class ParserUtil {
 
     /**
      * Parses a {@code String tag} into a {@code Tag}.
-     * Leading and trailing whitespaces will be trimmed.
+     * Strips surrounding Unicode whitespace, separates the category and name at Unicode whitespace,
+     * and normalizes whitespace within the tag name to single spaces before validation.
      *
      * @throws ParseException if the given {@code tag} is invalid.
      */
     public static Tag parseTag(String tag) throws ParseException {
         requireNonNull(tag);
-        String[] tagParts = tag.trim().split("\\s+", 2);
+        String[] tagParts = StringUtil.stripWhitespace(tag).split("(?U)\\s+", 2);
         if (tagParts.length < 2) {
             throw new ParseException(Tag.MESSAGE_MISSING_TAG_FIELD);
         }
         String tagCategory = tagParts[0].toLowerCase(Locale.ROOT);
-        String tagName = tagParts[1].trim().replaceAll("\\s+", " ");
+        String tagName = StringUtil.stripWhitespace(tagParts[1]).replaceAll("(?U)\\s+", " ");
         if (!Tag.isValidTagName(tagName)) {
             throw new ParseException(Tag.MESSAGE_CONSTRAINTS);
         }

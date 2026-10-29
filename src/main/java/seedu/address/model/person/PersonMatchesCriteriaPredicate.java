@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.tag.Tag;
 
@@ -64,14 +65,14 @@ public class PersonMatchesCriteriaPredicate implements Predicate<Person> {
     }
 
     private static String normalizeCriteria(String value) {
-        return value.trim().replaceAll("\\s+", " ");
+        return StringUtil.stripWhitespace(value).replaceAll("(?U)\\s+", " ");
     }
 
     /**
-     * Normalizes address whitespace, removing spaces before commas and adding one space after each comma.
+     * Normalizes Unicode address whitespace, removing spaces before commas and adding one space after each comma.
      */
     private static String normalizeAddress(String value) {
-        return normalizeCriteria(value.replaceAll("\\s*,\\s*", ", "));
+        return normalizeCriteria(value.replaceAll("(?U)\\s*,\\s*", ", "));
     }
 
     @Override

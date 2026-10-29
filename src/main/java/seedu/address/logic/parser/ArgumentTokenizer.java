@@ -3,7 +3,11 @@ package seedu.address.logic.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import seedu.address.commons.util.StringUtil;
 
 /**
  * Tokenizes arguments string of the form: {@code preamble <prefix> value <prefix> value ...}<br>
@@ -13,7 +17,7 @@ import java.util.stream.Collectors;
  * 3. An argument may be repeated and all its values will be accumulated e.g. the value of {@code -t}
  *    in the above example.<br>
  * 4. A prefix is only recognised if it is preceded by whitespace and followed by whitespace
- *    or the end of the string.<br>
+ *    or the end of the string. Both boundaries use Unicode whitespace.<br>
  */
 public class ArgumentTokenizer {
 
@@ -48,43 +52,15 @@ public class ArgumentTokenizer {
      */
     private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
         List<PrefixPosition> positions = new ArrayList<>();
+        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
+                Pattern.UNICODE_CHARACTER_CLASS);
+        Matcher matcher = pattern.matcher(argsString);
 
-        int prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), 0);
-        while (prefixPosition != -1) {
-            PrefixPosition extendedPrefix = new PrefixPosition(prefix, prefixPosition);
-            positions.add(extendedPrefix);
-            prefixPosition = findPrefixPosition(argsString, prefix.getPrefix(), prefixPosition);
+        while (matcher.find()) {
+            positions.add(new PrefixPosition(prefix, matcher.start()));
         }
 
         return positions;
-    }
-
-    /**
-     * Returns the index of the first occurrence of {@code prefix} in
-     * {@code argsString} starting from index {@code fromIndex}. An occurrence
-     * is valid if there is a whitespace before {@code prefix}, and either a
-     * whitespace or the end of {@code argsString} after it. Returns -1 if no
-     * such occurrence can be found.
-     *
-     * E.g. if {@code argsString} = "-e hi-p 900", {@code prefix} = "-p" and
-     * {@code fromIndex} = 0, this method returns -1 as there is no whitespace
-     * before "-p". Similarly, if {@code argsString} = "-a Blk 5 -north",
-     * {@code prefix} = "-n" and {@code fromIndex} = 0, this method returns -1
-     * as there is no whitespace after "-n". However, if
-     * {@code argsString} = "-e hi -p 900", {@code prefix} = "-p" and
-     * {@code fromIndex} = 0, this method returns 6.
-     */
-    private static int findPrefixPosition(String argsString, String prefix, int fromIndex) {
-        int prefixIndex = argsString.indexOf(" " + prefix, fromIndex);
-        while (prefixIndex != -1) {
-            int endIndex = prefixIndex + 1 + prefix.length();
-            if (endIndex == argsString.length()
-                    || Character.isWhitespace(argsString.charAt(endIndex))) {
-                return prefixIndex + 1; // +1 as offset for whitespace
-            }
-            prefixIndex = argsString.indexOf(" " + prefix, prefixIndex + 1);
-        }
-        return -1;
     }
 
     /**
@@ -133,7 +109,7 @@ public class ArgumentTokenizer {
         int valueStartPos = currentPrefixPosition.getStartPosition() + prefix.getPrefix().length();
         String value = argsString.substring(valueStartPos, nextPrefixPosition.getStartPosition());
 
-        return value.trim();
+        return StringUtil.stripWhitespace(value);
     }
 
     /**

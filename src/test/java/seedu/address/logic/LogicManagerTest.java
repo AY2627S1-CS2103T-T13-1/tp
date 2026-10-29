@@ -662,6 +662,17 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_importWithUnicodeWhitespace_readsExactFilePath() throws Exception {
+        AddressBook importedAddressBook = new AddressBookBuilder().withPerson(AMY).build();
+        Path importFilePath = temporaryFolder.resolve("my\u00a0contacts-full-stack.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        logic.execute("\u2003import\u00a0-f\u202f" + importFilePath + "\u3000");
+
+        assertEquals(importedAddressBook, new AddressBook(model.getAddressBook()));
+    }
+
+    @Test
     public void execute_importWithDuplicates_skipsDuplicates() throws Exception {
         model.addPerson(AMY);
         Person duplicatePerson = new PersonBuilder(AMY)
