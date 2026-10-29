@@ -618,26 +618,27 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User requests to delete an alias by specifying its name.
-2. coNnectUS deletes the specified alias and notifies the user about its successful deletion.
+1. User <u>views their list of available aliases</u> ([UC11](#use-case-uc11-list-available-aliases)).
+2. User requests to delete an alias by specifying its name.
+3. coNnectUS deletes the specified alias and notifies the user about its successful deletion.
 
    Use case ends.
 
 **Extensions:**
-* 1a. coNnectUS detects that the deletion request has an invalid format (e.g. the alias is missing or the request has too many arguments).
-    * 1a1. coNnectUS displays an error message explaining the invalid command format, followed by command usage instructions.
+* 2a. coNnectUS detects that the deletion request has an invalid format (e.g. the alias is missing or the request has too many arguments).
+    * 2a1. coNnectUS displays an error message explaining the invalid command format, followed by command usage instructions.
 
-      Use case resumes at Step 1.
+      Use case resumes at Step 2.
 
-* 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
-    * 1b1. coNnectUS displays an error message explaining that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+* 2b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
+    * 2b1. coNnectUS displays an error message explaining that aliases must contain only ASCII letters (`a-z` or `A-Z`).
 
-      Use case resumes at Step 1.
+      Use case resumes at Step 2.
 
-* 1c. coNnectUS detects that the supplied alias name does not match any registered alias, using a case-sensitive comparison.
-    * 1c1. coNnectUS displays an error message identifying the alias that was not previously registered.
+* 2c. coNnectUS detects that the supplied alias name does not match any registered alias, using a case-sensitive comparison.
+    * 2c1. coNnectUS displays an error message identifying the alias that was not previously registered.
 
-      Use case resumes at Step 1.
+      Use case resumes at Step 2.
 
 ### Non-Functional Requirements
 
