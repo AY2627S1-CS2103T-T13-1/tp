@@ -656,19 +656,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS.
-* **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
+* **Alias**: A user-defined, case-sensitive alternative command word that invokes a built-in coNnectUS command.
+* **ASCII (American Standard Code for Information Interchange)**: A character-encoding standard containing 128 characters, including letters, digits, punctuation, and control characters.
+* **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
 * **Command**: The string of words you enter in order to make use of a feature of the program.
 * **(Command-line) Parameters/Arguments/Fields**: The input that you add into commands.
 * **(Command) Switch**: An argument modifier added to a command to change how it behaves.
-* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
-* **List Index**: The item’s position in the contact list. This always begins at 1.
+* **Context**: Where/how a user of coNnectUS met the corresponding contact.
 * **Domain Name**: Refers to a human-readable string used to visit a website.
 * **Export**: Create a data file that contains a number of contacts specified by the user.
+* **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
 * **Import**: Using information from an existing data file to create contacts previously specified.
-* **Context**: Where/how a user of coNnectUS met the corresponding contact.
+* **List Index**: The item’s position in the contact list. This always begins at `1`.
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
 * **Tag**: A string label attached to a contact item, as a means to identify attributes related to the contact or group contacts with similar associations.
-* **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
 
 
 --------------------------------------------------------------------------------------------------------------------
