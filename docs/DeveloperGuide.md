@@ -526,7 +526,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 3.
 
-#### Use Case: UC06 - Pin Contacts
+#### Use Case: UC08 - Pin Contacts
 
 **Actor: User**
 
@@ -555,11 +555,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case ends.
 
 
-#### Use case: UC07 - Unpin contacts
+#### Use case: UC09 - Unpin contacts
 **Actor: User**
 
-The use case for `UC07` is identical to ([UC06](#use-case-uc06-pin-contacts)), where `pin` can be replaced with `unpin`, 
-`pinned contact` replaced with `unpinned contact` and vice versa.
+The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contacts)), where user `unpins` a `pinned` contact instead of user pinning an unpinned contact.
+* When unpinned, the contact will be displayed amongst other unpinned contacts, below any remaining pinned contacts.
 
 
 ### Non-Functional Requirements
