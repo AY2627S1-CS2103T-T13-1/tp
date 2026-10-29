@@ -737,6 +737,12 @@ public class LogicManagerTest {
         assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
         assertEquals(originalAliases, model.getAliases());
         assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+
+        // A subsequent valid command must still report contact-save failures.
+        storage.contactSaveException = DUMMY_IO_EXCEPTION;
+        String expectedSaveError = String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedSaveError, () -> logic.execute(PersonUtil.getAddCommand(BOB)));
     }
 
     @Test
