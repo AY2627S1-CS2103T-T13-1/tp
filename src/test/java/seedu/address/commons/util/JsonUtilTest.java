@@ -1,12 +1,17 @@
 package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.testutil.SerializableTestClass;
 import seedu.address.testutil.TestUtil;
 
@@ -16,6 +21,9 @@ import seedu.address.testutil.TestUtil;
 public class JsonUtilTest {
 
     private static final Path SERIALIZATION_FILE = TestUtil.getFilePathInSandboxFolder("serialize.json");
+
+    @TempDir
+    public Path testFolder;
 
     @Test
     public void serializeObjectToJsonFile_noExceptionThrown() throws IOException {
@@ -39,7 +47,92 @@ public class JsonUtilTest {
         assertEquals(serializableTestClass.getMapOfIntegerToString(), SerializableTestClass.getHashMapTestValues());
     }
 
-    //TODO: @Test jsonUtil_readJsonStringToObjectInstance_correctObject()
+    @Test
+    public void jsonUtil_readJsonStringToObjectInstance_correctObject() throws IOException {
+        SerializableTestClass actual = JsonUtil.fromJsonString(
+                SerializableTestClass.JSON_STRING_REPRESENTATION, SerializableTestClass.class);
 
-    //TODO: @Test jsonUtil_writeThenReadObjectToJson_correctObject()
+        assertEquals(SerializableTestClass.getNameTestValue(), actual.getName());
+        assertEquals(SerializableTestClass.getListTestValues(), actual.getListOfLocalDateTimes());
+        assertEquals(SerializableTestClass.getHashMapTestValues(), actual.getMapOfIntegerToString());
+    }
+
+    @Test
+    public void jsonUtil_writeThenReadObjectToJson_correctObject() throws IOException {
+        SerializableTestClass original = new SerializableTestClass();
+        original.setTestValues();
+
+        String json = JsonUtil.toJsonString(original);
+        assertEquals(SerializableTestClass.JSON_STRING_REPRESENTATION, json);
+
+        SerializableTestClass actual = JsonUtil.fromJsonString(json, SerializableTestClass.class);
+
+        assertEquals(original.getName(), actual.getName());
+        assertEquals(original.getListOfLocalDateTimes(), actual.getListOfLocalDateTimes());
+        assertEquals(original.getMapOfIntegerToString(), actual.getMapOfIntegerToString());
+    }
+
+    @Test
+    public void readJsonFileStrict_missingFile_returnsEmpty() throws DataLoadingException {
+        assertFalse(JsonUtil.readJsonFileStrict(testFolder.resolve("missing.json"),
+                String.class).isPresent());
+    }
+
+    @Test
+    public void readJsonFileStrict_validString_returnsCorrectValue() throws IOException, DataLoadingException {
+        Path filePath = testFolder.resolve("valid.json");
+        FileUtil.writeToFile(filePath, "\"value\"");
+
+        assertEquals(Optional.of("value"), JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_directory_throwsDataLoadingException() {
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(testFolder, SerializableTestClass.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_trailingWhitespace_returnsCorrectValue() throws Exception {
+        Path filePath = testFolder.resolve("trailingWhitespace.json");
+        FileUtil.writeToFile(filePath, "\"value\" \n\r\t");
+
+        assertEquals(Optional.of("value"), JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_trailingGarbage_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("trailingGarbage.json");
+        FileUtil.writeToFile(filePath, "\"value\" garbage");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_secondRootValue_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("secondRootValue.json");
+        FileUtil.writeToFile(filePath, "\"value\" \"another\"");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, String.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_duplicateKeys_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("duplicateKeys.json");
+        FileUtil.writeToFile(filePath, "{\"find\":\"f\",\"find\":\"fd\"}");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, SerializableTestClass.class));
+    }
+
+    @Test
+    public void readJsonFileStrict_nullRoot_throwsDataLoadingException() throws IOException {
+        Path filePath = testFolder.resolve("nullRoot.json");
+        FileUtil.writeToFile(filePath, "null");
+
+        assertThrows(DataLoadingException.class, () ->
+                JsonUtil.readJsonFileStrict(filePath, SerializableTestClass.class));
+    }
 }

@@ -18,7 +18,7 @@ public class UnpinCommand extends Command {
 
     public static final String COMMAND_WORD = "unpin";
 
-    public static final String COMMAND_DESCRIPTION = "Unpins a contact at the specified list index";
+    public static final String COMMAND_DESCRIPTION = "Unpins a contact at the specified list index.";
 
     public static final String COMMAND_SAMPLE_USAGE = "Example: " + COMMAND_WORD + " 1";
 

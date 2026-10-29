@@ -18,7 +18,8 @@ import seedu.address.model.Model;
  */
 public class ImportCommand extends Command {
     public static final String COMMAND_WORD = "import";
-    public static final String COMMAND_DESCRIPTION = "Imports contacts from a .json file and skips duplicates.";
+    public static final String COMMAND_DESCRIPTION = "Imports contacts from a specified "
+            + ".json file and skips duplicates.";
     public static final String MESSAGE_IMPORT_REQUESTED =
             "Importing contacts...";
 

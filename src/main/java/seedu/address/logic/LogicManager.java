@@ -2,6 +2,7 @@ package seedu.address.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -9,10 +10,15 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.commons.exceptions.IllegalValueException;
+import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.ExportRequest;
 import seedu.address.logic.commands.ImportRequest;
+import seedu.address.logic.commands.ListAliasCommand;
+import seedu.address.logic.commands.RedoCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -40,12 +46,19 @@ public class LogicManager implements Logic {
     public static final String FILE_INVALID_FORMAT =
             "The file is not a valid address book JSON file.";
 
+    public static final String ALIAS_SAVE_WARNING_FORMAT =
+            "Warning: Alias changes remain unsaved and will be retried after a successful command. %s";
+
+    public static final String CONTACT_SAVE_WARNING_FORMAT =
+            "Warning: Contact changes remain unsaved and will be retried after a successful command. %s";
+
     private final Logger logger = LogsCenter.getLogger(LogicManager.class);
 
     private final Model model;
     private final Storage storage;
     private final AddressBookParser addressBookParser;
     private boolean hasUnsavedContactChanges;
+    private boolean hasUnsavedAliasChanges;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -62,6 +75,8 @@ public class LogicManager implements Logic {
 
         Command command = addressBookParser.parseCommand(commandText);
         AddressBook originalAddressBook = new AddressBook(model.getAddressBook());
+        Map<String, String> originalAliases = model.getAliases();
+
         CommandResult commandResult = command.execute(model);
 
         boolean isImport = commandResult.getImportRequest().isPresent();
@@ -71,10 +86,16 @@ public class LogicManager implements Logic {
                 commandResult = executeImport(commandResult.getImportRequest().get());
             }
 
-            model.commit();
+            if (!isHistoryNavigationCommand(command)) {
+                model.commit();
+            }
 
             boolean contactsChanged = !originalAddressBook.equals(model.getAddressBook());
+            boolean aliasChanged = !originalAliases.equals(model.getAliases());
+
+            // account for pending saves from failed attempt
             hasUnsavedContactChanges = hasUnsavedContactChanges || contactsChanged;
+            hasUnsavedAliasChanges = hasUnsavedAliasChanges || aliasChanged;
 
             if (commandResult.getExportRequest().isPresent()) {
                 ExportRequest exportRequest = commandResult.getExportRequest().get();
@@ -84,8 +105,31 @@ public class LogicManager implements Logic {
                         exportRequest.getFilePath());
 
             } else if (hasUnsavedContactChanges || isImport) {
-                storage.saveAddressBook(model.getAddressBook());
-                hasUnsavedContactChanges = false;
+                try {
+                    storage.saveAddressBook(model.getAddressBook());
+                    hasUnsavedContactChanges = false;
+                } catch (IOException exception) {
+                    if (contactsChanged || isImport || !isAliasManagementCommand(command)) {
+                        throw exception;
+                    }
+
+                    String errorMessage = exception instanceof AccessDeniedException
+                            ? String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, exception.getMessage())
+                            : String.format(FILE_OPS_ERROR_FORMAT, exception.getMessage());
+
+                    commandResult = commandResult.appendAdditionalFeedback(
+                            String.format(CONTACT_SAVE_WARNING_FORMAT, errorMessage));
+                }
+            }
+
+            try {
+                savePendingAliasChanges();
+            } catch (CommandException exception) {
+                if (aliasChanged) {
+                    throw exception;
+                }
+                commandResult = commandResult.appendAdditionalFeedback(
+                        String.format(ALIAS_SAVE_WARNING_FORMAT, exception.getMessage()));
             }
 
         } catch (DataLoadingException e) {
@@ -130,6 +174,16 @@ public class LogicManager implements Logic {
         return new CommandResult(summary.getMessage());
     }
 
+    private boolean isHistoryNavigationCommand(Command command) {
+        return command instanceof UndoCommand || command instanceof RedoCommand;
+    }
+
+    private boolean isAliasManagementCommand(Command command) {
+        return command instanceof AliasCommand
+                || command instanceof DeleteAliasCommand
+                || command instanceof ListAliasCommand;
+    }
+
     @Override
     public ObservableList<Person> getFilteredPersonList() {
         return model.getFilteredPersonList();
@@ -143,5 +197,23 @@ public class LogicManager implements Logic {
     @Override
     public void setGuiSettings(GuiSettings guiSettings) {
         model.setGuiSettings(guiSettings);
+    }
+
+    @Override
+    public void savePendingAliasChanges() throws CommandException {
+        if (!hasUnsavedAliasChanges) {
+            return;
+        }
+
+        try {
+            storage.saveAliases(model.getAliasRegistry());
+            hasUnsavedAliasChanges = false;
+        } catch (AccessDeniedException exception) {
+            throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT,
+                    exception.getMessage()), exception);
+        } catch (IOException exception) {
+            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT,
+                    exception.getMessage()), exception);
+        }
     }
 }

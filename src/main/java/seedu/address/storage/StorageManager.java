@@ -10,22 +10,27 @@ import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.alias.AliasRegistry;
 
 /**
- * Manages storage of AddressBook data in local storage.
+ * Manages storage of address book data, user preferences and command aliases.
  */
 public class StorageManager implements Storage {
 
     private static final Logger logger = LogsCenter.getLogger(StorageManager.class);
     private JsonAddressBookStorage addressBookStorage;
     private JsonUserPrefsStorage userPrefsStorage;
+    private JsonAliasStorage jsonAliasStorage;
 
     /**
-     * Creates a {@code StorageManager} with the given address book and user prefs storage.
+     * Creates a {@code StorageManager} with the given address book,
+     * user prefs storage and alias storage.
      */
-    public StorageManager(JsonAddressBookStorage addressBookStorage, JsonUserPrefsStorage userPrefsStorage) {
+    public StorageManager(JsonAddressBookStorage addressBookStorage, JsonUserPrefsStorage userPrefsStorage,
+                          JsonAliasStorage jsonAliasStorage) {
         this.addressBookStorage = addressBookStorage;
         this.userPrefsStorage = userPrefsStorage;
+        this.jsonAliasStorage = jsonAliasStorage;
     }
 
     // ================ UserPrefs methods ==============================
@@ -75,5 +80,22 @@ public class StorageManager implements Storage {
     @Override
     public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) throws IOException {
         addressBookStorage.saveAddressBook(addressBook, path);
+    }
+
+    // ================ Alias methods =====================================
+
+    @Override
+    public Path getAliasPath() {
+        return jsonAliasStorage.getAliasPath();
+    }
+
+    @Override
+    public Optional<AliasLoadResult> readAliases() throws DataLoadingException {
+        return jsonAliasStorage.readAliases();
+    }
+
+    @Override
+    public void saveAliases(AliasRegistry aliases) throws IOException {
+        jsonAliasStorage.saveAliases(aliases);
     }
 }
