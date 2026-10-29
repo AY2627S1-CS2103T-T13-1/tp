@@ -33,7 +33,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.commons.core.Theme;
 import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteAliasCommand;
@@ -307,6 +309,72 @@ public class LogicManagerTest {
 
         assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
         assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_aliasWhileContactSaveFails_persistsAliasAndReturnsSuccessWithWarning() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_IO_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+
+        CommandResult result = logic.execute("alias list ls");
+
+        Map<String, String> expectedAliases = Map.of("f", "find", "ls", "list");
+        assertEquals(expectedAliases, model.getAliases());
+        assertEquals(expectedAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+        assertContactSaveWarning(result, String.format(AliasCommand.MESSAGE_SUCCESS, "ls", "list"),
+                DUMMY_IO_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts + 1, storage.aliasSaveAttempts);
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_deleteAliasWhileContactSaveFails_persistsDeletionAndWarns() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_AD_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+
+        CommandResult result = logic.execute("delete_alias f");
+
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertContactSaveWarning(result, String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f"), DUMMY_AD_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts + 1, storage.aliasSaveAttempts);
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_listAliasWhileContactSaveFails_returnsListingAndRetriesUntilRecovery() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_AD_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+        String expectedListing = ListAliasCommand.MESSAGE_SUCCESS_PREFIX + "\nfind: f";
+
+        CommandResult result = logic.execute("list_alias");
+
+        assertContactSaveWarning(result, expectedListing, DUMMY_AD_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+        assertEquals(Map.of("f", "find"), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+
+        storage.contactSaveException = null;
+        assertEquals(new CommandResult(expectedListing), logic.execute("list_alias"));
+        assertEquals(pendingContacts, storage.readAddressBook().orElseThrow());
+        assertEquals(contactSaveAttempts + 2, storage.contactSaveAttempts);
+
+        assertEquals(new CommandResult(expectedListing), logic.execute("list_alias"));
+        assertEquals(contactSaveAttempts + 2, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
     }
 
     @Test
@@ -643,6 +711,43 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_importMalformedJson_preservesContactsAliasesAndUndoHistory() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        Map<String, String> originalAliases = model.getAliases();
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+        Path importFilePath = temporaryFolder.resolve("malformedContacts.json");
+        FileUtil.writeToFile(importFilePath, "{\"persons\": [");
+
+        String expectedMessage = String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                importFilePath, LogicManager.FILE_INVALID_FORMAT);
+        assertThrows(CommandException.class, expectedMessage, () -> logic.execute("import -f " + importFilePath));
+
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(contactSaveAttempts, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+
+        assertEquals(new CommandResult(UndoCommand.MESSAGE_SUCCESS), logic.execute("undo"));
+        assertEquals(new AddressBook(), model.getAddressBook());
+        assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+
+        // A subsequent valid command must still report contact-save failures.
+        storage.contactSaveException = DUMMY_IO_EXCEPTION;
+        String expectedSaveError = String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedSaveError, () -> logic.execute(PersonUtil.getAddCommand(BOB)));
+    }
+
+    @Test
     public void execute_importSaveFailsThenLaterCommandRetriesSave() throws Exception {
         AddressBook importedAddressBook = new AddressBookBuilder()
                 .withPerson(AMY)
@@ -677,6 +782,42 @@ public class LogicManagerTest {
     @Test
     public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
+    }
+
+    /**
+     * Persists a contact and alias, then leaves an edited contact pending after a failed contact save.
+     * Alias storage remains writable.
+     */
+    private TestStorageManager setUpPendingContactSaveFailure(IOException exception) throws Exception {
+        model.addPerson(AMY);
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAddressBook(model.getAddressBook());
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.contactSaveException = exception;
+        int contactSaveAttempts = storage.contactSaveAttempts;
+
+        assertThrows(CommandException.class, () -> logic.execute("edit 1" + ADDRESS_DESC_BOB));
+
+        Person editedAmy = new PersonBuilder(AMY).withAddress(VALID_ADDRESS_BOB).build();
+        assertEquals(List.of(editedAmy), model.getAddressBook().getPersonList());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        return storage;
+    }
+
+    /**
+     * Verifies that successful command feedback is retained alongside a warning about a failed contact-save retry.
+     */
+    private void assertContactSaveWarning(CommandResult result, String expectedSuccess, IOException exception) {
+        String feedback = result.getFeedbackToUser();
+        String expectedError = exception instanceof AccessDeniedException
+                ? String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, exception.getMessage())
+                : String.format(LogicManager.FILE_OPS_ERROR_FORMAT, exception.getMessage());
+        assertTrue(feedback.startsWith(expectedSuccess));
+        assertTrue(feedback.contains("Warning:"));
+        assertTrue(feedback.contains(expectedError));
     }
 
     /**
