@@ -597,7 +597,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   
     Use case resumes at Step 1.
 
+#### Use Case: UC11 - List available aliases
 
+**Actor: User**
+
+**MSS:**
+1. User requests to view all registered aliases.
+2. coNnectUS displays the aliases and their corresponding built-in command words, grouped by command word.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that no aliases are currently registered.
+    * 1a1. coNnectUS displays a message informing the user that no aliases are currently registered.
+
+      Use case ends.
 
 ### Non-Functional Requirements
 
