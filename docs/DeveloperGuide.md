@@ -468,9 +468,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Extensions:**
 
 * 1a. coNnectUS detects that no contacts match all the fields provided.
-    * 1a1. coNnectUS displays an error message informing the user that no matching contacts were found.
+    * 1a1. coNnectUS displays a message informing the user that no contacts were found.
     
-      Use case ends.
+      Use case resumes at step 1.
 
 * 1b. coNnectUS detects that no fields were provided. 
     * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
