@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -673,6 +674,24 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_importAccessDeniedWhileReading_throwsPermissionError() {
+        Path importFilePath = temporaryFolder.resolve("permissionDeniedContacts.json");
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.readAddressBookException = new DataLoadingException(DUMMY_AD_EXCEPTION);
+        logic = new LogicManager(model, storage);
+
+        String expectedMessage = String.format(
+                LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                importFilePath,
+                LogicManager.FILE_READ_PERMISSION_ERROR);
+
+        assertCommandFailure(
+                "import -f " + importFilePath,
+                CommandException.class,
+                expectedMessage);
+    }
+
+    @Test
     public void execute_importWithDuplicates_skipsDuplicates() throws Exception {
         model.addPerson(AMY);
         Person duplicatePerson = new PersonBuilder(AMY)
@@ -1048,6 +1067,7 @@ public class LogicManagerTest {
         private int aliasSaveAttempts;
         private IOException contactSaveException;
         private IOException aliasSaveException;
+        private DataLoadingException readAddressBookException;
 
         TestStorageManager(Path folder) {
             super(new JsonAddressBookStorage(folder.resolve("addressBook.json")),
@@ -1076,6 +1096,14 @@ public class LogicManagerTest {
                 throw aliasSaveException;
             }
             super.saveAliases(aliases);
+        }
+
+        @Override
+        public Optional<ReadOnlyAddressBook> readAddressBook(Path path) throws DataLoadingException {
+            if (readAddressBookException != null) {
+                throw readAddressBookException;
+            }
+            return super.readAddressBook(path);
         }
     }
 }
