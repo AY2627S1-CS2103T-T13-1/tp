@@ -554,12 +554,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case ends.
 
-* 2b. coNnectUS detects an out-of-bounds index (List has n contacts, user specifies index of n + 1).
+* 2b. coNnectUS detects an out-of-bounds index (Currently displayed list has n contacts, user specifies index of n + 1).
     * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
 
       Use case ends.
   
-* 2b. conNectUS detects that the contact at the user-specified index is already pinned
+* 2b. coNnectUS detects that the contact at the user-specified index is already pinned.
     * 2b1. coNnectUS displays an error message informing the user that the contact is already pinned.
 
       Use case ends.
@@ -571,18 +571,19 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contacts)), where user `unpins` a `pinned` contact instead of user pinning an unpinned contact.
 * When unpinned, the contact will be displayed amongst other unpinned contacts, below any remaining pinned contacts.
 
+
 #### Use case: UC10 - Sort contacts
 **Actor: User**
 
 **MSS:**
-1. User specifies the command to sort contacts, with a sorting criteria and sorting order.
+1. User specifies the command to sort contacts, with a sorting criterion and sorting order.
 2. coNnectUS sorts the contacts and displays a success message.
 
    Use case ends.
 
 **Extensions:**
 
-* 1a. coNnectUS detects that an invalid sorting criteria or an invalid sorting order was specified.
+* 1a. coNnectUS detects that an invalid sorting criterion or an invalid sorting order was specified.
     * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly.
 
       Use case ends.
