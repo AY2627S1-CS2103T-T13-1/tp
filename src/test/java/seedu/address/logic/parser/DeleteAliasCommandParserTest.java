@@ -19,6 +19,8 @@ public class DeleteAliasCommandParserTest {
     public void parse_validAlias_returnsDeleteAliasCommand() {
         assertParseSuccess(parser, "f", new DeleteAliasCommand("f"));
         assertParseSuccess(parser, " \tSearch\n ", new DeleteAliasCommand("Search"));
+        assertParseSuccess(parser, "\u00a0f\u00a0", new DeleteAliasCommand("f"));
+        assertParseSuccess(parser, "\u2003Search\u2028", new DeleteAliasCommand("Search"));
     }
 
     @Test
@@ -31,10 +33,12 @@ public class DeleteAliasCommandParserTest {
     public void parse_missingAlias_throwsParseException() {
         assertParseFailure(parser, "", INVALID_COMMAND_FORMAT_MESSAGE);
         assertParseFailure(parser, " \t\n ", INVALID_COMMAND_FORMAT_MESSAGE);
+        assertParseFailure(parser, "\u00a0\u2003\u2028", INVALID_COMMAND_FORMAT_MESSAGE);
     }
 
     @Test
     public void parse_extraArguments_throwsParseException() {
         assertParseFailure(parser, "f extra", INVALID_COMMAND_FORMAT_MESSAGE);
+        assertParseFailure(parser, "f\u00a0extra", INVALID_COMMAND_FORMAT_MESSAGE);
     }
 }

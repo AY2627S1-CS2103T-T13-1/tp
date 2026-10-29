@@ -208,6 +208,23 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_fiveTags_success() {
+        String userInput = "1 -t others one -t others two -t others three -t others four -t others five";
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withTags(new OthersTag("one"), new OthersTag("two"), new OthersTag("three"),
+                        new OthersTag("four"), new OthersTag("five")).build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(INDEX_FIRST_PERSON, descriptor));
+    }
+
+    @Test
+    public void parse_sixTags_failure() {
+        assertParseFailure(parser,
+                "1 -t others one -t others two -t others three -t others four -t others five -t others six",
+                Tag.MESSAGE_TOO_MANY_TAGS);
+    }
+
+    @Test
     public void parse_resetAddress_success() {
         Index targetIndex = INDEX_THIRD_PERSON;
         String userInput = targetIndex.getOneBased() + INVALID_ADDRESS_DESC;

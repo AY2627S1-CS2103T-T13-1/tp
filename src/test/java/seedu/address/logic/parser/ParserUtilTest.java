@@ -240,6 +240,18 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseTag_unicodeWhitespace_returnsNormalizedTag() throws Exception {
+        assertEquals(new OthersTag("close friend"),
+                ParserUtil.parseTag("\u2003others\u00a0close\u202f\u2003friend\u3000"));
+    }
+
+    @Test
+    public void parseTag_unicodeWhitespaceWithoutName_throwsParseException() {
+        assertThrows(ParseException.class, Tag.MESSAGE_MISSING_TAG_FIELD, () ->
+                ParserUtil.parseTag("others\u00a0\u2003"));
+    }
+
+    @Test
     public void parseTags_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseTags(null));
     }

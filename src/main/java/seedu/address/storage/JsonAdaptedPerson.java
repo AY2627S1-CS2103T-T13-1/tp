@@ -123,6 +123,10 @@ class JsonAdaptedPerson {
         isPinned = "true".equals(this.isPinned);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
+        if (modelTags.size() > Tag.MAX_TAGS_PER_PERSON) {
+            throw new IllegalValueException(Tag.MESSAGE_TOO_MANY_TAGS);
+        }
+
         return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, isPinned);
     }
 

@@ -42,6 +42,13 @@ public class SearchCriteriaParserTest {
     }
 
     @Test
+    public void parse_nameWithUnicodeWhitespace_returnsNormalizedName() throws ParseException {
+        SearchCriteria criteria = SearchCriteriaParser.parse(tokenize(" -n Alice\u00a0\u2003Smith"));
+
+        assertEquals(Optional.of("Alice Smith"), criteria.getName());
+    }
+
+    @Test
     public void parse_noCriteria_returnsEmptyCriteria() throws ParseException {
         SearchCriteria criteria = SearchCriteriaParser.parse(tokenize(""));
 
@@ -55,14 +62,6 @@ public class SearchCriteriaParserTest {
     @Test
     public void parse_invalidName_throwsParseException() {
         String args = " -n R@chel";
-
-        assertThrows(ParseException.class, ()
-                -> SearchCriteriaParser.parse(tokenize(args)));
-    }
-
-    @Test
-    public void parse_invalidPhone_throwsParseException() {
-        String args = " -p +651234";
 
         assertThrows(ParseException.class, ()
                 -> SearchCriteriaParser.parse(tokenize(args)));

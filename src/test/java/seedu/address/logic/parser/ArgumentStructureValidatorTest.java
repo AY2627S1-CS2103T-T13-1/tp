@@ -24,7 +24,7 @@ public class ArgumentStructureValidatorTest {
         String args = " -n Alice -t role student -t skill coding";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
-        assertDoesNotThrow(() -> validate(args, arguments));
+        assertDoesNotThrow(() -> validate(arguments));
     }
 
     @Test
@@ -33,7 +33,17 @@ public class ArgumentStructureValidatorTest {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
         ParseException exception = assertThrows(ParseException.class, ()
-                -> validate(args, arguments));
+                -> validate(arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
+    public void validate_unknownParameterAfterUnicodeWhitespace_throwsParseException() {
+        String args = "\u2003-n\u00a0Alice\u202f-x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, () -> validate(arguments));
 
         assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
     }
@@ -43,7 +53,48 @@ public class ArgumentStructureValidatorTest {
         String args = " -n -";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
-        assertDoesNotThrow(() -> validate(args, arguments));
+        assertDoesNotThrow(() -> validate(arguments));
+    }
+
+    @Test
+    public void validate_hyphenLeadingWordsInTagValue_doesNotThrow() {
+        String args = " -t others -archived -t others coder -x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        assertDoesNotThrow(() -> validate(arguments));
+    }
+
+    @Test
+    public void validate_unknownParameterAfterTagAndAnotherPrefix_throwsParseException() {
+        String args = " -t others -archived -n Alice -x value";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
+    public void validate_unknownParameterBeforeTag_throwsParseException() {
+        String args = " -x value -t others -archived";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(arguments));
+
+        assertEquals("Unknown find parameter: '-x'.", exception.getMessage());
+    }
+
+    @Test
+    public void validate_knownParameterAfterTag_throwsParseException() {
+        String args = " -t others -p";
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
+
+        ParseException exception = assertThrows(ParseException.class, ()
+                -> validate(arguments));
+
+        assertEquals("The value for '-p' cannot be empty.", exception.getMessage());
     }
 
     @Test
@@ -52,7 +103,7 @@ public class ArgumentStructureValidatorTest {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
         ParseException exception = assertThrows(ParseException.class, ()
-                -> validate(args, arguments));
+                -> validate(arguments));
 
         assertEquals(
                 "Unexpected text before the first parameter: 'Alice'.",
@@ -65,7 +116,7 @@ public class ArgumentStructureValidatorTest {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
         ParseException exception = assertThrows(ParseException.class, ()
-                -> validate(args, arguments));
+                -> validate(arguments));
 
         assertEquals("The value for '-n' cannot be empty.", exception.getMessage());
     }
@@ -76,7 +127,7 @@ public class ArgumentStructureValidatorTest {
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
         ParseException exception = assertThrows(ParseException.class, ()
-                -> validate(args, arguments));
+                -> validate(arguments));
 
         assertEquals("The -n parameter may only be specified once.", exception.getMessage());
     }
@@ -86,11 +137,11 @@ public class ArgumentStructureValidatorTest {
         String args = " -t role student -t skill coding";
         ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, SUPPORTED_PREFIXES);
 
-        assertDoesNotThrow(() -> validate(args, arguments));
+        assertDoesNotThrow(() -> validate(arguments));
     }
 
-    private void validate(String args, ArgumentMultimap arguments) throws ParseException {
+    private void validate(ArgumentMultimap arguments) throws ParseException {
         ArgumentStructureValidator.validate(
-                args, arguments, SUPPORTED_PREFIXES, "find");
+                arguments, SUPPORTED_PREFIXES, "find");
     }
 }

@@ -3,6 +3,7 @@ package seedu.address.logic.parser;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 
+import seedu.address.commons.util.StringUtil;
 import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.alias.AliasRegistry;
@@ -19,7 +20,7 @@ public class DeleteAliasCommandParser implements Parser<DeleteAliasCommand> {
     }
 
     private String parseAlias(String args) throws ParseException {
-        String[] arguments = args.trim().split("\\s+", 2);
+        String[] arguments = StringUtil.stripWhitespace(args).split("(?U)\\s+", 2);
         String alias = arguments[0];
 
         if (alias.isEmpty() || arguments.length != 1) {
