@@ -61,7 +61,6 @@ public class EditCommand extends Command {
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Contact edited: %1$s";
     public static final String MESSAGE_NOT_EDITED = "A field must be specified for editing.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
     public static final String MESSAGE_INVALID_INDEX = "An invalid list index was specified."
             + " Please check against your contact list.";
 
@@ -92,7 +91,8 @@ public class EditCommand extends Command {
         Person personToEdit = lastShownList.get(index.getZeroBased());
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
         if (duplicatesAnotherPerson(model, personToEdit, editedPerson)) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+            throw new CommandException(
+                    Messages.getDuplicateContactMessage(editedPerson, getOtherPersons(model, personToEdit)));
         }
 
         model.setPerson(personToEdit, editedPerson);
@@ -118,9 +118,17 @@ public class EditCommand extends Command {
     }
 
     private static boolean duplicatesAnotherPerson(Model model, Person personToEdit, Person editedPerson) {
+        return getOtherPersons(model, personToEdit).stream()
+                .anyMatch(person -> editedPerson.isSamePerson(person));
+    }
+
+    /**
+     * Returns all persons in the address book except {@code personToEdit}.
+     */
+    private static List<Person> getOtherPersons(Model model, Person personToEdit) {
         return model.getAddressBook().getPersonList().stream()
                 .filter(person -> !person.equals(personToEdit))
-                .anyMatch(person -> editedPerson.isSamePerson(person));
+                .toList();
     }
 
     @Override
