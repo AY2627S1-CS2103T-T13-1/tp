@@ -22,6 +22,7 @@ import static seedu.address.testutil.TypicalPersons.BOB;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +58,8 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
+import seedu.address.model.tag.OthersTag;
+import seedu.address.model.tag.Tag;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -680,6 +683,61 @@ public class LogicManagerTest {
                 .findFirst()
                 .orElseThrow());
         assertTrue(model.hasPerson(BOB));
+    }
+
+    @Test
+    public void execute_importWithFiveTags_importsAndPersistsContact() throws Exception {
+        Person person = new PersonBuilder(AMY).withTags(new OthersTag("one"), new OthersTag("two"),
+                new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
+        AddressBook importedAddressBook = new AddressBookBuilder().withPerson(person).build();
+        Path importFilePath = temporaryFolder.resolve("fiveTags.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        CommandResult result = logic.execute("import -f " + importFilePath);
+
+        assertEquals("Imported 1 contact(s). Skipped 0 duplicate(s).", result.getFeedbackToUser());
+        assertEquals(importedAddressBook, model.getAddressBook());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(importedAddressBook, savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_importWithSixTags_rejectsWholeFileAndPreservesSession() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        Path importFilePath = temporaryFolder.resolve("sixTags.json");
+        // Put a valid contact first to check that rejection does not partially import the file.
+        Files.writeString(importFilePath, """
+                {
+                  "persons": [
+                    {"name": "Valid Contact", "phone": "12345678", "email": "valid@example.com",
+                     "address": "", "isPinned": "false", "tags": []},
+                    {"name": "Too Many Tags", "phone": "87654321", "email": "tags@example.com",
+                     "address": "", "isPinned": "false", "tags": [
+                       {"tagName": "one", "tagType": "others"},
+                       {"tagName": "two", "tagType": "others"},
+                       {"tagName": "three", "tagType": "others"},
+                       {"tagName": "four", "tagType": "others"},
+                       {"tagName": "five", "tagType": "others"},
+                       {"tagName": "six", "tagType": "others"}
+                     ]}
+                  ]
+                }
+                """);
+
+        assertCommandException("import -f " + importFilePath,
+                String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT, importFilePath, Tag.MESSAGE_TOO_MANY_TAGS));
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, savedStorage.readAddressBook().orElseThrow());
+        assertEquals(ListCommand.MESSAGE_SUCCESS, logic.execute(ListCommand.COMMAND_WORD).getFeedbackToUser());
+        assertUndoSuccess();
+        assertEquals(new AddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }
 
     @Test

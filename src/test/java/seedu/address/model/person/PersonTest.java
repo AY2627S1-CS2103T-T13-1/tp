@@ -12,12 +12,44 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.stream.IntStream;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.tag.OthersTag;
+import seedu.address.model.tag.Tag;
 import seedu.address.testutil.PersonBuilder;
 
 public class PersonTest {
+
+    @Test
+    public void constructor_fewerThanMaxTags_success() {
+        for (int tagCount = 0; tagCount < Tag.MAX_TAGS_PER_PERSON; tagCount++) {
+            Person person = new PersonBuilder().withTags(generateTags(tagCount)).build();
+            assertEquals(tagCount, person.getTags().size());
+        }
+    }
+
+    @Test
+    public void constructor_exactlyMaxTags_success() {
+        Person person = new PersonBuilder().withTags(generateTags(Tag.MAX_TAGS_PER_PERSON)).build();
+        assertEquals(Tag.MAX_TAGS_PER_PERSON, person.getTags().size());
+    }
+
+    @Test
+    public void constructor_moreThanMaxTags_throwsIllegalArgumentException() {
+        for (int excessTags = 1; excessTags <= 2; excessTags++) {
+            Tag[] tags = generateTags(Tag.MAX_TAGS_PER_PERSON + excessTags);
+            assertThrows(IllegalArgumentException.class,
+                    Tag.MESSAGE_TOO_MANY_TAGS, () -> new PersonBuilder().withTags(tags).build());
+        }
+    }
+
+    private static Tag[] generateTags(int count) {
+        return IntStream.range(0, count)
+                .mapToObj(index -> new OthersTag("tag" + index))
+                .toArray(Tag[]::new);
+    }
 
     @Test
     public void asObservableList_modifyList_throwsUnsupportedOperationException() {
