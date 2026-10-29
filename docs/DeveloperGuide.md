@@ -577,7 +577,6 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 **MSS:**
 1. User specifies the command to sort contacts, with a sorting criteria and sorting order.
 2. coNnectUS sorts the contacts and displays a success message.
-3. coNnectUS pins the contact, displaying the pinned contact above other unpinned contacts.
 
    Use case ends.
 
