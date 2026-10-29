@@ -1,6 +1,5 @@
 package seedu.address.logic.parser;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -55,14 +54,24 @@ public class ExportCommandParserTest {
     }
 
     @Test
-    public void parse_hyphenLeadingTagName_returnsExportCommand() {
-        assertDoesNotThrow(() -> parser.parse(" -f contacts -t others -archived"));
+    public void parse_hyphenLeadingTagName_throwsParseException() {
+        assertParseFailure(" -f contacts -t others -archived", Tag.MESSAGE_CONSTRAINTS);
     }
 
     @Test
-    public void parse_invalidHyphenLeadingTag_throwsParseException() {
+    public void parse_hyphenLeadingWordInTagName_throwsParseException() {
+        assertParseFailure(" -f contacts -t others coder -y", Tag.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_hyphenWithinTagName_throwsParseException() {
+        assertParseFailure(" -f contacts -t others full-stack", Tag.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_tagWithoutName_throwsParseException() {
+        assertParseFailure(" -f contacts -t others", Tag.MESSAGE_MISSING_TAG_FIELD);
         assertParseFailure(" -f contacts -t -archived", Tag.MESSAGE_MISSING_TAG_FIELD);
-        assertParseFailure(" -f contacts -t others -archived!", Tag.MESSAGE_CONSTRAINTS);
     }
 
     @Test

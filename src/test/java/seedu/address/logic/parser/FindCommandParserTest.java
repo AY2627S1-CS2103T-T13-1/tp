@@ -69,7 +69,7 @@ public class FindCommandParserTest {
                 Tag.MESSAGE_UNKNOWN_TAG_CATEGORY + "\n" + FindCommand.MESSAGE_USAGE);
         assertParseFailure(parser, " -t others bad@tag -t others owesMoney",
                 Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
-        assertParseFailure(parser, " -t others -archived! -t others owesMoney",
+        assertParseFailure(parser, " -t others -archived -t others owesMoney",
                 Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
@@ -88,12 +88,21 @@ public class FindCommandParserTest {
     }
 
     @Test
-    public void parse_hyphenLeadingTagName_returnsFindCommand() {
-        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
-                Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(),
-                Set.of(new OthersTag("-x")));
+    public void parse_hyphenLeadingTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others -archived",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
 
-        assertParseSuccess(parser, " -t others -x", new FindCommand(predicate));
+    @Test
+    public void parse_hyphenLeadingWordInTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others coder -y",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_hyphenWithinTagName_throwsParseException() {
+        assertParseFailure(parser, " -t others full-stack",
+                Tag.MESSAGE_CONSTRAINTS + "\n" + FindCommand.MESSAGE_USAGE);
     }
 
     @Test
