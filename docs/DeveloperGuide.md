@@ -551,6 +551,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 3.
 
+#### Use Case: UC10 - Create an alias
+
+**Actor: User**
+
+**MSS:**
+1. User creates an alias for a specified command word.
+2. coNnectUS creates a mapping of the alias to its respective command word and notifies the user about successful alias creation.
+
+    Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that the command word/alias are not letters (i.e. `a-zA-Z`).
+  * 1ai. 
+
+
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
