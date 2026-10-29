@@ -443,7 +443,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
 2. User specifies delete command with a list index corresponding to a contact.
 3. coNnectUS deletes the contact.
 4. coNnectUS displays a status message with the information of the deleted contact, together with the updated contact list.
@@ -505,7 +505,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01---list-contacts)).
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
 2. User requests to edit a specific contact in the list, providing new values for one or more fields.
 3. coNnectUS updates the contact with the new values and shows the updated details.
 
