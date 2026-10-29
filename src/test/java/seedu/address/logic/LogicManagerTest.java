@@ -1016,14 +1016,6 @@ public class LogicManagerTest {
         }
 
         @Override
-        public Optional<ReadOnlyAddressBook> readAddressBook(Path path) throws DataLoadingException {
-            if (readAddressBookException != null) {
-                throw readAddressBookException;
-            }
-            return super.readAddressBook(path);
-        }
-
-        @Override
         public void saveAddressBook(ReadOnlyAddressBook addressBook, Path path) {
             throw new AssertionError("These commands must not export contacts.");
         }
@@ -1035,6 +1027,14 @@ public class LogicManagerTest {
                 throw aliasSaveException;
             }
             super.saveAliases(aliases);
+        }
+
+        @Override
+        public Optional<ReadOnlyAddressBook> readAddressBook(Path path) throws DataLoadingException {
+            if (readAddressBookException != null) {
+                throw readAddressBookException;
+            }
+            return super.readAddressBook(path);
         }
     }
 }
