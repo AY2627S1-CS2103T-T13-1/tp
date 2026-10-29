@@ -472,7 +472,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     
       Use case ends.
 
-* 1b. coNnectUS detects that no fields was provided. 
+* 1b. coNnectUS detects that no fields were provided. 
     * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
 
       Use case resumes at step 1.
