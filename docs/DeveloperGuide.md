@@ -591,6 +591,69 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 3.
 
+#### Use Case: UC07 - Clear contacts
+
+**Actor: User**
+
+**MSS:**
+1. User specifies the command to clear the contact list.
+2. coNnectUS removes all contacts and displays a success message to the user.
+
+   Use case ends.
+
+#### Use Case: UC08 - Pin Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User <u>views their list of current contacts</u> ([UC01](#use-case-uc01-list-contacts)).
+2. User specifies the command to pin a contact, with an index corresponding to the contact to be pinned.
+3. coNnectUS pins the contact, displaying the pinned contact above other unpinned contacts.
+
+   Use case ends.
+
+**Extensions:**
+
+* 2a. coNnectUS detects an illegal or missing list index (e.g. List index is negative, zero, missing or non-numeric).
+    * 2a1. coNnectUS displays an error message informing the user of the correct usage of pin command.
+
+      Use case ends.
+
+* 2b. coNnectUS detects an out-of-bounds index (e.g. Currently displayed list has n contacts, user specifies index of n + 1).
+    * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
+
+      Use case ends.
+  
+* 2b. coNnectUS detects that the contact at the user-specified index is already pinned.
+    * 2b1. coNnectUS displays an error message informing the user that the contact is already pinned.
+
+      Use case ends.
+
+
+#### Use case: UC09 - Unpin contacts
+**Actor: User**
+
+The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contacts)), where the user `unpins` a `pinned` contact as opposed to them pinning an unpinned contact.
+* When unpinned, the contact will be displayed amongst other unpinned contacts, below any remaining pinned contacts.
+
+
+#### Use case: UC10 - Sort contacts
+**Actor: User**
+
+**MSS:**
+1. User specifies the command to sort contacts, with a sorting criterion and sorting order.
+2. coNnectUS sorts the contacts and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects that an invalid sorting criterion or an invalid sorting order was specified.
+    * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly and show sort command's usage.
+
+      Use case ends.
+
+
 #### Use Case: UC11 - Create an alias
 
 **Actor: User**
