@@ -614,12 +614,12 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 
-* 2a. coNnectUS detects an illegal or missing list index (List index is negative, 0, missing or non-numeric).
+* 2a. coNnectUS detects an illegal or missing list index (e.g. List index is negative, zero, missing or non-numeric).
     * 2a1. coNnectUS displays an error message informing the user of the correct usage of pin command.
 
       Use case ends.
 
-* 2b. coNnectUS detects an out-of-bounds index (Currently displayed list has n contacts, user specifies index of n + 1).
+* 2b. coNnectUS detects an out-of-bounds index (e.g. Currently displayed list has n contacts, user specifies index of n + 1).
     * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
 
       Use case ends.
@@ -633,7 +633,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 #### Use case: UC09 - Unpin contacts
 **Actor: User**
 
-The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contacts)), where user `unpins` a `pinned` contact instead of user pinning an unpinned contact.
+The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contacts)), where the user `unpins` a `pinned` contact as opposed to them pinning an unpinned contact.
 * When unpinned, the contact will be displayed amongst other unpinned contacts, below any remaining pinned contacts.
 
 
@@ -649,7 +649,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 **Extensions:**
 
 * 1a. coNnectUS detects that an invalid sorting criterion or an invalid sorting order was specified.
-    * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly.
+    * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly and show sort command's usage.
 
       Use case ends.
 
