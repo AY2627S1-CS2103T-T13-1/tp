@@ -217,7 +217,10 @@ The `alias` feature:
 * requires `alias` to consist of one or more ASCII lowercase or uppercase ASCII letters (i.e. `a-z` or `A-Z`), with **no whitespace**.
 * treats aliases as **case-sensitive**,  allowing for names such as `f` and `F` to be registered separately.
 * supports registration for built-in command words only, using an exact, case-sensitive match. Existing aliases cannot be used for the target command word.
-*  rejects alias names that conflict with a built-in command word, ignoring case, or an already-registered alias, using a case-sensitive comparison.
+* rejects alias names that conflict with either of the following:
+    * a built-in command word (using a _case-insensitive_ comparison).
+    * an already registered alias (using a _case-sensitive_ comparison).
+    <br>
 * resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
