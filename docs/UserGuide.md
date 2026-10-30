@@ -96,6 +96,25 @@ edit LIST_INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATE
 more commands ...
 ```
 
+<box type="info" header="<u>**Alternative way to access User Guide**<u>" seamless>
+Before we get started, ensure that you have a <i>reliable internet connection</i>.
+<br>
+<br>
+An alternative to accessing this user guide is through the "User Guide" dialog, using the following steps:
+
+1. With coNnectUS already open, click on <kbd>User Guide</kbd> on the top ribbon and select the button to trigger the User Guide dialog. Alternatively, you can press <kbd>F1</kbd> on your keyboard to trigger the same action.
+<br>
+
+<img src="images/user-guide-access-step-1.png" alt="user-guide-access-step-1" width="515" style="max-width: 100%; height: auto;" />
+
+2. Once the dialog appears, click on the <kbd>Open User Guide</kbd> button to open this User Guide your default browser configured.
+<br>
+
+<img src="images/user-guide-access-step-2.png" alt="user-guide-access-step-2" width="506" style="max-width: 100%; height: auto;" />
+
+Note that if there are issues with your default browser, you would be instead prompted to click <kbd>Copy URL</kbd> and open it in a browser of your choosing.
+</box>
+
 ### Adding a person: `add`
 
 Adds a person to the address book.
