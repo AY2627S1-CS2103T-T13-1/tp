@@ -252,6 +252,9 @@ Format: `import -f FILE_PATH`
 * The command displays the number of imported and skipped contacts.
 * The imported contacts can be removed using `undo`.
 
+Example:
+* `import -f data/exports/contacts.json`
+
 ### Exporting contacts: `export`
 
 Exports contacts that match the specified criteria to a JSON file.
@@ -268,14 +271,9 @@ Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] 
 *  If a file with the same name already exists, it will be overwritten.
 *  Exporting contacts does not modify the contacts in coNnectUS and cannot be undone.
 
-Examples: 
-
+Examples:
 * `export -f contacts` exports all contacts to `data/exports/contacts.json`.
 * `export -f filtered-contacts -n Alice -e example.com` exports contacts whose names contain `Alice` and whose email addresses contain `example.com`.
-
-Example:
-
-* `import -f data/exports/contacts.json`
 
 ### Redoing an undone change: `redo`
 
