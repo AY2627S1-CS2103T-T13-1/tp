@@ -40,7 +40,7 @@ deactivate AliasCommand
 
 AliasCommandParser --> AddressBookParser: a
 deactivate AliasCommandParser
-'Hidden arrow to position the destroy marker below the end of the activation bar.
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
 AliasCommandParser -[hidden]-> AddressBookParser
 destroy AliasCommandParser
 
