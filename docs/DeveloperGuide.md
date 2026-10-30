@@ -588,7 +588,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS:**
 1. User requests to register an alias for a specified built-in command word.
-2. coNnectUS registers the alias for the specified command and notifies the user about the alias's successful creation.
+2. coNnectUS registers the alias for the specified command word and notifies the user that it was successfully registered.
 
     Use case ends.
 
