@@ -16,7 +16,7 @@
 This brownfield project was based on AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org/).
 
 In addition, we also:
-* adapted [this solution](https://stackoverflow.com/questions/5226212/how-to-open-url-in-default-webbrowser-using-java) to open the User Guide URL from the `UserGuideAccessWindow` in user's default browser.
+* adapted [this solution](https://stackoverflow.com/a/5226244) to open the User Guide URL from the `UserGuideAccessWindow` in user's default browser.
 
 --------------------------------------------------------------------------------------------------------------------
 
