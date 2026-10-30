@@ -26,7 +26,7 @@ public class PersonComparatorFactory {
         Comparator<Person> criteriaComparator = switch (sortCriteria) {
             case NAME -> Comparator.comparing(person -> person.getName().fullName, String.CASE_INSENSITIVE_ORDER);
             case EMAIL -> Comparator.comparing(person -> person.getEmail().value, String.CASE_INSENSITIVE_ORDER);
-            case PHONE -> Comparator.comparing(person -> person.getPhone().value);
+            case PHONE -> Comparator.comparing(person -> person.getPhone().convertToLong());
         };
 
         if (sortOrder == SortOrder.DESC) {

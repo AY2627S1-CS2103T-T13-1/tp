@@ -13,7 +13,10 @@
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+This brownfield project was based on AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org/).
+
+In addition, we also:
+* adapted [this solution](https://stackoverflow.com/a/5226244) to open the User Guide URL from the `UserGuideAccessWindow` in user's default browser.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -176,6 +179,20 @@ The theme feature,
 * keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
+### Sorting contacts
+<puml src="diagrams/SortSequenceDiagram.puml" alt="Sequence of sort command"/>
+
+Users are able to sort their contacts such as by name and by their phone numbers.
+
+The sort feature makes use of the `PersonComparatorFactory` class to create comparators for the various sorts.
+- `PersonComparatorFactory` provides `createComparator(SortCriteria, SortOrder)` to create the various comparators required to achieve the sorts.
+- `PersonComparatorFactory` also has a private `SortComparator` class with the intention to override `equals()` to provide a more accurate equality check.
+  - Ensuring `equals()` is accurate is needed to prevent `undo/redo` loops associated with `sort`.
+- `PersonComparatorFactory` also adopts the singleton design pattern for the default comparator (for pinned persons sorting) to ensure `equals()` is correct for it.
+- To ensure that user applied sorts are maintained, `ModelManager` stores the most recent comparator used as `activeComparator`
+  - `ModelManager` will call `sortAddressBook` internally after any change to the contacts such as adding or removing contacts
+
+
 ### Pinning a contact
 
 Users are able to pin contacts, placing them above other unpinned contacts.
@@ -184,28 +201,66 @@ Users are able to pin contacts, placing them above other unpinned contacts.
 
 The pin feature makes use of sorting to ensure pinned contacts are displayed on top of unpinned contacts.
 - The default sorting method from `PersonComparatorFactory` sorts persons by their pinned status.
-- When a person is pinned, `Model` uses `previousComparator` from `PersonComparatorFactory` to sort the contacts.
 - This sorts the list according to pinned status first, followed by the sorting method previously set by the user (such as by Name).
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
 
-### Setting an `alias` for a command
+### Registering an alias for a command
 
-Users are able to set aliases for commands, enabling a more customized experience when using coNnectUS.
+Users are able to register aliases for commands, enabling a more customized experience when using coNnectUS.
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
+The above sequence diagram above illustrates the successful execution of
+`alias find f`.
+
 The `alias` feature:
-* stores mappings from aliases to built-in commands offered by coNnectUS in a map in `AliasRegistry`.
-* requires `alias` to contain one or more ASCII lower- and upper-case letters (i.e. `a-z` or `A-Z`). Aliases are case-sensitive, _should not conflict_ with existing built-in command words (e.g. `alias find delete` is **not allowed**) and existing aliases.
-* resolves aliases to their corresponding built-in commands before parsing of commands.
-* 🚧 (WIP) will support storing created aliases across sessions to enable easy import/export by users.
+* maintains alias-to-command-word mappings in `AliasRegistry`.
+* delegates registration through `Model#registerAlias()` to `AliasRegistry#register()`, which validates the registration and stores the alias-to-command-word mapping.
+* requires `alias` to consist of one or more ASCII lowercase or uppercase ASCII letters (i.e. `a-z` or `A-Z`), with **no whitespace**.
+* treats aliases as **case-sensitive**,  allowing for names such as `f` and `F` to be registered separately.
+* supports registration for built-in command words only, using an exact, case-sensitive match. Existing aliases cannot be used for the target command word.
+* rejects alias names that conflict with either of the following:
+    * a built-in command word (using a _case-insensitive_ comparison).
+    * an already registered alias (using a _case-sensitive_ comparison).
+    <br>
+* resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
+* saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
 <box type="warning" header="**Important Note**" seamless>
 
 When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
 </box>
 
+### Deleting a particular alias
+
+Users are able to remove previously registered alias entries that they do not require.
+
+<puml src="diagrams/DeleteAliasSequenceDiagram.puml" alt="Sequence for delete_alias command"/>
+
+The above sequence diagram above illustrates the successful execution of
+`delete_alias s`, assuming that the user has previously registered `s` as an alias for `sort`.
+
+The `delete_alias` feature:
+* uses `DeleteAliasCommandParser` to validate the alias is supplied before creating a `DeleteAliasCommand`.
+* delegates deletion through `Model#deleteAlias()` to `AliasRegistry#deleteAlias()`and requires the alias to exist in the `AliasRegistry`, before deleting it.
+* treats alias names as **case-sensitive**, so deleting `f` does not remove a separately registered alias named `F`.
+* rejects an unregistered alias with an `IllegalArgumentException`, which `DeleteAliasCommand` converts into a `CommandException` for display to the user.
+* saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved deletions persist across sessions.
+
+
+### Tags for contacts
+
+#### Implementation
+
+<puml src="diagrams/TagClassDiagram.puml" alt="Class diagram for Tag"/>
+
+* The different tag categories are implemented as subclasses of an abstract `Tag` class.
+* When adding a new tag category, the following changes are recommended:
+  * Create a new subclass of `Tag`.
+  * Modify `src/main/resources/Base.css`, adding a new CSS selector for a background color for the new tag with: `#tags .label.tags-<NEW_TAG_CATEGORY>` and `#tagLegend .label.tag-<NEW_TAG_CATEGORY>`.
+  * Then, modify `MainWindow.java`, adding a new `TagCategoryLegendLabel` to `tagLegend` to represent the new tag category.
+* The recommended changes ensure that the new tag category is assigned a background color and displayed in the legend at the bottom of the Ui.
 
 ### Undo/redo feature
 
@@ -409,7 +464,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case resumes from Step 1.
   
 * 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
-    * 1b1. coNnectUS displays an error message, indicating the contact already exists.
+    * 1b1. coNnectUS displays an error message, indicating whether the phone number, email address or both are already used by another contact.
 
       Use case ends.
 
@@ -447,23 +502,33 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **Actor: User**
 
 **MSS:**
-1. User searches for a contact using its name.
-2. coNnectUS returns a list containing the contacts matching the keyword provided. 
+1. User searches for a contact using any of its fields.
+2. coNnectUS returns a list containing the contacts matching all the fields provided. 
 
    Use case ends.
 
 **Extensions:**
 
-* 1a. coNnectUS detects that no contacts match the keyword.
-    * 1a1. coNnectUS displays an error message informing the user that no matching contacts were found.
+* 1a. coNnectUS detects that no contacts match all the fields provided.
+    * 1a1. coNnectUS displays a message informing the user that no contacts were found.
     
-      Use case ends.
+      Use case resumes at step 1.
 
-* 1b. coNnectUS detects that no keyword was provided. 
+* 1b. coNnectUS detects that no fields were provided. 
     * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
 
       Use case resumes at step 1.
-    
+
+* 1c. coNnectUS detects duplicates of fields other than tags were provided.
+    * 1c1. coNnectUS displays a warning message of the duplicated fields.
+
+      Use case resumes at step 1.
+
+* 1d. coNnectUS detects that an unknown field was entered.
+    * 1d1. coNnectUS displays a warning message of the unknown field being entered.
+
+      Use case resumes at step 1.
+
 #### Use Case: UC05 - Edit Contacts
 
 **Actor: User**
@@ -504,7 +569,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 2e. The new phone number or email is the same as that of another contact already in the list.
 
-    * 2e1. coNnectUS shows an error message stating that the contact already exists.
+    * 2e1. coNnectUS shows an error message stating whether the phone number, email address or both are already used by another contact.
 
       Use case resumes at step 2.
 
@@ -589,6 +654,85 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
       Use case ends.
 
 
+#### Use Case: UC11 - Create an alias
+
+**Actor: User**
+
+**MSS:**
+1. User requests to register an alias for a specified built-in command word.
+2. coNnectUS registers the alias for the specified command word and notifies the user that it was successfully registered.
+
+    Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that the registration request has an invalid format (e.g. missing arguments or too many arguments).
+  * 1a1. coNnectUS displays an error message informing the user of the invalid command format, followed by the command's usage instructions.
+
+    Use case resumes at Step 1.
+
+* 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
+  * 1b1. coNnectUS displays an error message informing the user that the alias must contain only upper or lower-case ASCII letters (i.e. `a-z` or `A-Z`).
+
+    Use case resumes at Step 1.
+
+* 1c. coNnectUS detects that an unsupported command word has been supplied (e.g. wrong case for an existing command word, an existing alias or an undefined command word).
+  * 1c1. coNnectUS displays an error message informing the user that the supplied command word supplied is unknown.
+
+    Use case resumes at Step 1.
+
+* 1d. coNnectUS detects that the supplied alias conflicts with a built-in command word, ignoring case.
+  * 1d1. coNnectUS displays an error message informing the user of a conflict with the existing command word.
+
+    Use case resumes at Step 1.
+
+* 1e. coNnectUS detects that the alias supplied is already registered, using a case-sensitive comparison.
+  * 1e1. coNnectUS displays an error message informing the user about the existing alias. 
+  
+    Use case resumes at Step 1.
+
+#### Use Case: UC12 - List available aliases
+
+**Actor: User**
+
+**MSS:**
+1. User requests to view all registered aliases.
+2. coNnectUS displays the aliases and their corresponding built-in command words, grouped by command word.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that no aliases are currently registered.
+    * 1a1. coNnectUS displays an error message informing the user that there are no currently registered aliases.
+
+      Use case ends.
+
+#### Use Case: UC13 - Delete an alias
+
+**Actor: User**
+
+**MSS:**
+1. User <u>views their list of available aliases</u> ([UC12](#use-case-uc12-list-available-aliases)).
+2. User requests to delete an alias by specifying its name.
+3. coNnectUS deletes the specified alias and notifies the user about its successful deletion.
+
+   Use case ends.
+
+**Extensions:**
+* 2a. coNnectUS detects that the deletion request has an invalid format (e.g. the alias is missing or the request has too many arguments).
+    * 2a1. coNnectUS displays an error message informing the user about the invalid command format, followed by the command's usage instructions.
+
+      Use case resumes at Step 2.
+
+* 2b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
+    * 2b1. coNnectUS displays an error message informing the user that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+
+      Use case resumes at Step 2.
+
+* 2c. coNnectUS detects that the supplied alias name does not match any registered alias, using a case-sensitive comparison.
+    * 2c1. coNnectUS displays an error message informing the user that the alias was not previously registered.
+
+      Use case resumes at Step 2.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
@@ -602,17 +746,20 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS.
-* **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
+* **Alias**: A user-defined, case-sensitive alternative command word that invokes a built-in coNnectUS command.
+* **ASCII (American Standard Code for Information Interchange)**: A character-encoding standard containing 128 characters, including letters, digits, punctuation, and control characters.
+* **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
 * **Command**: The string of words you enter in order to make use of a feature of the program.
 * **(Command-line) Parameters/Arguments/Fields**: The input that you add into commands.
 * **(Command) Switch**: An argument modifier added to a command to change how it behaves.
-* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
-* **List Index**: The item’s position in the contact list. This always begins at 1.
+* **Context**: Where/how a user of coNnectUS met the corresponding contact.
 * **Domain Name**: Refers to a human-readable string used to visit a website.
 * **Export**: Create a data file that contains a number of contacts specified by the user.
+* **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
 * **Import**: Using information from an existing data file to create contacts previously specified.
-* **Context**: Where/how a user of coNnectUS met the corresponding contact.
+* **List Index**: The item’s position in the contact list. This always begins at `1`.
+* **Mainstream OS**: Windows, Linux, Unix, or macOS.
+* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
 * **Tag**: A string label attached to a contact item, as a means to identify attributes related to the contact or group contacts with similar associations.
 
 

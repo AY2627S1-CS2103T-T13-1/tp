@@ -113,6 +113,16 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_unicodeWhitespace_returnsFindCommandWithTag() throws Exception {
+        FindCommand expected = new FindCommand(new PersonMatchesCriteriaPredicate(
+                Optional.of("Alice"), Optional.empty(), Optional.empty(), Optional.empty(),
+                Set.of(new OthersTag("archived"))));
+
+        assertEquals(expected, parser.parseCommand(
+                "\u00a0find\u2003-n\u00a0Alice\u2028-t\u2003others archived\u00a0"));
+    }
+
+    @Test
     public void parseCommand_help() throws Exception {
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD) instanceof HelpCommand);
         assertTrue(parser.parseCommand(HelpCommand.COMMAND_WORD + " 3") instanceof HelpCommand);
@@ -140,6 +150,72 @@ public class AddressBookParserTest {
     public void parseCommand_deleteAlias() throws Exception {
         assertEquals(new DeleteAliasCommand("f"),
                 parser.parseCommand(DeleteAliasCommand.COMMAND_WORD + " f"));
+    }
+
+    @Test
+    public void parseCommand_registeredAliasWithArguments_returnsTargetCommand() throws Exception {
+        model.registerAlias("find", "f");
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.of("Wolf Alice"), Optional.of("91231100"), Optional.empty(),
+                Optional.empty(), Set.of());
+
+        assertEquals(new FindCommand(predicate), parser.parseCommand("f -n Wolf Alice -p 91231100"));
+    }
+
+    @Test
+    public void parseCommand_registeredAliasWithoutArguments_returnsTargetCommand() throws Exception {
+        model.registerAlias("list", "ls");
+        assertTrue(parser.parseCommand("ls") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_registeredAliasMissingRequiredArguments_throwsTargetParseException() {
+        model.registerAlias("find", "f");
+        String expectedMessage = FindCommand.MESSAGE_NO_CRITERION + "\n" + FindCommand.MESSAGE_USAGE;
+
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("f"));
+    }
+
+    @Test
+    public void parseCommand_unregisteredCaseVariantOfAlias_throwsParseException() {
+        model.registerAlias("find", "f");
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("F -n Alice"));
+    }
+
+    @Test
+    public void parseCommand_caseDistinctAliases_returnsRespectiveTargetCommands() throws Exception {
+        model.registerAlias("find", "f");
+        model.registerAlias("list", "F");
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.of("Alice"), Optional.empty(), Optional.empty(),
+                Optional.empty(), Set.of());
+
+        assertEquals(new FindCommand(predicate), parser.parseCommand("f -n Alice"));
+        assertTrue(parser.parseCommand("F") instanceof ListCommand);
+    }
+
+    @Test
+    public void parseCommand_deletedAlias_throwsParseException() throws Exception {
+        model.registerAlias("find", "f");
+        PersonMatchesCriteriaPredicate predicate = new PersonMatchesCriteriaPredicate(
+                Optional.of("Alice"), Optional.empty(), Optional.empty(),
+                Optional.empty(), Set.of());
+        assertEquals(new FindCommand(predicate), parser.parseCommand("f -n Alice"));
+
+        model.deleteAlias("f");
+
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("f -n Alice"));
+    }
+
+    @Test
+    public void parseCommand_aliasInArgument_preservesLiteralValue() throws Exception {
+        model.registerAlias("find", "f");
+        FindCommand expectedCommand = new FindCommand(new PersonMatchesCriteriaPredicate(
+                Optional.of("f"), Optional.empty(), Optional.empty(),
+                Optional.empty(), Set.of()));
+
+        assertEquals(expectedCommand, parser.parseCommand("find -n f"));
+        assertEquals(expectedCommand, parser.parseCommand("f -n f"));
     }
 
     @Test
@@ -182,7 +258,7 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unrecognisedInput_throwsParseException() {
         assertThrows(ParseException.class, String.format(MESSAGE_INVALID_COMMAND_FORMAT, HelpCommand.MESSAGE_USAGE), ()
-            -> parser.parseCommand(""));
+                -> parser.parseCommand(""));
     }
 
     @Test

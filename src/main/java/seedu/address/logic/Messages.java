@@ -1,5 +1,6 @@
 package seedu.address.logic;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +27,12 @@ public class Messages {
         + " friend's details!";
     public static final String MESSAGE_UNKNOWN_PINNED_STATUS =
             "Please only specify 'true'/'false' for the contact's isPinned!";
+    public static final String MESSAGE_DUPLICATE_PHONE =
+            "This phone number is already used by another contact.";
+    public static final String MESSAGE_DUPLICATE_EMAIL =
+            "This email address is already used by another contact.";
+    public static final String MESSAGE_DUPLICATE_PHONE_AND_EMAIL =
+            "This phone number and email address are already used by existing contacts.";
 
     /**
      * Returns an error message indicating the duplicate prefixes.
@@ -39,6 +46,24 @@ public class Messages {
                                           .collect(Collectors.toSet());
 
         return MESSAGE_DUPLICATE_FIELDS + String.join(" ", duplicateFields);
+    }
+
+    /**
+     * Returns an error message stating whether the phone number, email address or both of {@code person}
+     * are already used by any of {@code otherPersons}.
+     * At least one of them must already be used.
+     */
+    public static String getDuplicateContactMessage(Person person, List<Person> otherPersons) {
+        boolean isPhoneUsed = otherPersons.stream()
+                .anyMatch(other -> other.getPhone().equals(person.getPhone()));
+        boolean isEmailUsed = otherPersons.stream()
+                .anyMatch(other -> other.getEmail().equals(person.getEmail()));
+        assert isPhoneUsed || isEmailUsed : "Person must share a phone number or email address with another";
+
+        if (isPhoneUsed && isEmailUsed) {
+            return MESSAGE_DUPLICATE_PHONE_AND_EMAIL;
+        }
+        return isPhoneUsed ? MESSAGE_DUPLICATE_PHONE : MESSAGE_DUPLICATE_EMAIL;
     }
 
     /**

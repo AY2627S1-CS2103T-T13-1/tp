@@ -2,6 +2,8 @@ package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_EMAIL;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_PHONE;
 import static seedu.address.logic.Messages.MESSAGE_EMPTY_LIST;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.CommandCatalog.BUILT_IN_COMMAND_WORDS;
@@ -20,23 +22,29 @@ import static seedu.address.testutil.TypicalPersons.BOB;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.commons.core.Theme;
+import seedu.address.commons.exceptions.DataLoadingException;
+import seedu.address.commons.util.FileUtil;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AliasCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteAliasCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.FindCommand;
+import seedu.address.logic.commands.ListAliasCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.PinCommand;
 import seedu.address.logic.commands.RedoCommand;
@@ -51,6 +59,8 @@ import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.alias.AliasRegistry;
 import seedu.address.model.person.Person;
+import seedu.address.model.tag.OthersTag;
+import seedu.address.model.tag.Tag;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonAliasStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -265,12 +275,12 @@ public class LogicManagerTest {
 
     @Test
     public void execute_duplicateEmailEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB);
+        assertDuplicateEditPreservesSession(EMAIL_DESC_BOB, MESSAGE_DUPLICATE_EMAIL);
     }
 
     @Test
     public void execute_duplicatePhoneEdit_preservesContactsStorageAndUndoHistory() throws Exception {
-        assertDuplicateEditPreservesSession(PHONE_DESC_BOB);
+        assertDuplicateEditPreservesSession(PHONE_DESC_BOB, MESSAGE_DUPLICATE_PHONE);
     }
 
     @Test
@@ -306,6 +316,167 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_aliasWhileContactSaveFails_persistsAliasAndReturnsSuccessWithWarning() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_IO_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+
+        CommandResult result = logic.execute("alias list ls");
+
+        Map<String, String> expectedAliases = Map.of("f", "find", "ls", "list");
+        assertEquals(expectedAliases, model.getAliases());
+        assertEquals(expectedAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+        assertContactSaveWarning(result, String.format(AliasCommand.MESSAGE_SUCCESS, "ls", "list"),
+                DUMMY_IO_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts + 1, storage.aliasSaveAttempts);
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_deleteAliasWhileContactSaveFails_persistsDeletionAndWarns() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_AD_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+
+        CommandResult result = logic.execute("delete_alias f");
+
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertContactSaveWarning(result, String.format(DeleteAliasCommand.MESSAGE_SUCCESS, "f"), DUMMY_AD_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts + 1, storage.aliasSaveAttempts);
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+    }
+
+    @Test
+    public void execute_listAliasWhileContactSaveFails_returnsListingAndRetriesUntilRecovery() throws Exception {
+        TestStorageManager storage = setUpPendingContactSaveFailure(DUMMY_AD_EXCEPTION);
+        AddressBook pendingContacts = new AddressBook(model.getAddressBook());
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+        String expectedListing = ListAliasCommand.MESSAGE_SUCCESS_PREFIX + "\nfind: f";
+
+        CommandResult result = logic.execute("list_alias");
+
+        assertContactSaveWarning(result, expectedListing, DUMMY_AD_EXCEPTION);
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+        assertEquals(Map.of("f", "find"), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(pendingContacts, model.getAddressBook());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+
+        storage.contactSaveException = null;
+        assertEquals(new CommandResult(expectedListing), logic.execute("list_alias"));
+        assertEquals(pendingContacts, storage.readAddressBook().orElseThrow());
+        assertEquals(contactSaveAttempts + 2, storage.contactSaveAttempts);
+
+        assertEquals(new CommandResult(expectedListing), logic.execute("list_alias"));
+        assertEquals(contactSaveAttempts + 2, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+    }
+
+    @Test
+    public void execute_aliasCommands_preserveUndoRedoHistoryAndMappings() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+
+        logic.execute("undo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("f", "find"), model.getAliases());
+
+        logic.execute("delete_alias f");
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES), logic.execute("list_alias"));
+        logic.execute("redo");
+
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+        assertEquals(Map.of(), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasedDelete_supportsUndoAndRedo() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias delete d");
+
+        logic.execute("d 1");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+
+        logic.execute("undo");
+        assertEquals(List.of(AMY), model.getAddressBook().getPersonList());
+
+        logic.execute("redo");
+        assertEquals(List.of(), model.getAddressBook().getPersonList());
+        assertEquals(Map.of("d", "delete"), model.getAliases());
+    }
+
+    @Test
+    public void execute_aliasLifecycle_reusesDeletedAliasForDifferentCommand() throws Exception {
+        model.addPerson(AMY);
+        model.addPerson(BOB);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+
+        logic.execute("alias find f");
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX + "\nfind: f"),
+                logic.execute("list_alias"));
+
+        logic.execute("delete_alias f");
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+
+        logic.execute("alias list f");
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("f"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
+    public void execute_aliasManagementAliases_supportAliasedCommandsAndSelfDeletion() throws Exception {
+        logic.execute("alias list_alias shortcuts");
+        CommandResult expectedListing = new CommandResult(ListAliasCommand.MESSAGE_SUCCESS_PREFIX
+                + "\nlist_alias: shortcuts");
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+
+        logic.execute("alias alias shortcut");
+        logic.execute("shortcut delete_alias removeShortcut");
+        logic.execute("removeShortcut shortcut");
+        logic.execute("removeShortcut removeShortcut");
+
+        assertEquals(expectedListing, logic.execute("shortcuts"));
+    }
+
+    @Test
+    public void execute_aliasesAcrossReloads_restoresMappingsAndPersistsDeletion() throws Exception {
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute(PersonUtil.getAddCommand(BOB));
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        logic.execute("alias find f");
+        logic.execute("alias list L");
+
+        // Use aliases read from disk, not the old registry.
+        reloadPersistedSession();
+
+        logic.execute("f -n Amy");
+        assertEquals(List.of(AMY), logic.getFilteredPersonList());
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+
+        logic.execute("delete_alias f");
+        reloadPersistedSession();
+
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+        assertEquals(new CommandResult(ListCommand.MESSAGE_SUCCESS), logic.execute("L"));
+        assertEquals(List.of(AMY, BOB), logic.getFilteredPersonList());
+        assertEquals(originalContacts, model.getAddressBook());
+    }
+
+    @Test
     public void execute_deleteAlias_deletesAliasWithoutSavingContacts() throws Exception {
         model.addPerson(AMY);
         model.registerAlias("find", "f");
@@ -324,6 +495,30 @@ public class LogicManagerTest {
         assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(0, storage.contactSaveAttempts);
+    }
+
+    @Test
+    public void execute_deleteAliasSaveFails_retriesDeletionOnNextCommandAndStopsAfterSuccess() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.aliasSaveException = DUMMY_IO_EXCEPTION;
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()), () ->
+                        logic.execute("delete_alias f"));
+        assertEquals(Map.of(), model.getAliases());
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> logic.execute("f -n Amy"));
+
+        storage.aliasSaveException = null;
+        CommandResult expectedResult = new CommandResult(ListAliasCommand.MESSAGE_NO_ALIASES);
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(Map.of(), storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(3, storage.aliasSaveAttempts);
+
+        assertEquals(expectedResult, logic.execute("list_alias"));
+        assertEquals(3, storage.aliasSaveAttempts);
     }
 
     @Test
@@ -468,6 +663,35 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_importWithUnicodeWhitespace_readsExactFilePath() throws Exception {
+        AddressBook importedAddressBook = new AddressBookBuilder().withPerson(AMY).build();
+        Path importFilePath = temporaryFolder.resolve("my\u00a0contacts-full-stack.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        logic.execute("\u2003import\u00a0-f\u202f" + importFilePath + "\u3000");
+
+        assertEquals(importedAddressBook, new AddressBook(model.getAddressBook()));
+    }
+
+    @Test
+    public void execute_importAccessDeniedWhileReading_throwsPermissionError() {
+        Path importFilePath = temporaryFolder.resolve("permissionDeniedContacts.json");
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.readAddressBookException = new DataLoadingException(DUMMY_AD_EXCEPTION);
+        logic = new LogicManager(model, storage);
+
+        String expectedMessage = String.format(
+                LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                importFilePath,
+                LogicManager.FILE_READ_PERMISSION_ERROR);
+
+        assertCommandFailure(
+                "import -f " + importFilePath,
+                CommandException.class,
+                expectedMessage);
+    }
+
+    @Test
     public void execute_importWithDuplicates_skipsDuplicates() throws Exception {
         model.addPerson(AMY);
         Person duplicatePerson = new PersonBuilder(AMY)
@@ -489,6 +713,61 @@ public class LogicManagerTest {
                 .findFirst()
                 .orElseThrow());
         assertTrue(model.hasPerson(BOB));
+    }
+
+    @Test
+    public void execute_importWithFiveTags_importsAndPersistsContact() throws Exception {
+        Person person = new PersonBuilder(AMY).withTags(new OthersTag("one"), new OthersTag("two"),
+                new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
+        AddressBook importedAddressBook = new AddressBookBuilder().withPerson(person).build();
+        Path importFilePath = temporaryFolder.resolve("fiveTags.json");
+        new JsonAddressBookStorage(importFilePath).saveAddressBook(importedAddressBook);
+
+        CommandResult result = logic.execute("import -f " + importFilePath);
+
+        assertEquals("Imported 1 contact(s). Skipped 0 duplicate(s).", result.getFeedbackToUser());
+        assertEquals(importedAddressBook, model.getAddressBook());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(importedAddressBook, savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_importWithSixTags_rejectsWholeFileAndPreservesSession() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        Path importFilePath = temporaryFolder.resolve("sixTags.json");
+        // Put a valid contact first to check that rejection does not partially import the file.
+        Files.writeString(importFilePath, """
+                {
+                  "persons": [
+                    {"name": "Valid Contact", "phone": "12345678", "email": "valid@example.com",
+                     "address": "", "isPinned": "false", "tags": []},
+                    {"name": "Too Many Tags", "phone": "87654321", "email": "tags@example.com",
+                     "address": "", "isPinned": "false", "tags": [
+                       {"tagName": "one", "tagType": "others"},
+                       {"tagName": "two", "tagType": "others"},
+                       {"tagName": "three", "tagType": "others"},
+                       {"tagName": "four", "tagType": "others"},
+                       {"tagName": "five", "tagType": "others"},
+                       {"tagName": "six", "tagType": "others"}
+                     ]}
+                  ]
+                }
+                """);
+
+        assertCommandException("import -f " + importFilePath,
+                String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT, importFilePath, Tag.MESSAGE_TOO_MANY_TAGS));
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, savedStorage.readAddressBook().orElseThrow());
+        assertEquals(ListCommand.MESSAGE_SUCCESS, logic.execute(ListCommand.COMMAND_WORD).getFeedbackToUser());
+        assertUndoSuccess();
+        assertEquals(new AddressBook(), savedStorage.readAddressBook().orElseThrow());
+        assertCommandException(UndoCommand.COMMAND_WORD, UndoCommand.MESSAGE_NOTHING_TO_UNDO);
     }
 
     @Test
@@ -517,6 +796,43 @@ public class LogicManagerTest {
                         missingFilePath,
                         LogicManager.FILE_NOT_FOUND),
                 expectedModel);
+    }
+
+    @Test
+    public void execute_importMalformedJson_preservesContactsAliasesAndUndoHistory() throws Exception {
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        logic = new LogicManager(model, storage);
+        logic.execute(PersonUtil.getAddCommand(AMY));
+        logic.execute("alias find f");
+        AddressBook originalContacts = new AddressBook(model.getAddressBook());
+        Map<String, String> originalAliases = model.getAliases();
+        int contactSaveAttempts = storage.contactSaveAttempts;
+        int aliasSaveAttempts = storage.aliasSaveAttempts;
+        Path importFilePath = temporaryFolder.resolve("malformedContacts.json");
+        FileUtil.writeToFile(importFilePath, "{\"persons\": [");
+
+        String expectedMessage = String.format(LogicManager.FILE_IMPORT_ERROR_FORMAT,
+                importFilePath, LogicManager.FILE_INVALID_FORMAT);
+        assertThrows(CommandException.class, expectedMessage, () -> logic.execute("import -f " + importFilePath));
+
+        assertEquals(originalContacts, model.getAddressBook());
+        assertEquals(originalContacts, storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+        assertEquals(contactSaveAttempts, storage.contactSaveAttempts);
+        assertEquals(aliasSaveAttempts, storage.aliasSaveAttempts);
+
+        assertEquals(new CommandResult(UndoCommand.MESSAGE_SUCCESS), logic.execute("undo"));
+        assertEquals(new AddressBook(), model.getAddressBook());
+        assertEquals(new AddressBook(), storage.readAddressBook().orElseThrow());
+        assertEquals(originalAliases, model.getAliases());
+        assertEquals(originalAliases, storage.readAliases().orElseThrow().aliases().getAliases());
+
+        // A subsequent valid command must still report contact-save failures.
+        storage.contactSaveException = DUMMY_IO_EXCEPTION;
+        String expectedSaveError = String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedSaveError, () -> logic.execute(PersonUtil.getAddCommand(BOB)));
     }
 
     @Test
@@ -557,6 +873,52 @@ public class LogicManagerTest {
     }
 
     /**
+     * Persists a contact and alias, then leaves an edited contact pending after a failed contact save.
+     * Alias storage remains writable.
+     */
+    private TestStorageManager setUpPendingContactSaveFailure(IOException exception) throws Exception {
+        model.addPerson(AMY);
+        TestStorageManager storage = new TestStorageManager(temporaryFolder);
+        storage.saveAddressBook(model.getAddressBook());
+        logic = new LogicManager(model, storage);
+        logic.execute("alias find f");
+        storage.contactSaveException = exception;
+        int contactSaveAttempts = storage.contactSaveAttempts;
+
+        assertThrows(CommandException.class, () -> logic.execute("edit 1" + ADDRESS_DESC_BOB));
+
+        Person editedAmy = new PersonBuilder(AMY).withAddress(VALID_ADDRESS_BOB).build();
+        assertEquals(List.of(editedAmy), model.getAddressBook().getPersonList());
+        assertEquals(List.of(AMY), storage.readAddressBook().orElseThrow().getPersonList());
+        assertEquals(contactSaveAttempts + 1, storage.contactSaveAttempts);
+        assertEquals(Map.of("f", "find"), storage.readAliases().orElseThrow().aliases().getAliases());
+        return storage;
+    }
+
+    /**
+     * Verifies that successful command feedback is retained alongside a warning about a failed contact-save retry.
+     */
+    private void assertContactSaveWarning(CommandResult result, String expectedSuccess, IOException exception) {
+        String feedback = result.getFeedbackToUser();
+        String expectedError = exception instanceof AccessDeniedException
+                ? String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT, exception.getMessage())
+                : String.format(LogicManager.FILE_OPS_ERROR_FORMAT, exception.getMessage());
+        assertTrue(feedback.startsWith(expectedSuccess));
+        assertTrue(feedback.contains("Warning:"));
+        assertTrue(feedback.contains(expectedError));
+    }
+
+    /**
+     * Rebuilds the model and logic, including its parser, from saved contacts and aliases.
+     */
+    private void reloadPersistedSession() throws DataLoadingException {
+        StorageManager storage = new TestStorageManager(temporaryFolder);
+        model = new ModelManager(storage.readAddressBook().orElseThrow(), new UserPrefs(), BUILT_IN_COMMAND_WORDS,
+                storage.readAliases().orElseThrow().aliases());
+        logic = new LogicManager(model, storage);
+    }
+
+    /**
      * Executes the command and confirms that
      * - no exceptions are thrown <br>
      * - the feedback message is equal to {@code expectedMessage} <br>
@@ -571,10 +933,11 @@ public class LogicManagerTest {
     }
 
     /**
-     * Verifies that a rejected identity-field edit leaves contacts and storage unchanged,
-     * and that subsequent list and undo commands still work without an extra history entry.
+     * Verifies that a rejected identity-field edit shows {@code expectedMessage}, leaves contacts and storage
+     * unchanged, and that subsequent list and undo commands still work without an extra history entry.
      */
-    private void assertDuplicateEditPreservesSession(String duplicateField) throws Exception {
+    private void assertDuplicateEditPreservesSession(String duplicateField, String expectedMessage)
+            throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_BOB + PHONE_DESC_BOB
@@ -584,8 +947,7 @@ public class LogicManagerTest {
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
 
-        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField,
-                EditCommand.MESSAGE_DUPLICATE_PERSON);
+        assertCommandException(EditCommand.COMMAND_WORD + " 1" + duplicateField, expectedMessage);
 
         assertEquals(originalContacts, model.getAddressBook());
         assertEquals(originalContacts, addressBookStorage.readAddressBook().orElseThrow());
@@ -705,6 +1067,7 @@ public class LogicManagerTest {
         private int aliasSaveAttempts;
         private IOException contactSaveException;
         private IOException aliasSaveException;
+        private DataLoadingException readAddressBookException;
 
         TestStorageManager(Path folder) {
             super(new JsonAddressBookStorage(folder.resolve("addressBook.json")),
@@ -733,6 +1096,14 @@ public class LogicManagerTest {
                 throw aliasSaveException;
             }
             super.saveAliases(aliases);
+        }
+
+        @Override
+        public Optional<ReadOnlyAddressBook> readAddressBook(Path path) throws DataLoadingException {
+            if (readAddressBookException != null) {
+                throw readAddressBookException;
+            }
+            return super.readAddressBook(path);
         }
     }
 }

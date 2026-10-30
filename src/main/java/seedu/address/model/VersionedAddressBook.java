@@ -27,9 +27,11 @@ public class VersionedAddressBook extends AddressBook {
     }
 
     /**
-     * Saves a copy of the current data as a new state, unless it is the same as the current saved state.
+     * Saves a copy of the current data and {@code activeComparator} as a new state, unless both are the same
+     * as in the current saved state.
      * When a new state is saved, states after the current state are discarded.
      *
+     * @param activeComparator the comparator that the current data is sorted by.
      * @return true if a new state was saved.
      */
     public boolean commit(Comparator<Person> activeComparator) {
@@ -57,6 +59,7 @@ public class VersionedAddressBook extends AddressBook {
     /**
      * Restores the data to the previous saved state.
      *
+     * @return the comparator that the restored data is sorted by.
      * @throws IllegalStateException if there is no previous state.
      */
     public Comparator<Person> undo() {
@@ -81,6 +84,7 @@ public class VersionedAddressBook extends AddressBook {
     /**
      * Restores the data to the most recently undone state.
      *
+     * @return the comparator that the restored data is sorted by.
      * @throws IllegalStateException if there is no undone state.
      */
     public Comparator<Person> redo() {
@@ -90,8 +94,8 @@ public class VersionedAddressBook extends AddressBook {
 
         currentStatePointer++;
         assert currentStatePointer < addressBookStateList.size() : "Redo must not move past the last state";
-        SavedState previousState = addressBookStateList.get(currentStatePointer);
-        resetData(previousState.readOnlyAddressBook());
-        return previousState.comparator();
+        SavedState nextState = addressBookStateList.get(currentStatePointer);
+        resetData(nextState.readOnlyAddressBook());
+        return nextState.comparator();
     }
 }

@@ -18,6 +18,8 @@ import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
+import seedu.address.model.tag.OthersTag;
+import seedu.address.model.tag.Tag;
 import seedu.address.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
@@ -236,8 +238,8 @@ public class JsonAdaptedPersonTest {
     @Test
     public void toModelType_addressTooLong_throwsIllegalValueException() {
         String longAddress = "a".repeat(Address.MAXIMUM_ADDRESS_LENGTH + 1);
-        JsonAdaptedPerson person =
-                new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, longAddress, VALID_TAGS, UNPINNED);
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                longAddress, VALID_TAGS, UNPINNED);
         String expectedMessage = Address.MESSAGE_EXCEED_MAX_LENGTH;
         assertThrows(IllegalValueException.class, expectedMessage, person::toModelType);
     }
@@ -270,6 +272,39 @@ public class JsonAdaptedPersonTest {
         JsonAdaptedPerson person =
                 new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL, VALID_ADDRESS, invalidTags, UNPINNED);
         assertThrows(IllegalValueException.class, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_fiveDistinctTags_returnsPerson() throws Exception {
+        Person expectedPerson = new PersonBuilder(BENSON).withTags(new OthersTag("one"), new OthersTag("two"),
+                new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
+
+        assertEquals(expectedPerson, new JsonAdaptedPerson(expectedPerson).toModelType());
+    }
+
+    @Test
+    public void toModelType_sixDistinctTags_throwsIllegalValueException() {
+        List<JsonAdaptedTag> tags = List.of("one", "two", "three", "four", "five", "six").stream()
+                .map(name -> new JsonAdaptedTag(name, OTHERS_TAG_TYPE))
+                .collect(Collectors.toList());
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, tags, UNPINNED);
+
+        assertThrows(IllegalValueException.class, Tag.MESSAGE_TOO_MANY_TAGS, person::toModelType);
+    }
+
+    @Test
+    public void toModelType_sixTagEntriesWithFiveDistinctTags_returnsPerson() throws Exception {
+        Person expectedPerson = new PersonBuilder(BENSON).withTags(new OthersTag("one"), new OthersTag("two"),
+                new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
+        List<JsonAdaptedTag> tags = expectedPerson.getTags().stream()
+                .map(JsonAdaptedTag::new)
+                .collect(Collectors.toList());
+        tags.add(new JsonAdaptedTag("one", OTHERS_TAG_TYPE));
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, tags, UNPINNED);
+
+        assertEquals(expectedPerson, person.toModelType());
     }
 
 }
