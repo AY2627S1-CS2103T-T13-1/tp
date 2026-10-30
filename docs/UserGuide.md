@@ -96,7 +96,7 @@ edit LIST_INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATE
 more commands ...
 ```
 
-<box type="info" header="<u>**Alternative way to access User Guide**<u>" seamless>
+<box type="info" header="**Alternative way getting help**: the User Guide" seamless>
 Before we get started, ensure that you have a <i>reliable internet connection</i>.
 <br>
 <br>
