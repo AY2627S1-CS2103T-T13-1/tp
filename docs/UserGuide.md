@@ -67,12 +67,34 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </box>
 
-### Viewing help: `help`
+### Getting help : `help`
 
-Displays the list of commands, their usages, descriptions, examples and the link for the User Guide.
+Displays a command reference in coNnectUS's result display area, including command formats, descriptions, examples where applicable, as well as a link to this User Guide.
+* Scroll through the results area to view the "built-in" commands available for your use.
 
 Format: `help`
 
+Sample Output (truncated):
+```
+Help Menu
+========
+help
+	Displays this help menu.
+
+add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...
+	Adds a contact to the address book.
+	Example: add -n John Doe -p 98765432 -e johnd@example.com -a 311, Clementi Ave 2, #02-25 -t others friends -t others owesMoney
+
+list
+	Displays all saved contacts.
+
+edit LIST_INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...
+	Updates the specified fields for the contact at the specified list index. Existing values will be overwritten by the new input values.
+	Example: edit 4 -p 92008101 -t others CS1001 Groupmate
+
+
+more commands ...
+```
 
 ### Adding a person: `add`
 
