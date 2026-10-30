@@ -15,11 +15,11 @@ participant "m:Model" as Model MODEL_COLOR
 participant ":AliasRegistry" as AliasRegistry MODEL_COLOR
 end box
 
-'Assumes that alias "f" is already registered.'
-[-> LogicManager : execute("delete_alias f")
+'Assumes that alias "s" is already registered.'
+[-> LogicManager : execute("delete_alias s")
 activate LogicManager
 
-LogicManager -> AddressBookParser : parseCommand("delete_alias f")
+LogicManager -> AddressBookParser : parseCommand("delete_alias s")
 activate AddressBookParser
 
 create DeleteAliasCommandParser
@@ -29,11 +29,11 @@ activate DeleteAliasCommandParser
 DeleteAliasCommandParser --> AddressBookParser
 deactivate DeleteAliasCommandParser
 
-AddressBookParser -> DeleteAliasCommandParser : parse("f")
+AddressBookParser -> DeleteAliasCommandParser : parse("s")
 activate DeleteAliasCommandParser
 
 create DeleteAliasCommand
-DeleteAliasCommandParser -> DeleteAliasCommand : DeleteAliasCommand("f")
+DeleteAliasCommandParser -> DeleteAliasCommand : DeleteAliasCommand("s")
 activate DeleteAliasCommand
 
 DeleteAliasCommand --> DeleteAliasCommandParser :
@@ -51,10 +51,10 @@ deactivate AddressBookParser
 LogicManager -> DeleteAliasCommand : execute(m)
 activate DeleteAliasCommand
 
-DeleteAliasCommand -> Model : deleteAlias("f")
+DeleteAliasCommand -> Model : deleteAlias("s")
 activate Model
 
-Model -> AliasRegistry : deleteAlias("f")
+Model -> AliasRegistry : deleteAlias("s")
 activate AliasRegistry
 
 AliasRegistry --> Model

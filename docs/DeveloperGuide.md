@@ -211,6 +211,9 @@ Users are able to register aliases for commands, enabling a more customized expe
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
+The above sequence diagram above illustrates the successful execution of
+`alias find f`.
+
 The `alias` feature:
 * maintains alias-to-command-word mappings in `AliasRegistry`.
 * delegates registration through `Model#registerAlias()` to `AliasRegistry#register()`, which validates the registration and stores the alias-to-command-word mapping.
@@ -234,6 +237,9 @@ When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BU
 Users are able to remove previously registered alias entries that they do not require.
 
 <puml src="diagrams/DeleteAliasSequenceDiagram.puml" alt="Sequence for delete_alias command"/>
+
+The above sequence diagram above illustrates the successful execution of
+`delete_alias s`, assuming that the user has previously registered `s` as an alias for `sort`.
 
 The `delete_alias` feature:
 * uses `DeleteAliasCommandParser` to validate the alias is supplied before creating a `DeleteAliasCommand`.
