@@ -58,13 +58,32 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 * Items followed by `...` can appear zero or more times.<br>
   For example, `[-t CATEGORY TAG]... ` may be omitted, or written as `-t others friend` or `-t others friend -t others family`.
 
-* Parameters can be in any order.<br>
-  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
+* Prefixed Parameters can be in any order.<br>
+  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.<br>
+
+* Parameters that are not prefixed must be specified in the order stated in [Command Summary](#command-summary).<br>
+  For example, `sort name asc` is accepted while `sort asc name` is not.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
+* With the exception of tags, repeated parameters in a command will result in the command being rejected. <br>
+  For example, `add -n Bob -n Alice -e Alice@gmail.com -p 91234567` will be rejected as `-n` is specified twice.
+
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
+</box>
+
+<box type="info" seamless>
+
+**Notes about accepted values for a contact's properties:**<br>
+Property        | Accepted Values | Accepted Length and Format (if any)
+----------------|--------------------------------------------------------------------------|-----------------
+Name            | Alphabets and spaces only.                                               | Must contain `1-70` characters and must not start with a space.
+Email           | Alphabets, Digits and special characters: `@`, `.`.                      | Should be of the format `username@domain` and not longer than `254` characters.
+Phone           | Digits only.                                                             | Must contain `3-15` digits.
+Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
+
+
 </box>
 
 ### Viewing help: `help`
@@ -82,7 +101,7 @@ Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_
 
 <box type="tip" header="**Tips**" seamless>
 
-- A person can have any number of tags, including zero.
+- A person can only have a maximum of `5` unique tags.
 - Refer to [Tagging a person](#tagging-a-person) for more information on tags.
 - The address parameter is optional.
 - Each contact must have a phone number and email address that no other contact uses. Names do not need to be unique.
@@ -216,6 +235,10 @@ The following tag categories are supported, with each category being assigned a 
 Tag categories are not case-sensitive.
 - `add ... -t OTHERS friend` has the same effect as `add ... -t oThErS friend`.
 
+A person can only have a maximum of `5` **unique** tags.
+- A tag is unique if the person does not have another tag with the same `category` and _case-insensitive_ `tag name`
+- For example: `add ... -t others FrIenD -t others friend` adds a person with only 1 tag, while `add ... -t others friend -t module friend` adds a person with 2 tags.
+
 
 ### Clearing all entries: `clear`
 
@@ -299,7 +322,7 @@ Format: `exit`
 
 ### Saving the data
 
-coNnectUS automatically saves data after every command. You do not need to save manually.
+Data is saved automatically by coNnectUS after every successful command that modifies the contact list. You do not need to save manually.
 
 Your window size, window position and theme are saved in `[JAR file location]/preferences.json` when you close the app.
 
@@ -310,7 +333,7 @@ The address book application data is saved automatically as a JSON file `[JAR fi
 <box type="warning" seamless>
 
 **Caution:**
-If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run. The invalid file remains on disk until you run a command (coNnectUS saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run.<br> The invalid file remains on disk until you run a successful command that modifies the contact list, where coNnectUS will automatically write to the data file.<br> Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways (e.g., if a value entered is outside the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </box>
 
