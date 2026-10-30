@@ -106,11 +106,15 @@ An alternative to accessing this user guide is through the "User Guide" dialog, 
 <br>
 
 <img src="images/user-guide-access-step-1.png" alt="user-guide-access-step-1" width="515" style="max-width: 100%; height: auto;" />
+<br>
+<br>
 
 2. Once the dialog appears, click on the <kbd>Open User Guide</kbd> button to open this User Guide your default browser configured.
 <br>
 
 <img src="images/user-guide-access-step-2.png" alt="user-guide-access-step-2" width="506" style="max-width: 100%; height: auto;" />
+<br>
+<br>
 
 Note that if there are issues with your default browser, you would be instead prompted to click <kbd>Copy URL</kbd> and open it in a browser of your choosing.
 </box>
