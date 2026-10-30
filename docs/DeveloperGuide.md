@@ -579,27 +579,27 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 * 1a. coNnectUS detects that the registration request has an invalid format (e.g. missing arguments or too many arguments).
-  * 1a1. coNnectUS displays an error message warning the user of the invalid command format, followed by command usage instructions.
+  * 1a1. coNnectUS displays an error message informing the user of the invalid command format, followed by the command's usage instructions.
 
     Use case resumes at Step 1.
 
 * 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
-  * 1b1. coNnectUS displays an error message warning the user that the alias must contain only upper or lower-case ASCII letters (i.e. `a-z` or `A-Z`).
+  * 1b1. coNnectUS displays an error message informing the user that the alias must contain only upper or lower-case ASCII letters (i.e. `a-z` or `A-Z`).
 
     Use case resumes at Step 1.
 
 * 1c. coNnectUS detects that an unsupported command word has been supplied (e.g. wrong case for an existing command word, an existing alias or an undefined command word).
-  * 1c1. coNnectUS displays an error message warning the user that the supplied command word is unknown.
+  * 1c1. coNnectUS displays an error message informing the user that the supplied command word supplied is unknown.
 
     Use case resumes at Step 1.
 
 * 1d. coNnectUS detects that the supplied alias conflicts with a built-in command word, ignoring case.
-  * 1d1. coNnectUS displays an error message warning the user of a conflict with the existing command word.
+  * 1d1. coNnectUS displays an error message informing the user of a conflict with the existing command word.
 
     Use case resumes at Step 1.
 
 * 1e. coNnectUS detects that the alias supplied is already registered, using a case-sensitive comparison.
-  * 1e1. coNnectUS displays an error message warning the user about the existing alias. 
+  * 1e1. coNnectUS displays an error message informing the user about the existing alias. 
   
     Use case resumes at Step 1.
 
@@ -615,7 +615,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 * 1a. coNnectUS detects that no aliases are currently registered.
-    * 1a1. coNnectUS displays a message informing the user that no aliases are currently registered.
+    * 1a1. coNnectUS displays an error message informing the user that there are no currently registered aliases.
 
       Use case ends.
 
@@ -632,17 +632,17 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 * 2a. coNnectUS detects that the deletion request has an invalid format (e.g. the alias is missing or the request has too many arguments).
-    * 2a1. coNnectUS displays an error message explaining the invalid command format, followed by command usage instructions.
+    * 2a1. coNnectUS displays an error message informing the user about the invalid command format, followed by the command's usage instructions.
 
       Use case resumes at Step 2.
 
 * 2b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
-    * 2b1. coNnectUS displays an error message explaining that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+    * 2b1. coNnectUS displays an error message informing the user that aliases must contain only ASCII letters (`a-z` or `A-Z`).
 
       Use case resumes at Step 2.
 
 * 2c. coNnectUS detects that the supplied alias name does not match any registered alias, using a case-sensitive comparison.
-    * 2c1. coNnectUS displays an error message identifying the alias that was not previously registered.
+    * 2c1. coNnectUS displays an error message informing the user that the alias was not previously registered.
 
       Use case resumes at Step 2.
 
