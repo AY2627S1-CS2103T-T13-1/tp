@@ -219,7 +219,7 @@ The `alias` feature:
 * supports registration for built-in command words only, using an exact, case-sensitive match. Existing aliases cannot be used for the target command word.
 *  rejects alias names that conflict with a built-in command word, ignoring case, or an already-registered alias, using a case-sensitive comparison.
 * resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
-* saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, using `data/aliases.json`.
+* saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
 <box type="warning" header="**Important Note**" seamless>
 
