@@ -252,6 +252,27 @@ Format: `import -f FILE_PATH`
 * The command displays the number of imported and skipped contacts.
 * The imported contacts can be removed using `undo`.
 
+### Exporting contacts: `export`
+
+Exports contacts that match the specified criteria to a JSON file.
+
+The exported file is saved in the `data/export` folder. The `.json` file extension is added automatically.
+
+Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]`
+
+* `FILENAME` must contain only alphanumeric characters and spaces.
+* `FILENAME` must begin with an alphanumeric character and cannot exceed 100 characters.
+*  Do not include the `.json` file extension in `FILENAME`.
+*  If no filtering criteria is provided, all contacts are exported.
+*  Multiple criteria can be specified. A contact must match every specified criterion to be exported.
+*  If a file with the same name already exists, it will be overwritten.
+*  Exporting contacts does not modify the contacts in coNnectUS and cannot be undone.
+
+Examples: 
+
+* `export -f contacts` exports all contacts to `data/exports/contacts.json`.
+* `export -f filtered-contacts -n Alice -e example.com` exports contacts whose names contain `Alice` and whose email addresses contain `example.com`.
+
 Example:
 
 * `import -f data/exports/contacts.json`
@@ -347,4 +368,5 @@ Action     | Format, Examples
 **Undo**   | `undo`                                                                                                                                                                                                               
 **Redo**   | `redo`                                                                                                                                                                                                               
 **Help**   | `help`                                                                                                                                                                                                               
-**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`                                                                                                                                                
+**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`
+**Export** | `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `export -f contacts -n Alice`
