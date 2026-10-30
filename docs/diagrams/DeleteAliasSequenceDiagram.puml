@@ -1,0 +1,79 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":DeleteAliasCommandParser" as DeleteAliasCommandParser LOGIC_COLOR
+participant "d:DeleteAliasCommand" as DeleteAliasCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+participant ":AliasRegistry" as AliasRegistry MODEL_COLOR
+end box
+
+'Assumes that alias "f" is already registered.'
+[-> LogicManager : execute("delete_alias f")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("delete_alias f")
+activate AddressBookParser
+
+create DeleteAliasCommandParser
+AddressBookParser -> DeleteAliasCommandParser
+activate DeleteAliasCommandParser
+
+DeleteAliasCommandParser --> AddressBookParser
+deactivate DeleteAliasCommandParser
+
+AddressBookParser -> DeleteAliasCommandParser : parse("f")
+activate DeleteAliasCommandParser
+
+create DeleteAliasCommand
+DeleteAliasCommandParser -> DeleteAliasCommand : DeleteAliasCommand("f")
+activate DeleteAliasCommand
+
+DeleteAliasCommand --> DeleteAliasCommandParser :
+deactivate DeleteAliasCommand
+
+DeleteAliasCommandParser --> AddressBookParser : d
+deactivate DeleteAliasCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+DeleteAliasCommandParser -[hidden]-> AddressBookParser
+destroy DeleteAliasCommandParser
+
+AddressBookParser --> LogicManager : d
+deactivate AddressBookParser
+
+LogicManager -> DeleteAliasCommand : execute(m)
+activate DeleteAliasCommand
+
+DeleteAliasCommand -> Model : deleteAlias("f")
+activate Model
+
+Model -> AliasRegistry : deleteAlias("f")
+activate AliasRegistry
+
+AliasRegistry --> Model
+deactivate AliasRegistry
+
+Model --> DeleteAliasCommand
+deactivate Model
+
+create CommandResult
+DeleteAliasCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> DeleteAliasCommand
+deactivate CommandResult
+
+DeleteAliasCommand --> LogicManager : r
+deactivate DeleteAliasCommand
+
+[<-- LogicManager
+deactivate LogicManager
+
+@enduml
