@@ -88,10 +88,6 @@ add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...
 list
 	Displays all saved contacts.
 
-edit LIST_INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...
-	Updates the specified fields for the contact at the specified list index. Existing values will be overwritten by the new input values.
-	Example: edit 4 -p 92008101 -t others CS1001 Groupmate
-
 
 ... more commands ...
 ```
