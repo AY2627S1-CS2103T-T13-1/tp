@@ -82,7 +82,7 @@ Name            | English Letters (A-Z, a-z) and spaces only                    
 Email           | Alphabets, Digits and special characters: `@`, `.`.                      | Should be of the format `username@domain` and not longer than `254` characters.
 Phone           | Digits only.                                                             | Must contain `3-15` digits.
 Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
-Tag             | English Letters (A-Z, a-z), spaces and hyphens only.                     | Must contain `1-30` characters and must not start with a space or a hyphen.
+Tag             | English Letters (A-Z, a-z), spaces and hyphens only.                     | Must contain `1-30` characters and must not start with a space.
 
 </box>
 
