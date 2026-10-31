@@ -192,7 +192,6 @@ The sort feature makes use of the `PersonComparatorFactory` class to create comp
 - To ensure that user applied sorts are maintained, `ModelManager` stores the most recent comparator used as `activeComparator`
   - `ModelManager` will call `sortAddressBook` internally after any change to the contacts such as adding or removing contacts
 
-
 ### Pinning a contact
 
 Users are able to pin contacts, placing them above other unpinned contacts.
@@ -204,6 +203,19 @@ The pin feature makes use of sorting to ensure pinned contacts are displayed on 
 - This sorts the list according to pinned status first, followed by the sorting method previously set by the user (such as by Name).
 
 As for unpinning a contact, the only difference is using `unpinPerson()` instead of `pinPerson()`.
+
+### Bulk deletion by tags
+
+Contacts have tags, and users can remove specified tags from all contacts using `delete -t TAG_CATEGORY TAG_NAME...`. Contacts whose entire non-empty tag set is covered by the specified tags are deleted.
+
+<puml src="diagrams/BulkDeleteActivityDiagram.puml" alt="Activity of bulk deletion by tags" />
+
+The `bulk deletion` feature:
+* matches tags by category and name, ignoring case.
+* considers all contacts in the address book, including those hidden by the current filter.
+* deletes a contact if the supplied tags cover all of its existing tags. Additional supplied tags do not prevent deletion.
+* removes matching tags from each contact and retains the contact if at least one of its tags remains.
+* leaves contacts with no matching tags unchanged, including contacts that initially have no tags.
 
 ### Registering an alias for a command
 
@@ -247,7 +259,6 @@ The `delete_alias` feature:
 * treats alias names as **case-sensitive**, so deleting `f` does not remove a separately registered alias named `F`.
 * rejects an unregistered alias with an `IllegalArgumentException`, which `DeleteAliasCommand` converts into a `CommandException` for display to the user.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved deletions persist across sessions.
-
 
 ### Tags for contacts
 
@@ -497,7 +508,35 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
   
         Use case resumes from Step 2.
 
-#### Use Case: UC04 - Find Contacts
+#### Use Case: UC04 - Delete Multiple Contacts
+
+**Actor: User**
+
+**MSS:**
+1. User specifies delete command with one or more tags to delete.
+2. coNnectUS removes matching tags from all contacts and deletes contacts with no tags remaining.
+3. coNnectUS displays the removed tags and, if any contacts were deleted, the number of deleted contacts.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. coNnectUS detects that the address book is empty.
+    * 1a1. coNnectUS displays an error message informing the user about the empty contact list.
+
+      Use case ends.
+
+* 1b. coNnectUS detects that an invalid tag was entered.
+    * 1b1. coNnectUS displays an error message with the expected usage instructions.
+
+      Use case resumes from Step 1.
+
+* 1c. coNnectUS detects that there are no matching instances of the tag.
+    * 1c1. coNnectUS displays a status message informing the user that no matching contacts were found.
+
+      Use case ends.
+
+#### Use Case: UC05 - Find Contacts
 
 **Actor: User**
 
@@ -528,8 +567,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1d1. coNnectUS displays a warning message of the unknown field being entered.
 
       Use case resumes at step 1.
-
-#### Use Case: UC05 - Edit Contacts
+    
+#### Use Case: UC06 - Edit Contacts
 
 **Actor: User**
 
