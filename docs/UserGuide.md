@@ -341,6 +341,12 @@ Creates an alternative command word for a built-in command, allowing you to cust
 Format: `alias COMMAND_WORD ALIAS_TO_SET`
 * `COMMAND_WORD` must be an **existing built-in command**, written in lowercase, such as `find`, `add` or `list`.
 * `ALIAS_TO_SET` must contain only English/ASCII lowercase and uppercase letters (`a-z`, `A-Z`). Numbers, spaces and special characters are **not allowed**.
+* There is **no maximum length** imposed for aliases, giving you the flexibility to choose alias names that suit your needs. For convenience's sake, we recommend choosing an alias that is:
+    * _**shorter**_ than the original command such as `f` or `fd` for `find`; or
+    * _**easy to associate**_ with the command, such as `search` for `find`.
+<br>
+<br>
+
 * Aliases are **case-sensitive**. For example, `f` and `F` are different aliases and associating each of them with distinct commands is allowed.
 * An alias **cannot conflict** with an existing built-in command, regardless of letter case. For example, neither `list` nor `LIST`, which exists as a registered command word can be used as an alias.
 * An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#deleting-an-alias-delete-alias).
