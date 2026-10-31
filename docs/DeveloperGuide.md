@@ -778,18 +778,17 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
 **MSS:**
 
-1. User specifies the `export` command with a filename and optional contact filtering criteria.
+1. User specifies the `export` command with a filename and optional contact filtering criterion.            
 2. coNnectUS identifies all contacts matching every specified criterion.
-3. coNnectUS creates or overwrites a JSON file named `FILENAME.json` in the `data/exports` folder.
-4. coNnectUS saves the matching contacts in the JSON file.
-5. coNnectUS displays a success message indicating the exported filename.
+3. coNnectUS saves all matching contacts to a JSON file with the user-specified file name.
+4. coNnectUS displays a success message indicating the exported filename.
 
    Use case ends.
 
 **Extensions:**
 
 * 1a. User does not provide a filename.
-    * 1a1. coNnectUS displays an error message with the correct command format.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
 
       Use case resumes from Step 1.
 
@@ -798,8 +797,8 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes from Step 1.
 
-* 1c. User provides an invalid, unknown or duplicated parameter.
-    * 1c1. coNnectUS displays an error message with the correct command format.
+* 1c. User provides an invalid, unknown parameter.
+    * 1c1. coNnectUS displays an error message indicating that an unknown export parameter has been provided.
 
       Use case resumes from Step 1.
 
@@ -821,23 +820,20 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
 1. User specifies the `import` command with the path to a JSON address book file.
 2. coNnectUS reads the contacts from the specified file.
-3. coNnectUS compares the imported contacts with the existing contacts.
-4. coNnectUS adds contacts that do not have the same phone number or email address as an existing contact.
-5. coNnectUS skips duplicate contacts.
-6. coNnectUS saves the merged contact list and displays the updated contacts.
-7. coNnectUS displays the number of imported contacts and skipped duplicates.
+3. coNnectUs adds new contacts.
+4. coNnectUS displays the number of imported contacts and skipped duplicates.
 
    Use case ends.
 
 **Extensions:**
 
 * 1a. User does not provide a file path.
-    * 1a1. coNnectUS displays an error message with the correct command format.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
 
       Use case resumes from Step 1.
 
 * 1b. User provides an invalid command format or unknown parameter.
-    * 1b1. coNnectUS displays an error message with the correct command format.
+    * 1b1. coNnectUS displays an error message indicating that the parameter is either unknown, or cannot be specified more than once.
 
       Use case resumes from Step 1.
 
@@ -860,11 +856,6 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
     * 3a1. coNnectUS skips the duplicate contact and continues importing the remaining contacts.
 
       Use case resumes from Step 4.
-
-* 7a. All imported contacts are duplicates.
-    * 7a1. coNnectUS displays a message indicating that zero contacts were imported and shows the number of skipped duplicates.
-
-      Use case ends.
 
 ### Non-Functional Requirements
 
