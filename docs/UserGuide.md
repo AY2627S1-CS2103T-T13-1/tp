@@ -165,8 +165,8 @@ Examples:
 
 * `list` followed by `delete 2` deletes the 2nd contact in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st contact in the results of the `find` command.
-* `delete -t faculty Science` removes the faculty tag `Science` from all contacts that have it. Contacts with no remaining tags are deleted.
-* `delete -t module TJ3000 -t others Badminton` removes the module tag `TJ3000` and the others tag `Badminton` from all contacts that have either or both tags.
+* `delete -t faculty Science` removes the faculty tag `Science` from all contacts that have it. Contacts that have only faculty tag `Science` originally are deleted.
+* `delete -t module TJ3000 -t others Badminton` removes the module tag `TJ3000` and the others tag `Badminton` from all contacts that have it. Contacts that originally have only module tag `TJ3000`, only others tag `Badminton`, or both, are deleted.
 
 ### Pinning and unpinning a person
 
