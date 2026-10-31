@@ -240,6 +240,21 @@ Examples:
 * `delete 2` followed by `undo` brings back the deleted contact.
 * `pin 1`, `edit 3 -n John Doe`, then `undo` twice reverses the edit and then the pin.
 
+### Redoing an undone change: `redo`
+
+Reapplies the most recent change that was reversed by `undo`.
+
+Format: `redo`
+
+* You can use `redo` several times in a row to reapply undone changes one at a time, in the order they were made.
+* Making a new change after an `undo` (e.g. `add`, `edit` or `delete`) clears the redo history, so the undone changes can no longer be redone.
+* Commands that do not change your contact list, such as `list` and `find`, do not clear the redo history.
+* After a redo, all contacts are shown, with pinned contacts at the top.
+
+Examples:
+* `delete 2`, `undo`, then `redo` deletes the contact again.
+* `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
+
 ### Importing contacts: `import`
 
 Imports contacts from a JSON address book file and merges them into the current address book.
@@ -274,21 +289,6 @@ Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] 
 Examples:
 * `export -f contacts` exports all contacts to `data/exports/contacts.json`.
 * `export -f filtered-contacts -n Alice -e example.com` exports contacts whose names contain `Alice` and whose email addresses contain `example.com`.
-
-### Redoing an undone change: `redo`
-
-Reapplies the most recent change that was reversed by `undo`.
-
-Format: `redo`
-
-* You can use `redo` several times in a row to reapply undone changes one at a time, in the order they were made.
-* Making a new change after an `undo` (e.g. `add`, `edit` or `delete`) clears the redo history, so the undone changes can no longer be redone.
-* Commands that do not change your contact list, such as `list` and `find`, do not clear the redo history.
-* After a redo, all contacts are shown, with pinned contacts at the top.
-
-Examples:
-* `delete 2`, `undo`, then `redo` deletes the contact again.
-* `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
 
 ### Changing the theme: `theme`
 
