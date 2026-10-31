@@ -398,7 +398,7 @@ Format: `delete_alias ALIAS_TO_DELETE`
 
 * `ALIAS_TO_DELETE` must be an **existing alias**, with the same letter-case used when it was registered.
 * Deleting an alias **does not remove** its corresponding built-in command or any other aliases corresponding to that command.
-* To change the command associated with an alias, delete the alias and register it again.
+* To change the command associated with an alias, _delete the alias_ and _re-register it again_.
 
     ```bash
     alias edit e        # registers "e" as an alias for the "edit" command
