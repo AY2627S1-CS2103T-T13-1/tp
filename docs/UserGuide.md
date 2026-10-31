@@ -274,15 +274,15 @@ Example:
 
 Exports contacts that match the specified criteria to a JSON file.
 
-The exported file is saved in the `data/export` folder. The `.json` file extension is added automatically.
+The exported file is saved in the `data/exports` folder. The `.json` file extension is added automatically.
 
-Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]`
+Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`
 
 * `FILENAME` must contain only alphanumeric characters and spaces.
 * `FILENAME` must begin with an alphanumeric character and cannot exceed 100 characters.
 *  Do not include the `.json` file extension in `FILENAME`.
-*  If no filtering criteria is provided, all contacts are exported.
-*  Multiple criteria can be specified. A contact must match every specified criterion to be exported.
+*  If no filtering criteria is provided, all contacts present in coNnectUS at that point of time are exported by default.
+*  Multiple criteria can be specified. A contact must match **every specified criterion** to be included in the export.
 *  If a file with the same name already exists, it will be overwritten.
 *  Exporting contacts does not modify the contacts in coNnectUS and cannot be undone.
 
