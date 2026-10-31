@@ -336,6 +336,48 @@ Examples:
   <img src="images/ThemeLight.png" alt="coNnectUS in the light theme" width="360" />
 </div>
 
+<br>
+
+### Adding an alias: `alias`
+
+Creates an alternative command word for a built-in command, allowing you to customize and use more memorable commands.
+
+Format: `alias COMMAND_WORD ALIAS_TO_SET`
+* `COMMAND_WORD` must be an **existing built-in command**, written in lowercase, such as `find`, `add` or `list`.
+* `ALIAS_TO_SET` must contain only English/ASCII lowercase and uppercase letters (`a-z`, `A-Z`). Numbers, spaces and special characters are **not allowed**.
+* Aliases are **case-sensitive**. For example, `f` and `F` are different aliases and associating them with each of them with distinct commands is allowed.
+* An alias **cannot conflict** with an existing built-in command, regardless of letter case. For example, neither `list` nor `LIST`, which exists as a registered command word can be used as an alias.
+* An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#removing-an-alias-delete-alias).
+* You can register _multiple aliases_ for the same built-in command.
+* An alias **only replaces the command word**. The command word's associated parameter(s) and parameter value(s) are still necessary. E.g.,
+    ```bash
+    alias find f                   # creates the alias "f" for the "find" command
+    f -n James -t others friend    # runs the find command with the relevant search criteria
+    ```
+
+* The original command word remains usable after an alias is added (as illustrated in the above example).
+* The list of aliases if viewable using the [`list_alias`](#list-available-aliases-list-alias) command.
+
+
+Examples:
+* `alias find f` allows you to use `f -n James` instead of `find -n James`.
+* `alias list ls` allows you to use `ls` instead of `list`.
+* `alias delete del` allows you to use `del 3` instead of `delete 3`.
+
+
+<box type="warning" header="****Alias persistence and undo behaviour****" seamless>
+
+Aliases are **saved automatically** when you add or remove them and remain available when you restart coNnectUS at `data/aliases.json`.
+
+Adding or deleting an alias **cannot be undone** using [`undo`](#undoing-a-change-undo). However, commands executed through an alias follow the same undo behavior as the original command. For example, a deletion of a particular contact performed using `del 3` can be undone.
+
+</box>
+
+### List available aliases: `list_alias`
+
+### Removing an alias: `delete_alias`
+
+
 ### Exiting the program: `exit`
 
 Exits the program.
