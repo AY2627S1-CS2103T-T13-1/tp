@@ -59,7 +59,7 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
   For example, `[-t CATEGORY TAG]... ` may be omitted, or written as `-t others friend` or `-t others friend -t others family`.
 
 * Prefixed Parameters can be in any order.<br>
-  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.<br>
+  For example, for the add command, `-n NAME -p PHONE_NUMBER` and `-p PHONE_NUMBER -n NAME` are both accepted.
 
 * Parameters that are not prefixed must be specified in the order stated in [Command Summary](#command-summary).<br>
   For example, `sort name asc` is accepted while `sort asc name` is not.
@@ -79,7 +79,7 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 Property        | Accepted Values | Accepted Length and Format (if any)
 ----------------|--------------------------------------------------------------------------|-----------------
 Name            | English Letters (A-Z, a-z) and spaces only                               | Must contain `1-70` characters and must not start with a space.
-Email           | Alphabets, Digits and special characters: `@`, `.`.                      | Should be of the format `username@domain` and not longer than `254` characters.
+Email           | Alphabets, Digits and some special characters: `@`, `.`, `+`, `_` and `-`.| Must follow `local-part@domain` and contain at most **254 characters**.<br><ul><li>Local part allows letters, digits separated by single `+`, `_`, `.`, or `-` characters.</li> <li>The domain consists of dot-separated parts containing letters, digits, or hyphens. Each part must start and end with a letter or digit, with the last part being at least two characters long.</li>
 Phone           | Digits only.                                                             | Must contain `3-15` digits.
 Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
 Tag             | English Letters (A-Z, a-z), spaces and apostrophes only.                 | Must contain `1-30` characters and must not start with a space.
