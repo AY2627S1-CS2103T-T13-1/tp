@@ -67,7 +67,7 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </box>
 
-### Getting help : `help`
+### Getting help: `help`
 
 Displays a command reference in coNnectUS's result display area, including command formats, descriptions, examples where applicable, as well as a link to this User Guide.
 * Scroll through the results area to view the "built-in" commands available for your use.
