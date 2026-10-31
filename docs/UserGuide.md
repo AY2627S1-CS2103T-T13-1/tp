@@ -93,11 +93,11 @@ edit LIST_INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATE
 	Example: edit 4 -p 92008101 -t others CS1001 Groupmate
 
 
-more commands ...
+... more commands ...
 ```
 
 <box type="info" header="**Alternative way getting help**: the User Guide" seamless>
-Before we get started, ensure that you have a <i>reliable internet connection</i>.
+Before we proceed with this step, ensure that you have a <i>reliable internet connection</i>.
 <br>
 <br>
 An alternative to accessing this user guide is through the "User Guide" dialog, using the following steps:
