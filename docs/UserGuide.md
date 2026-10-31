@@ -465,7 +465,7 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 | **Unpin** | `unpin INDEX` |
 | **List all contacts** | `list` |
 | **Sort** | `sort (name \| email \| phone) (asc \| desc)` |
-| **Theme** | `theme dark` \| `theme light`<br>e.g., `theme light` |
+| **Theme** | `theme dark` \| `theme light` |
 | **Undo** | `undo` |
 | **Redo** | `redo` |
 | **Import** |  `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json` |
