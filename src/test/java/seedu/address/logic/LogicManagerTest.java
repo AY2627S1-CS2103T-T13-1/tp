@@ -123,6 +123,32 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_editTagNameCase_savesUpdatedCasing() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + " -t others Friend");
+
+        logic.execute("edit 1 -t others friend");
+
+        ReadOnlyAddressBook savedAddressBook = new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"))
+                .readAddressBook().orElseThrow();
+        assertEquals("friend", savedAddressBook.getPersonList().get(0).getTags().iterator().next().tagName);
+    }
+
+    @Test
+    public void execute_editTagNameCase_undoAndRedoRestoreCasing() throws Exception {
+        logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + " -t others Friend");
+        logic.execute("edit 1 -t others friend");
+
+        logic.execute(UndoCommand.COMMAND_WORD);
+        assertEquals(1, model.getAddressBook().getPersonList().size());
+        assertEquals("Friend", model.getAddressBook().getPersonList().get(0).getTags().iterator().next().tagName);
+
+        logic.execute(RedoCommand.COMMAND_WORD);
+        assertEquals("friend", model.getAddressBook().getPersonList().get(0).getTags().iterator().next().tagName);
+    }
+
+    @Test
     public void execute_undoAfterAdd_removesAddedPerson() throws Exception {
         logic.execute(AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY);

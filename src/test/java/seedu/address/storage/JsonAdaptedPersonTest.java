@@ -275,6 +275,34 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_caseVariantDuplicateTags_returnsPersonWithOneTag() throws Exception {
+        List<JsonAdaptedTag> tags = List.of(new JsonAdaptedTag("Friends", OTHERS_TAG_TYPE),
+                new JsonAdaptedTag("friends", OTHERS_TAG_TYPE), new JsonAdaptedTag("FRIENDS", OTHERS_TAG_TYPE));
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, tags, UNPINNED);
+        Person expectedPerson = new PersonBuilder(BENSON).withTags(new OthersTag("Friends")).build();
+
+        Person actualPerson = person.toModelType();
+        assertEquals(expectedPerson, actualPerson);
+        assertEquals(1, actualPerson.getTags().size());
+    }
+
+    @Test
+    public void toModelType_caseVariantDuplicateTagsAtTagLimit_returnsPersonWithFiveTags() throws Exception {
+        List<JsonAdaptedTag> tags = List.of("Friends", "friends", "two", "three", "four", "five").stream()
+                .map(name -> new JsonAdaptedTag(name, OTHERS_TAG_TYPE))
+                .collect(Collectors.toList());
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, tags, UNPINNED);
+        Person expectedPerson = new PersonBuilder(BENSON).withTags(new OthersTag("Friends"), new OthersTag("two"),
+                new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
+
+        Person actualPerson = person.toModelType();
+        assertEquals(expectedPerson, actualPerson);
+        assertEquals(5, actualPerson.getTags().size());
+    }
+
+    @Test
     public void toModelType_fiveDistinctTags_returnsPerson() throws Exception {
         Person expectedPerson = new PersonBuilder(BENSON).withTags(new OthersTag("one"), new OthersTag("two"),
                 new OthersTag("three"), new OthersTag("four"), new OthersTag("five")).build();
