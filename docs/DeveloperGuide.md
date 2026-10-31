@@ -217,7 +217,7 @@ The above sequence diagram above illustrates the successful execution of
 The `alias` feature:
 * maintains alias-to-command-word mappings in `AliasRegistry`.
 * delegates registration through `Model#registerAlias()` to `AliasRegistry#register()`, which validates the registration and stores the alias-to-command-word mapping.
-* requires `alias` to consist of one or more ASCII lowercase or uppercase ASCII letters (i.e. `a-z` or `A-Z`), with **no whitespace**.
+* requires `alias` to consist of one or more lowercase or uppercase ASCII letters (i.e. `a-z` or `A-Z`), with **no whitespace**.
 * treats aliases as **case-sensitive**,  allowing for names such as `f` and `F` to be registered separately.
 * supports registration for built-in command words only, using an exact, case-sensitive match. Existing aliases cannot be used for the target command word.
 * rejects alias names that conflict with either of the following:
@@ -670,8 +670,8 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
     Use case resumes at Step 1.
 
-* 1b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
-  * 1b1. coNnectUS displays an error message informing the user that the alias must contain only upper or lower-case ASCII letters (i.e. `a-z` or `A-Z`).
+* 1b. coNnectUS detects that the supplied alias contains characters other than lowercase or uppercase ASCII letters.
+  * 1b1. coNnectUS displays an error message informing the user that the alias must contain only the allowed ASCII letters (i.e. `a-z` or `A-Z`).
 
     Use case resumes at Step 1.
 
@@ -723,8 +723,8 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
-* 2b. coNnectUS detects that the supplied alias contains characters other than uppercase or lowercase ASCII letters.
-    * 2b1. coNnectUS displays an error message informing the user that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+* 2b. coNnectUS detects that the supplied alias contains characters other than lowercase or uppercase ASCII letters.
+    * 2b1. coNnectUS displays an error message informing the user that aliases must contain only the allowed ASCII letters (`a-z` or `A-Z`).
 
       Use case resumes at Step 2.
 
