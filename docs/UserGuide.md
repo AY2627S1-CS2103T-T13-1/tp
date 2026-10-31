@@ -377,19 +377,20 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 
 ## Command summary
 
-Action     | Format, Examples                                                                                                                                                                                                     
------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague` 
-**Clear**  | `clear`                                                                                                                                                                                                              
-**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`                                                                                                                 
-**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`                                                               
-**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`                                                                          
-**Pin**    | `pin INDEX`                                                                                                                                                                                                          
-**Unpin**  | `unpin INDEX`                                                                                                                                                                                                        
-**List**   | `list`                                                                                                                                                                                                               
-**Sort**   | `sort (name \| email \| phone) (asc \| desc)`                                                                                                                                                                         |
-**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`                                                                                                                                                                
-**Undo**   | `undo`                                                                                                                                                                                                               
-**Redo**   | `redo`                                                                                                                                                                                                               
-**Help**   | `help`                                                                                                                                                                                                               
-**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`                                                                                                                                                
+| Action | Format and Examples |
+|---|---|
+| **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague` |
+| **Clear** | `clear` |
+| **Delete** | `delete INDEX` or `delete -t TAG_CATEGORY TAG_NAME...`<br>e.g., `delete 3`, `delete -t faculty CDE` |
+| **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `edit 2 -n James Lee -e jameslee@example.com` |
+| **Find** | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `find -n James -p 2222 -t others friend` |
+| **Pin** | `pin INDEX` |
+| **Unpin** | `unpin INDEX` |
+| **List** | `list` |
+| **Sort** | `sort (name \| email \| phone) (asc \| desc)` |
+| **Theme** | `theme dark` or `theme light`<br>e.g., `theme light` |
+| **Undo** | `undo` |
+| **Redo** | `redo` |
+| **Import** |  `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json` |
+| **Export** | `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `export -f contacts -n Alice` |
+| **Help** | `help` |
