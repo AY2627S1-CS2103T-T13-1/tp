@@ -158,14 +158,14 @@ Examples:
 * `find -n john` returns `John`, `Johnny`.
 * `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
 * `find -p 92` returns `92005000`, `88922301`
-* `find -t others Friend -t faculty Computing` returns contact who have both tags.<br>
+* `find -t others Friend -t faculty Computing` returns contacts who have both tags.<br>
   ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
-### Deleting a contact or multiple people: `delete`
+### Deleting a contact or multiple contacts: `delete`
 
-Deletes either the specified contact (based on list index), or people matching the supplied tag set from the address book.
+Deletes either the specified contact (based on list index), or removes all instances of the specified tags and deletes contacts with no remaining tags.
 
-Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
+Format: `delete INDEX` | `delete -t TAG_CATEGORY TAG_NAME...`
 
 <ins>__Index-based deletion:__</ins>
 
@@ -175,17 +175,19 @@ Format: `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`
 
 <ins>__Tag-based deletion:__</ins>
 
-* Deletes people whose __complete set of tags exactly matches the supplied tags__. 
+* Removes matching tags from each tagged contact. Retains the contact if any tags remain; otherwise, deletes it.
 * One or more tags can be specified.
-* Matching people not displayed in the active filter will still be deleted.
-* Tag categories and tag names are compared case-insensitively. 
-* If there are no matches, no deletion will occur.
+* Matching contacts not displayed in the active filter can still be deleted, or have their tags removed.
+* Tag categories and tag names are compared case-insensitively.
 
 Examples:
+
 * `list` followed by `delete 2` deletes the 2nd contact in the address book.
 * `find -n Betsy` followed by `delete 1` deletes the 1st contact in the results of the `find` command.
-* `delete -t faculty Science` deletes all people with only the faculty tag `Science`.
-* `delete -t module TJ3000 -t others Badminton` deletes all people with only the module tag `TJ3000` and others tag `Badminton`. (Contacts missing any of the exact tags OR having extra tags will __not__ be matched)
+* `delete -t faculty Science` removes the faculty tag `Science` from all contacts that have it. Contacts that have only faculty tag `Science` originally are deleted.
+* `delete -t module TJ3000 -t others Badminton` removes the module tag `TJ3000` and the others tag `Badminton` from all contacts that have it. Only contacts that originally had **either or both** of the following tags, will be deleted.
+  * `TJ3000` tag of the "module" category.
+  * `Badminton` tag of the "others" category.
 
 ### Pinning and unpinning a contact
 
@@ -199,7 +201,6 @@ Format: `pin INDEX`, `unpin INDEX`
 * The index **must be a positive integer**.
   * If using `pin`, the contact specified at `INDEX` **must be** an unpinned contact.
   * If using `unpin`, the contact specified at `INDEX` **must be** a pinned contact.
-
 
 Examples:
 * `list` followed by `pin 3` pins the 3rd contact in the address book.
@@ -298,7 +299,7 @@ Examples:
 
 Switches coNnectUS between a dark theme (true black, which saves power on OLED screens) and a light theme (white).
 
-Format: `theme dark` or `theme light`
+Format: `theme dark` | `theme light`
 
 * The theme name is not case-sensitive. For example, `theme LIGHT` works the same as `theme light`.
 * You can also click the **Dark** / **Light** button at the right end of the menu bar to switch to the other theme.
@@ -355,19 +356,19 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 
 ## Command summary
 
-Action     | Format, Examples                                                                                                                                                                                                     
------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague` 
-**Clear**  | `clear`                                                                                                                                                                                                              
-**Delete** | `delete INDEX` OR `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE`                                                                                                                 
-**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`                                                               
-**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`                                                                          
-**Pin**    | `pin INDEX`                                                                                                                                                                                                          
-**Unpin**  | `unpin INDEX`                                                                                                                                                                                                        
-**List**   | `list`                                                                                                                                                                                                               
+Action     | Format, Examples
+-----------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+**Add**    | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... ` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague`
+**Clear**  | `clear`
+**Delete** | `delete INDEX` \| `delete -t TAG_CATEGORY TAG_NAME...`<br> e.g., `delete 3`, `delete -t faculty CDE -t others Intern`
+**Edit**   | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`edit 2 -n James Lee -e jameslee@example.com`
+**Find**   | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `<br> e.g.,`find -n James -p 2222 -t others friend`
+**Pin**    | `pin INDEX`
+**Unpin**  | `unpin INDEX`
+**List**   | `list`
 **Sort**   | `sort (name \| email \| phone) (asc \| desc)`                                                                                                                                                                         |
-**Theme**  | `theme dark` or `theme light`<br> e.g., `theme light`                                                                                                                                                                
-**Undo**   | `undo`                                                                                                                                                                                                               
-**Redo**   | `redo`                                                                                                                                                                                                               
-**Help**   | `help`                                                                                                                                                                                                               
-**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`                                                                                                                                                
+**Theme**  | `theme dark` \| `theme light`<br> e.g., `theme light`
+**Undo**   | `undo`
+**Redo**   | `redo`
+**Help**   | `help`
+**Import** | `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json`
