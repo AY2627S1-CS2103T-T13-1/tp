@@ -121,8 +121,11 @@ public class DeleteCommandTest {
         String expectedMessage = String.format(DeleteCommand.MESSAGE_DELETE_TAGS_SUCCESS, 1)
                 + "\nAll instances of tag(s) (others:friend) have been removed.";
 
-        assertCommandSuccess(new DeleteCommand(Set.of(new OthersTag("FRIEND"),
-                new OthersTag("friend"))), tagModel, expectedMessage, modelWithPersons());
+        Set<Tag> duplicateTagSet = new HashSet<>();
+        duplicateTagSet.add(new OthersTag("FRIEND"));
+        duplicateTagSet.add(new OthersTag("friend"));
+
+        assertCommandSuccess(new DeleteCommand(duplicateTagSet), tagModel, expectedMessage, modelWithPersons());
     }
 
     @Test

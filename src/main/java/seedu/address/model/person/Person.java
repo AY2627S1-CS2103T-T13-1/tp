@@ -113,6 +113,7 @@ public class Person {
     /**
      * Returns true if both persons have the same identity and data fields.
      * This defines a stronger notion of equality between two persons.
+     * Tag names are compared case-sensitively so changes to their displayed and stored casing are detected.
      */
     @Override
     public boolean equals(Object other) {
@@ -129,8 +130,18 @@ public class Person {
                 && phone.equals(otherPerson.phone)
                 && email.equals(otherPerson.email)
                 && address.equals(otherPerson.address)
-                && tags.equals(otherPerson.tags)
+                && hasSameTagData(otherPerson)
                 && isPinned == otherPerson.isPinned;
+    }
+
+    /**
+     * Compares exact tag data independently of case-insensitive tag identity and set iteration order.
+     */
+    private boolean hasSameTagData(Person otherPerson) {
+        return tags.size() == otherPerson.tags.size()
+                && tags.stream().allMatch(tag -> otherPerson.tags.stream().anyMatch(otherTag ->
+                        tag.getTagCategory().equals(otherTag.getTagCategory())
+                                && tag.tagName.equals(otherTag.tagName)));
     }
 
     @Override

@@ -72,6 +72,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_caseVariantDuplicateTags_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withTags(new OthersTag("Friends")).build();
+
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                + " -t others Friends -t others friends", new AddCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_repeatedNonTagValue_failure() {
         String validExpectedPersonString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;

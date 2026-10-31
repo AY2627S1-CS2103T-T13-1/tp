@@ -1,0 +1,30 @@
+@startuml
+skin rose
+skinparam ActivityFontSize 15
+skinparam ArrowFontSize 12
+
+start
+:Receive valid tags to remove;
+
+floating note right
+  Match tags by category and name,
+  ignoring case. Consider all contacts,
+  including those hidden by a filter.
+end note
+
+while () is ([Address book contains unprocessed contacts])
+    :Select next contact;
+    if () then ([Contact has matching tags])
+        if () then ([Supplied tags cover\n all of contact's tags])
+            :Delete the contact;
+        else ([else])
+            :Remove matching tag instances\nand retain the contact;
+        endif
+    else ([else])
+        :Leave contact unchanged;
+    endif
+endwhile ([else])
+
+
+stop
+@enduml
