@@ -102,14 +102,14 @@ Before we proceed with this step, ensure that you have a <i>reliable internet co
 <br>
 An alternative to accessing this user guide is through the "User Guide" dialog, using the following steps:
 
-1. With coNnectUS already open, click on <kbd>User Guide</kbd> on the top ribbon and select the button to trigger the User Guide dialog. Alternatively, you can press <kbd>F1</kbd> on your keyboard to trigger the same action.
+1. With coNnectUS already open, click on <kbd>User Guide</kbd> on the top ribbon and select the button to trigger the User Guide dialog. Alternatively, you can press <kbd>F1</kbd> on your keyboard.
 <br>
 
 <img src="images/user-guide-access-step-1.png" alt="user-guide-access-step-1" width="515" style="max-width: 100%; height: auto;" />
 <br>
 <br>
 
-2. Once the dialog appears, click on the <kbd>Open User Guide</kbd> button to open this User Guide your default browser configured.
+2. Once the dialog appears, click on the <kbd>Open User Guide</kbd> button to open this User Guide with your configured default browser.
 <br>
 
 <img src="images/user-guide-access-step-2.png" alt="user-guide-access-step-2" width="506" style="max-width: 100%; height: auto;" />
@@ -340,12 +340,12 @@ Examples:
 
 ### Adding an alias: `alias`
 
-Creates an alternative command word for a built-in command, allowing you to customize and use more memorable commands.
+Creates an alternative command word for a built-in command, allowing you to customize and use more memorable and intuitive commands.
 
 Format: `alias COMMAND_WORD ALIAS_TO_SET`
 * `COMMAND_WORD` must be an **existing built-in command**, written in lowercase, such as `find`, `add` or `list`.
 * `ALIAS_TO_SET` must contain only English/ASCII lowercase and uppercase letters (`a-z`, `A-Z`). Numbers, spaces and special characters are **not allowed**.
-* Aliases are **case-sensitive**. For example, `f` and `F` are different aliases and associating them with each of them with distinct commands is allowed.
+* Aliases are **case-sensitive**. For example, `f` and `F` are different aliases and associating each of them with distinct commands is allowed.
 * An alias **cannot conflict** with an existing built-in command, regardless of letter case. For example, neither `list` nor `LIST`, which exists as a registered command word can be used as an alias.
 * An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#deleting-an-alias-delete-alias).
 * You can register _multiple aliases_ for the same built-in command.
@@ -356,7 +356,7 @@ Format: `alias COMMAND_WORD ALIAS_TO_SET`
     ```
 
 * The original command word remains usable after an alias is added (as illustrated in the above example).
-* The list of aliases if viewable using the [`list_alias`](#list-all-available-aliases-list-alias) command.
+* The list of aliases is viewable using the [`list_alias`](#list-all-available-aliases-list-alias) command.
 
 
 Examples:
@@ -458,14 +458,14 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 |---|---|
 | **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665 -t others friend -t others colleague` |
 | **Clear** | `clear` |
-| **Delete** | `delete INDEX` or `delete -t TAG_CATEGORY TAG_NAME...`<br>e.g., `delete 3`, `delete -t faculty CDE` |
+| **Delete** | `delete INDEX` \| `delete -t TAG_CATEGORY TAG_NAME...`<br>e.g., `delete 3`, `delete -t faculty CDE` |
 | **Edit** | `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `edit 2 -n James Lee -e jameslee@example.com` |
 | **Find** | `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `find -n James -p 2222 -t others friend` |
 | **Pin** | `pin INDEX` |
 | **Unpin** | `unpin INDEX` |
 | **List all contacts** | `list` |
 | **Sort** | `sort (name \| email \| phone) (asc \| desc)` |
-| **Theme** | `theme dark` or `theme light`<br>e.g., `theme light` |
+| **Theme** | `theme dark` \| `theme light`<br>e.g., `theme light` |
 | **Undo** | `undo` |
 | **Redo** | `redo` |
 | **Import** |  `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json` |
