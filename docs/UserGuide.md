@@ -78,11 +78,11 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 **Notes about accepted values for a contact's properties:**<br>
 Property        | Accepted Values | Accepted Length and Format (if any)
 ----------------|--------------------------------------------------------------------------|-----------------
-Name            | Alphabets and spaces only.                                               | Must contain `1-70` characters and must not start with a space.
+Name            | English Letters (A-Z, a-z) and spaces only                               | Must contain `1-70` characters and must not start with a space.
 Email           | Alphabets, Digits and special characters: `@`, `.`.                      | Should be of the format `username@domain` and not longer than `254` characters.
 Phone           | Digits only.                                                             | Must contain `3-15` digits.
 Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
-
+Tag             | English Letters (A-Z, a-z), spaces and hyphens only.                     | Must contain `1-30` characters and must not start with a space or a hyphen.
 
 </box>
 
