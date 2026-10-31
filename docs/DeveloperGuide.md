@@ -192,7 +192,6 @@ The sort feature makes use of the `PersonComparatorFactory` class to create comp
 - To ensure that user applied sorts are maintained, `ModelManager` stores the most recent comparator used as `activeComparator`
   - `ModelManager` will call `sortAddressBook` internally after any change to the contacts such as adding or removing contacts
 
-
 ### Pinning a contact
 
 Users are able to pin contacts, placing them above other unpinned contacts.
@@ -215,7 +214,7 @@ The `bulk deletion` feature:
 * matches tags by category and name, ignoring case.
 * considers all contacts in the address book, including those hidden by the current filter.
 * deletes a contact if the supplied tags cover all of its existing tags. Additional supplied tags do not prevent deletion.
-* removes matching tag instances and retains the contact if other tags still remain.
+* removes matching tags from each contact and retains the contact if at least one of its tags remains.
 * leaves contacts with no matching tags unchanged, including contacts that initially have no tags.
 
 ### Registering an alias for a command
@@ -528,7 +527,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case ends.
 
 * 1b. coNnectUS detects that an invalid tag was entered.
-    * 1b1. coNnectUS displays an error message with the expected usage instructions
+    * 1b1. coNnectUS displays an error message with the expected usage instructions.
 
       Use case resumes from Step 1.
 

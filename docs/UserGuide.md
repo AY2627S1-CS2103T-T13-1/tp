@@ -142,30 +142,31 @@ Examples:
 * `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
   ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
-### Deleting a person or multiple people: `delete`
+### Deleting a contact or multiple contacts: `delete`
 
-Deletes either the specified person (based on list index), or removes all instances of the specified tags.
+Deletes either the specified contact (based on list index), or removes all instances of the specified tags and deletes contacts with no remaining tags.
 
 Format: `delete INDEX` | `delete -t TAG_CATEGORY TAG_NAME...`
 
 <ins>__Index-based deletion:__</ins>
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Deletes the contact at the specified `INDEX`.
+* The index refers to the index number shown in the displayed contact list.
 * The index **must be a positive integer** 1, 2, 3, ...
 
 <ins>__Tag-based deletion:__</ins>
-* Deletes a person if the supplied tags cover all existing tags. Additional supplied tags do not prevent deletion.
-* Removes matching tag instances from each person and retains the person if other tags still remain after removal.
+
+* Removes matching tags from each tagged contact and retains the contact if at least one of its tags remains, deletes it if no tags remain.
 * One or more tags can be specified.
-* Matching people not displayed in the active filter can still be deleted, or have their tags removed.
-* Tag categories and tag names are compared case-insensitively. 
+* Matching contacts not displayed in the active filter can still be deleted, or have their tags removed.
+* Tag categories and tag names are compared case-insensitively.
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find -n Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
-* `delete -t faculty Science` deletes all people with only the faculty tag `Science`, and removes only tag `Science` from people with the tag, provided other tags still remain.
-* `delete -t module TJ3000 -t others Badminton` deletes all people with only module Tag `TJ3000`, only others Tag `Badminton`, and people with both. Instances of both tags are also removed.
+
+* `list` followed by `delete 2` deletes the 2nd contact in the address book.
+* `find -n Betsy` followed by `delete 1` deletes the 1st contact in the results of the `find` command.
+* `delete -t faculty Science` removes the faculty tag `Science` from all contacts that have it. Contacts with no remaining tags are deleted.
+* `delete -t module TJ3000 -t others Badminton` removes the module tag `TJ3000` and the others tag `Badminton` from all contacts that have either or both tags.
 
 ### Pinning and unpinning a person
 
@@ -179,8 +180,6 @@ Format: `pin INDEX`, `unpin INDEX`
 * The index **must be a positive integer**.
   * If using `pin`, the person specified at `INDEX` **must be** an unpinned person.
   * If using `unpin`, the person specified at `INDEX`  **must be** a pinned person.
-
-
 
 Examples:
 * `list` followed by `pin 3` pins the 3rd person in the address book.
@@ -215,7 +214,6 @@ The following tag categories are supported, with each category being assigned a 
 
 Tag categories are not case-sensitive.
 - `add ... -t OTHERS friend` has the same effect as `add ... -t oThErS friend`.
-
 
 ### Clearing all entries: `clear`
 
