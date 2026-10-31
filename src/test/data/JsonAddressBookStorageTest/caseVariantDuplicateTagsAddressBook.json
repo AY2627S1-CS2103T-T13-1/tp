@@ -1,0 +1,19 @@
+{
+  "persons": [ {
+    "name": "Valid Person",
+    "phone": "9482424",
+    "email": "hans@example.com",
+    "address": "4th street",
+    "tags": [ {
+      "tagName": "Friends",
+      "tagType": "others"
+    }, {
+      "tagName": "friends",
+      "tagType": "others"
+    }, {
+      "tagName": "FRIENDS",
+      "tagType": "others"
+    } ],
+    "isPinned": "false"
+  } ]
+}

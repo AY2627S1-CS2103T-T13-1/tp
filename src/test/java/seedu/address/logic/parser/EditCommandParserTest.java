@@ -165,6 +165,16 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_caseVariantDuplicateTags_success() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withTags(new OthersTag("Friends")).build();
+        EditCommand expectedCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        assertParseSuccess(parser, INDEX_FIRST_PERSON.getOneBased()
+                + " -t others Friends -t others friends", expectedCommand);
+    }
+
+    @Test
     public void parse_multipleRepeatedFields_failure() {
         // More extensive testing of duplicate parameter detections is done in
         // AddCommandParserTest#parse_repeatedNonTagValue_failure()

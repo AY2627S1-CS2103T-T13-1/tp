@@ -12,6 +12,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -101,6 +102,10 @@ public class PersonTest {
         // same object -> returns true
         assertTrue(ALICE.equals(ALICE));
 
+        // same tags -> returns true
+        Person aliceWithTag = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
+        assertTrue(aliceWithTag.equals(aliceWithTag));
+
         // null -> returns false
         assertFalse(ALICE.equals(null));
 
@@ -129,6 +134,53 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different tag casing -> returns false
+        Person lowerCaseTagAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
+
+        Person uppercaseTagAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND
+                .toUpperCase(Locale.ROOT))).build();
+
+        assertFalse(lowerCaseTagAlice.equals(uppercaseTagAlice));
+
+    }
+
+    @Test
+    public void equals_tagNameDiffersOnlyInCase_returnsFalse() {
+        Person original = new PersonBuilder(ALICE).withTags(new OthersTag("Friend")).build();
+        Person edited = new PersonBuilder(original).withTags(new OthersTag("friend")).build();
+
+        assertEquals(original.getTags(), edited.getTags());
+        assertFalse(original.equals(edited));
+        assertFalse(edited.equals(original));
+        assertTrue(original.isSamePerson(edited));
+        assertTrue(edited.isSamePerson(original));
+    }
+
+    @Test
+    public void equals_oneTagNameDiffersOnlyInCaseAmongMultipleTags_returnsFalse() {
+        Person original = new PersonBuilder(ALICE).withTags(new OthersTag("Friend"),
+                new OthersTag("Colleague"), new OthersTag("Neighbour")).build();
+        Person edited = new PersonBuilder(original).withTags(new OthersTag("friend"),
+                new OthersTag("Colleague"), new OthersTag("Neighbour")).build();
+
+        assertEquals(original.getTags(), edited.getTags());
+        assertFalse(original.equals(edited));
+        assertFalse(edited.equals(original));
+        assertTrue(original.isSamePerson(edited));
+        assertTrue(edited.isSamePerson(original));
+    }
+
+    @Test
+    public void equals_tagsReordered_returnsTrue() {
+        Person original = new PersonBuilder(ALICE).withTags(new OthersTag("Friend"),
+                new OthersTag("Colleague"), new OthersTag("Neighbour")).build();
+        Person reordered = new PersonBuilder(original).withTags(new OthersTag("Neighbour"),
+                new OthersTag("Colleague"), new OthersTag("Friend")).build();
+
+        assertTrue(original.equals(reordered));
+        assertTrue(reordered.equals(original));
+        assertEquals(original.hashCode(), reordered.hashCode());
     }
 
     @Test
