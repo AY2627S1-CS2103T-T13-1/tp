@@ -3,6 +3,8 @@ package seedu.address.model.tag;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
+import java.util.Locale;
+
 /**
  * Represents a Tag in the address book.
  * Guarantees: immutable; name is valid as declared in {@link #isValidTagName(String)}
@@ -60,12 +62,12 @@ public abstract class Tag {
             return false;
         }
 
-        return tagName.equals(otherTag.tagName);
+        return tagName.equalsIgnoreCase(otherTag.tagName);
     }
 
     @Override
     public int hashCode() {
-        return tagName.hashCode();
+        return tagName.toLowerCase(Locale.ROOT).hashCode();
     }
 
     /**
