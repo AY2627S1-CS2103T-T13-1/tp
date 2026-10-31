@@ -12,6 +12,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
@@ -101,6 +102,10 @@ public class PersonTest {
         // same object -> returns true
         assertTrue(ALICE.equals(ALICE));
 
+        // same tags -> returns true
+        Person aliceWithTag = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
+        assertTrue(aliceWithTag.equals(aliceWithTag));
+
         // null -> returns false
         assertFalse(ALICE.equals(null));
 
@@ -129,6 +134,15 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
         assertFalse(ALICE.equals(editedAlice));
+
+        // different tag casing -> returns false
+        Person lowerCaseTagAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
+
+        Person uppercaseTagAlice  = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND
+                .toUpperCase(Locale.ROOT))).build();
+
+        assertFalse(lowerCaseTagAlice.equals(uppercaseTagAlice));
+
     }
 
     @Test
