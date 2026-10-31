@@ -350,13 +350,13 @@ Format: `alias COMMAND_WORD ALIAS_TO_SET`
 * An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#removing-an-alias-delete-alias).
 * You can register _multiple aliases_ for the same built-in command.
 * An alias **only replaces the command word**. The command word's associated parameter(s) and parameter value(s) are still necessary. E.g.,
-    ```bash
+    ```text
     alias find f                   # creates the alias "f" for the "find" command
     f -n James -t others friend    # runs the find command with the relevant search criteria
     ```
 
 * The original command word remains usable after an alias is added (as illustrated in the above example).
-* The list of aliases if viewable using the [`list_alias`](#list-available-aliases-list-alias) command.
+* The list of aliases if viewable using the [`list_alias`](#list-all-available-aliases-list-alias) command.
 
 
 Examples:
@@ -373,7 +373,22 @@ Adding or deleting an alias **cannot be undone** using [`undo`](#undoing-a-chang
 
 </box>
 
-### List available aliases: `list_alias`
+### List all available aliases: `list_alias`
+
+Displays all registered aliases, grouped by corresponding built-in command.
+
+Format: `list_alias`
+
+* If no aliases have been registered, a message indicating this will be displayed.
+
+Example:
+* After running `alias find f`, `alias list l` and `alias list ls`, entering `list_alias` displays the following mappings. Their order may vary.
+
+    ```text
+    Registered alias(es):
+    find: f
+    list: l, ls
+    ```
 
 ### Removing an alias: `delete_alias`
 
@@ -436,6 +451,6 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 | **Import** |  `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json` |
 | **Export** | `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `export -f contacts -n Alice` |
 | **Add an alias** | `alias COMMAND_WORD ALIAS_TO_SET`<br>e.g., `alias find f` |
-| **List all aliases** | `list_alias` |
+| **List all available aliases** | `list_alias` |
 | **Delete an alias** | `delete_alias ALIAS_TO_DELETE`<br>e.g., `delete_alias f` |
 | **Help** | `help` |
