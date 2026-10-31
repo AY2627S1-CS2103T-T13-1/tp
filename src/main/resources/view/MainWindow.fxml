@@ -36,7 +36,7 @@
               <MenuItem fx:id="userGuideMenuItem" mnemonicParsing="false" onAction="#handleUserGuide" text="User Guide" />
             </Menu>
           </MenuBar>
-          <Button fx:id="themeButton" onAction="#handleThemeToggle"
+          <Button fx:id="themeButton" onAction="#handleThemeButton"
                   styleClass="theme-button" focusTraversable="false">
             <HBox.margin>
               <Insets right="8" />
