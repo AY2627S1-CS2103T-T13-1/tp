@@ -132,6 +132,17 @@ public class PersonTest {
     }
 
     @Test
+    public void equals_tagNameDiffersOnlyInCase_returnsFalse() {
+        Person original = new PersonBuilder(ALICE).withTags(new OthersTag("Friend")).build();
+        Person edited = new PersonBuilder(original).withTags(new OthersTag("friend")).build();
+
+        assertEquals(original.getTags(), edited.getTags());
+        assertFalse(original.equals(edited));
+        assertFalse(edited.equals(original));
+        assertTrue(original.isSamePerson(edited));
+    }
+
+    @Test
     public void toStringMethod() {
         String expected = Person.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + ", address=" + ALICE.getAddress() + ", tags=" + ALICE.getTags() + "}";
