@@ -39,7 +39,7 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 
    * `exit` : Exits the app.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
