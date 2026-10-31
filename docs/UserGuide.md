@@ -347,11 +347,11 @@ Format: `alias COMMAND_WORD ALIAS_TO_SET`
 * `ALIAS_TO_SET` must contain only English/ASCII lowercase and uppercase letters (`a-z`, `A-Z`). Numbers, spaces and special characters are **not allowed**.
 * Aliases are **case-sensitive**. For example, `f` and `F` are different aliases and associating them with each of them with distinct commands is allowed.
 * An alias **cannot conflict** with an existing built-in command, regardless of letter case. For example, neither `list` nor `LIST`, which exists as a registered command word can be used as an alias.
-* An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#removing-an-alias-delete-alias).
+* An alias **must not already be registered**. To reassign an existing alias to a new command word, delete it first using [`delete_alias`](#deleting-an-alias-delete-alias).
 * You can register _multiple aliases_ for the same built-in command.
 * An alias **only replaces the command word**. The command word's associated parameter(s) and parameter value(s) are still necessary. E.g.,
-    ```text
-    alias find f                   # creates the alias "f" for the "find" command
+    ```bash
+    alias find f                   # registers "f" as an alias for the "find" command
     f -n James -t others friend    # runs the find command with the relevant search criteria
     ```
 
@@ -390,7 +390,27 @@ Example:
     list: l, ls
     ```
 
-### Removing an alias: `delete_alias`
+### Deleting an alias: `delete_alias`
+
+Removes a registered alias.
+
+Format: `delete_alias ALIAS_TO_DELETE`
+
+* `ALIAS_TO_DELETE` must be an **existing alias**, with the same letter-case used when it was registered.
+* Deleting an alias **does not remove** its corresponding built-in command or any other aliases corresponding to that command.
+* To change the command associated with an alias, delete the alias and register it again.
+
+    ```bash
+    alias edit e        # registers "e" as an alias for the "edit" command
+    e 1 -n John Cena    # use "e" to rename first contact in the current displayed list
+    delete_alias e      # removes the alias "e", so that it can be reassigned
+    alias exit e        # registers "e" as an alias for a different command, "exit"
+    e                   # exits coNnectUS
+    ```
+
+Examples:
+* `delete_alias f` removes the alias `f`. You can still use the original `find` command thereafter.
+* `delete_alias f` followed by `alias list f` reassigns `f` to the `list` command.
 
 
 ### Exiting the program: `exit`
