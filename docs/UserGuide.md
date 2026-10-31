@@ -388,12 +388,12 @@ Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways 
 | **Unpin** | `unpin INDEX` |
 | **List all contacts** | `list` |
 | **Sort** | `sort (name \| email \| phone) (asc \| desc)` |
-| **Add an alias** | `alias COMMAND_WORD ALIAS_TO_SET`<br>e.g., `alias find f` |
-| **List all aliases** | `list_alias` |
-| **Delete an alias** | `delete_alias ALIAS_TO_DELETE`<br>e.g., `delete_alias f` |
 | **Theme** | `theme dark` or `theme light`<br>e.g., `theme light` |
 | **Undo** | `undo` |
 | **Redo** | `redo` |
 | **Import** |  `import -f FILE_PATH`<br>e.g., `import -f data/exports/contacts.json` |
 | **Export** | `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`<br>e.g., `export -f contacts -n Alice` |
+| **Add an alias** | `alias COMMAND_WORD ALIAS_TO_SET`<br>e.g., `alias find f` |
+| **List all aliases** | `list_alias` |
+| **Delete an alias** | `delete_alias ALIAS_TO_DELETE`<br>e.g., `delete_alias f` |
 | **Help** | `help` |
