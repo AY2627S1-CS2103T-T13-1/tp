@@ -138,7 +138,7 @@ public class PersonTest {
         // different tag casing -> returns false
         Person lowerCaseTagAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND)).build();
 
-        Person uppercaseTagAlice  = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND
+        Person uppercaseTagAlice = new PersonBuilder(ALICE).withTags(new OthersTag(VALID_TAG_OTHERS_HUSBAND
                 .toUpperCase(Locale.ROOT))).build();
 
         assertFalse(lowerCaseTagAlice.equals(uppercaseTagAlice));
