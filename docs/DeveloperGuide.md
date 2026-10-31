@@ -420,7 +420,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `*` | Regular User | Sort my contacts | I can find my contacts more easily |
 | `*` | Regular User | Have favourite / most-frequented contacts | I can easily navigate to frequently-contacted contacts |
 | `*` | Regular User | Store and be reminded of regular meeting times with contacts | I don't forget to show up for them |
-| `*` | Expert user | Set aliases for the commands | I can customise the command syntax to my liking |
+| `*` | Expert user | Set aliases for the commands | I can customise the available command words to my liking |
 | `*` | Expert user | Delete all contacts with a certain tag | I can remove multiple contacts that are not needed easily. |
 | `*` | Expert user | Change the storage location for data files | I can store it at a location I can easily access |
 
