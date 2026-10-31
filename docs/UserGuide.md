@@ -156,7 +156,7 @@ Format: `delete INDEX` | `delete -t TAG_CATEGORY TAG_NAME...`
 
 <ins>__Tag-based deletion:__</ins>
 
-* Removes matching tags from each tagged contact and retains the contact if at least one of its tags remains, deletes it if no tags remain.
+* Removes matching tags from each tagged contact. Retains the contact if any tags remain; otherwise, deletes it.
 * One or more tags can be specified.
 * Matching contacts not displayed in the active filter can still be deleted, or have their tags removed.
 * Tag categories and tag names are compared case-insensitively.

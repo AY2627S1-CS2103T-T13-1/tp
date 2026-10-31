@@ -514,8 +514,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS:**
 1. User specifies delete command with one or more tags to delete.
-2. coNnectUS deletes all instances of the tag.
-3. coNnectUS displays a status message with the number of deleted contacts, and the tag(s) deleted.
+2. coNnectUS removes matching tags from all contacts and deletes contacts with no tags remaining.
+3. coNnectUS displays the removed tags and, if any contacts were deleted, the number of deleted contacts.
 
    Use case ends.
 
@@ -532,7 +532,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
       Use case resumes from Step 1.
 
 * 1c. coNnectUS detects that there are no matching instances of the tag.
-    * 1c1. coNnectUS displays a status message informing the user that no matching persons was found.
+    * 1c1. coNnectUS displays a status message informing the user that no matching contacts were found.
 
       Use case ends.
 
