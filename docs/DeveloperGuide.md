@@ -733,6 +733,56 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
+#### Use Case: UC14 - Undo a change
+
+**Actor: User**
+
+**MSS:**
+1. User requests to undo the most recent change to the contacts or their sort order.
+2. coNnectUS restores the contacts and their sort order to the state before that change, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no changes to undo (e.g. no change has been made since the app was started, or all changes have already been undone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no changes to undo.
+
+      Use case ends.
+
+* 1b. coNnectUS detects that the most recent commands did not change the contacts or their sort order (e.g. `find`, `theme`, alias commands or commands that failed).
+    * 1b1. coNnectUS skips those commands and undoes the most recent change made before them.
+
+      Use case resumes at Step 2.
+
+#### Use Case: UC15 - Redo an undone change
+
+**Actor: User**
+
+**MSS:**
+1. User <u>undoes a change</u> ([UC14](#use-case-uc14-undo-a-change)).
+2. User requests to redo the most recently undone change.
+3. coNnectUS reapplies the change to the contacts or their sort order, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. User makes a new change to the contacts or their sort order after undoing.
+    * 1a1. coNnectUS discards all undone changes.
+    * 1a2. User requests to redo the most recently undone change.
+    * 1a3. coNnectUS displays an error message informing the user that there are no undone changes to redo.
+
+      Use case ends.
+
+* 1b. User runs commands that do not change the contacts or their sort order after undoing (e.g. `find` or `theme`).
+    * 1b1. coNnectUS keeps the undone changes.
+
+      Use case resumes at Step 2.
+
+* 2a. coNnectUS detects that there are no undone changes to redo (e.g. no change has been undone since the app was started, or all undone changes have already been redone).
+    * 2a1. coNnectUS displays an error message informing the user that there are no undone changes to redo.
+
+      Use case ends.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
