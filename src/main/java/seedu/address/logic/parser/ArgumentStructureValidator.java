@@ -102,7 +102,7 @@ public class ArgumentStructureValidator {
         }
 
         if (insideQuotes) {
-            throw new ParseException(ImportCommandParser.MESSAGE_FILENAME_CONTAINS_QUOTES);
+            throw new ParseException(ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
         }
         validateParameterToken(token.toString(), commandName);
     }
