@@ -238,7 +238,7 @@ When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BU
 
 The undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
 
-* `VersionedAddressBook#commit()` -- Saves a copy of the current address book state and its sort order in its history, if either differs from the current saved state.
+* `VersionedAddressBook#commit(Comparator<Person>)` -- Saves a copy of the current address book state and its sort order in its history, if either differs from the current saved state.
 * `VersionedAddressBook#undo()` -- Restores the previous address book state and its sort order from its history.
 * `VersionedAddressBook#redo()` -- Restores a previously undone address book state and its sort order from its history.
 
@@ -286,8 +286,6 @@ The following sequence diagram shows how an undo operation goes through the `Log
 
 **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </box>
-
-`LogicManager` does not call `Model#commit()` after the `undo` command, since `undo` only moves through the history.
 
 Similarly, how an undo operation goes through the `Model` component is shown below:
 
@@ -653,8 +651,8 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete 1`, `list`, then `undo`<br>
       Expected: `list` is skipped, and the deleted contact is back in the list.
 
-   1. Test case: `sort name desc`, then `undo`<br>
-      Expected: The contacts are shown in the order they were in before sorting.
+   1. Test case: `sort name asc`, `sort phone desc`, `undo`, then `add -n Zack Lim -p 99999999 -e zack@example.com`<br>
+      Expected: After `undo`, the contacts are sorted by name again. Zack Lim is placed in name order (at the bottom of the sample data), not by phone number (at the top of the unpinned contacts), since the name order is restored.
 
 1. Nothing to undo or redo
 
