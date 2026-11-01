@@ -871,6 +871,93 @@ testers are expected to do more *exploratory* testing.
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
 
+### Pinning and Unpinning persons
+
+1. Pinning and then unpinning the same contact
+
+    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+
+    1. Test case: `pin 2`<br>
+    Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
+
+   1. Test case: `unpin 1`<br>
+    Expected: The previously pinned contact is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
+
+1. Selected person is already pinned or unpinned
+
+    1. Prerequisites: List all persons using the `list` command, with pinned and unpinned persons in the list.
+
+    1. Test case: `pin 1`, where person at index `1` is pinned<br>
+   Expected: The person at index `1` is not modified and an error message is returned, stating that the selected person is already pinned.
+
+    1. Test case: `unpin 3`, where person at index `3` is unpinned <br>
+    Expected: The person at index `3` is not modified and an error message is returned, stating that the selected person is already unpinned.
+
+### Sorting persons
+
+1. Sorting persons using the supported sorts
+
+    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Persons are now ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+   Expected: Persons are now ordered by their name in descending alphabetical order (Z-A).
+
+    1. Test case: `sort NaMe DeSc`<br>
+    Expected: Sorting criteria and order are _case-insensitive_. Persons are now ordered by their name in descending alphabetical order (Z-A).
+
+1. Sorting with pinned persons in the contact list
+
+    1. Prerequisites: List all persons using the `list` command, with pinned and unpinned persons in the list.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Pinned persons still appear above unpinned persons. Pinned and unpinned persons are ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+    Expected: Pinned persons still appear above unpinned persons. Pinned and unpinned persons are ordered by their name in descending alphabetical order (Z-A).
+
+1. Attempting to sort with unsupported sorts
+
+    1. Test case: `sort tag asc`<br>
+   Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+   
+    1. Test case: `sort name`<br>
+    Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+
+       
+### Tagging a contact
+
+1. Adding a person with tags
+
+    1. Test case: `add -n Bobby -e Bobby@gmail.com -p 91234567 -t others Friend -t module CS2103`<br>
+    Expected: A contact named `Bobby` is created with 2 tags, an `others` tag with the tag name `Friend` and a `module` tag with the tag name `CS2103`.
+
+    1. Test case: `add -n Alice -e Alice@gmail.com -p 98765432 -t others friend -t others friend -t others FrIeNd`<br>
+    Expected: A contact named `Alice` is created with 1 tag, an `others` tag with the tag name `friend`, due to _case-insensitive_ deduplication of tags.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others 1 + 1 = 2`<br>
+    Expected: No contacts are created. An error message is displayed, describing the accepted values for tag names.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+    Expected: No contacts are created. An error message is displayed, warning that a person should not have more than 5 tags.
+   
+
+1. Editing an existing person
+
+    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+
+    1. Test case: `edit 1 -t others friend`<br>
+    Expected: The person at index `1` now has an `others` tag with the tag name `friend`
+
+    1. Test case: `edit 1 -t`, where person at index `1` already has tags.<br>
+    Expected: The person at index `1` now has no tags. Other properties are unmodified.
+
+   1. Test case: `edit 1 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+      Expected: The person at index `1` is not modified. An error message is displayed, warning that a person should not have more than 5 tags.
+
+
 ### Deleting a person
 
 1. Deleting a person while all persons are being shown
