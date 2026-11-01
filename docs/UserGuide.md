@@ -281,22 +281,6 @@ Examples:
 * `delete 2` followed by `undo` brings back the deleted contact.
 * `pin 1`, `edit 3 -n John Doe`, then `undo` twice reverses the edit and then the pin.
 
-### Importing contacts: `import`
-
-Imports contacts from a JSON address book file and merges them into the current address book.
-
-Format: `import -f FILE_PATH`
-
-* `FILE_PATH` is the path to a JSON address book file.
-* Contacts with the same phone number or email address as an existing contact are skipped.
-* Imported contacts are added to the current address book; existing contacts are not replaced.
-* The command displays the number of imported and skipped contacts.
-* The imported contacts can be removed using `undo`.
-
-Example:
-
-* `import -f data/exports/contacts.json`
-
 ### Redoing an undone change: `redo`
 
 Reapplies the most recent change that was reversed by `undo`.
@@ -311,6 +295,41 @@ Format: `redo`
 Examples:
 * `delete 2`, `undo`, then `redo` deletes the contact again.
 * `delete 2`, `undo`, `add -n Jane Tan -p 87654321 -e janetan@example.com`, then `redo` shows an error, because adding Jane Tan cleared the redo history.
+
+### Importing contacts: `import`
+
+Imports contacts from a JSON address book file and merges them into the current address book.
+
+Format: `import -f FILE_PATH`
+
+* `FILE_PATH` is the path to a JSON address book file.
+* Contacts with the same phone number or email address as an existing contact are skipped.
+* Imported contacts are added to the current address book; existing contacts are not replaced.
+* The command displays the number of imported and skipped contacts.
+* The imported contacts can be removed using `undo`.
+
+Example:
+* `import -f data/exports/contacts.json`
+
+### Exporting contacts: `export`
+
+Exports contacts that match the specified criteria to a JSON file.
+
+The exported file is saved in the `data/exports` folder. The `.json` file extension is added automatically.
+
+Format: `export -f FILENAME [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`
+
+* `FILENAME` must contain only alphanumeric characters and spaces.
+* `FILENAME` must begin with an alphanumeric character and cannot exceed 100 characters.
+*  Do not include the `.json` file extension in `FILENAME`.
+*  If no filtering criteria is provided, all contacts present in coNnectUS at that point of time are exported by default.
+*  Multiple criteria can be specified. A contact must match **every specified criterion** to be included in the export.
+*  If a file with the same name already exists, it will be overwritten.
+*  Exporting contacts does not modify the contacts in coNnectUS and cannot be undone.
+
+Examples:
+* `export -f contacts` exports all contacts to `data/exports/contacts.json`.
+* `export -f filtered-contacts -n Alice -e example.com` exports contacts whose names contain `Alice` and whose email addresses contain `example.com`.
 
 ### Changing the theme: `theme`
 
