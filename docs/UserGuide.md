@@ -131,7 +131,7 @@ An alternative to accessing this user guide is through the "User Guide" dialog, 
 <br>
 <br>
 
-Note that if there are issues with your default browser, you would be instead prompted to click <kbd>Copy URL</kbd> and open it in a browser of your choosing.
+Note that if there are issues with your default browser, you would be prompted to click <kbd>Copy URL</kbd> instead and open it in a browser of your choosing.
 </box>
 
 ### Adding a contact: `add`
