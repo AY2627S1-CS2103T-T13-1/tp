@@ -767,6 +767,86 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
+#### Use Case: UC16 - Export Contacts
+
+**Actor: User**
+
+**MSS:**
+
+1. User specifies the `export` command with a filename and optional contact filtering criterion.            
+2. coNnectUS identifies all contacts matching every specified criterion.
+3. coNnectUS saves all matching contacts to a JSON file with the user-specified file name.
+4. coNnectUS displays a success message indicating the exported filename.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. User does not provide a filename.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
+
+      Use case resumes from Step 1.
+
+* 1b. User provides an invalid filename.
+    * 1b1. coNnectUS displays an error message explaining the filename requirements.
+
+      Use case resumes from Step 1.
+
+* 1c. User provides an invalid, unknown parameter.
+    * 1c1. coNnectUS displays an error message indicating that an unknown export parameter has been provided.
+
+      Use case resumes from Step 1.
+
+* 2a. No contacts match all the specified criteria.
+    * 2a1. coNnectUS displays a message indicating that no matching contacts were found.
+
+      Use case resumes from Step 1.
+
+* 3a. coNnectUS is unable to create or write to the export file.
+    * 3a1. coNnectUS displays an error message indicating that the file could not be saved.
+
+      Use case ends.
+
+#### Use Case: UC17 - Import Contacts
+
+**Actor: User**
+
+**MSS:**
+
+1. User specifies the `import` command with the path to a JSON address book file.
+2. coNnectUS reads the contacts from the specified file.
+3. coNnectUs merges the imported contacts into the current address book, retaining existing contacts and skipping contacts that share an existing phone number or email address.
+4. coNnectUS displays the number of imported contacts and skipped duplicates.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. User does not provide a file path.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
+
+      Use case resumes from Step 1.
+
+* 1b. User provides an invalid command format or unknown parameter.
+    * 1b1. coNnectUS displays an error message indicating that the parameter is either unknown, or cannot be specified more than once.
+
+      Use case resumes from Step 1.
+
+* 2a. The specified file cannot be found.
+    * 2a1. coNnectUS displays an error message indicating that the file was not found.
+
+      Use case ends.
+
+* 2b. The specified file cannot be read due to insufficient permissions.
+    * 2b1. coNnectUS displays an error message indicating that the file cannot be read.
+
+      Use case ends.
+
+* 2c. The specified file is not a valid address book JSON file.
+    * 2c1. coNnectUS displays an error message indicating that the file format is invalid.
+
+      Use case ends.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
