@@ -68,6 +68,14 @@ public class ImportCommandParser implements Parser<ImportCommand> {
         }
     }
 
+    /**
+     * Parses and validates a file path that may be enclosed in double quotes.
+     *
+     * @param rawFilePath the raw file path to parse
+     * @return the validated file path without surrounding quotes
+     * @throws ParseException if the quotes are unmatched, the file path contains
+     *         additional double quotes, or the file path is empty
+     */
     private String parseQuotedFilePath(String rawFilePath) throws ParseException {
         String filePath = StringUtil.stripWhitespace(rawFilePath);
 

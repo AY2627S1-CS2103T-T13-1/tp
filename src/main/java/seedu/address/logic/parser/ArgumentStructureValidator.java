@@ -68,6 +68,7 @@ public class ArgumentStructureValidator {
 
     /**
      * Rejects parameter-like tokens in text outside tokenized tag values.
+     * Treats text enclosed in double quotes as a single token.
      * Supported parameter prefixes have already been removed by the tokenizer.
      *
      * @throws ParseException if the text contains an unknown parameter
