@@ -23,6 +23,12 @@ activate LogicManager
 LogicManager -> AddressBookParser : parseCommand("find -n Alex")
 activate AddressBookParser
 
+create FindCommandParser
+AddressBookParser -> FindCommandParser : new FindCommandParser()
+activate FindCommandParser
+FindCommandParser --> AddressBookParser
+deactivate FindCommandParser
+
 AddressBookParser -> FindCommandParser : parse(args)
 activate FindCommandParser
 
