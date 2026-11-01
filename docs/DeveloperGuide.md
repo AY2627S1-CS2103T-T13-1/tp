@@ -374,11 +374,6 @@ The following activity diagram summarizes what happens when a user executes a ne
   * Pros: No comparison is needed after each command.
   * Cons: A developer may forget to call `Model#commit()` in a new command, which then cannot be undone.
 
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
-
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, dev-ops**

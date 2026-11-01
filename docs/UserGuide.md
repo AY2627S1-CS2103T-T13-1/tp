@@ -58,13 +58,32 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 * Items followed by `...` can appear zero or more times.<br>
   For example, `[-t CATEGORY TAG]... ` may be omitted, or written as `-t others friend` or `-t others friend -t others family`.
 
-* Parameters can be in any order.<br>
-  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
+* Prefixed Parameters can be in any order.<br>
+  For example, for the add command, `-n NAME -p PHONE_NUMBER` and `-p PHONE_NUMBER -n NAME` are both accepted.
+
+* Parameters that are not prefixed must be specified in the order stated in [Command Summary](#command-summary).<br>
+  For example, `sort name asc` is accepted while `sort asc name` is not.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
+* With the exception of tags, repeated parameters in a command will result in the command being rejected. <br>
+  For example, `add -n Bob -n Alice -e Alice@gmail.com -p 91234567` will be rejected as `-n` is specified twice.
+
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
+</box>
+
+<box type="info" seamless>
+
+**Notes about accepted values for a contact's properties:**<br>
+Property        | Accepted Values | Accepted Length and Format (if any)
+----------------|--------------------------------------------------------------------------|-----------------
+Name            | English Letters (A-Z, a-z) and spaces only                               | Must contain `1-70` characters and must not start with a space.
+Email           | Alphabets, Digits and some special characters: `@`, `.`, `+`, `_` and `-`.| Must follow `local-part@domain` and contain at most **254 characters**.<br><ul><li>Local part allows letters and digits separated by single `+`, `_`, `.`, or `-` characters.</li> <li>The domain consists of dot-separated parts containing letters, digits, or hyphens. Hyphens should not be repeated consecutively and each part must start and end with a letter or digit, with the last part being at least two characters long.</li>
+Phone           | Digits only.                                                             | Must contain `3-15` digits.
+Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
+Tag             | English Letters (A-Z, a-z), digits (0-9), spaces, and apostrophes only.   | Must contain `1-30` characters and must not start with a space.
+
 </box>
 
 ### Viewing help: `help`
@@ -74,16 +93,16 @@ Displays the list of commands, their usages, descriptions, examples and the link
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a contact: `add`
 
-Adds a person to the address book.
+Adds a contact to the address book.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
 <box type="tip" header="**Tips**" seamless>
 
-- A person can have any number of tags, including zero.
-- Refer to [Tagging a person](#tagging-a-person) for more information on tags.
+- A contact can only have a maximum of `5` unique tags.
+- Refer to [Tagging a contact](#tagging-a-contact) for more information on tags.
 - The address parameter is optional.
 - Each contact must have a phone number and email address that no other contact uses. Names do not need to be unique.
 
@@ -94,52 +113,52 @@ Examples:
 * `add -n Betsy Crowe -t others friend -e betsycrowe@example.com -a Newgate Prison -p 1234567 -t others criminal`
 * `add -n Jane Tan -p 87654321 -e janetan@example.com`
 
-### Listing all persons: `list`
+### Listing all contacts: `list`
 
-Shows a list of all persons in the address book.
+Shows a list of all contacts in the address book.
 
 Format: `list`
 
-### Editing a person: `edit`
+### Editing a contact: `edit`
 
-Edits an existing person in the address book.
+Edits an existing contact in the address book.
 
 Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]... `
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, ...
+* Edits the contact at the specified `INDEX`. The index refers to the index number shown in the displayed contact list. The index **must be a positive integer** 1, 2, 3, ...
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * The new phone number or email address must not already be used by another contact.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `-t` without a tag after it.
-* To remove a person's address, enter `-a` without an address after it.
-* Refer to [Tagging a person](#tagging-a-person) for more info on tags.
+* When editing tags, all of the contact's existing tags are removed; adding tags is not cumulative.
+* To remove all of a contact's tags, enter `-t` without a tag after it.
+* To remove a contact's address, enter `-a` without an address after it.
+* Refer to [Tagging a contact](#tagging-a-contact) for more info on tags.
 
 
 Examples:
-*  `edit 1 -p 91234567 -e johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 -n Betsy Crower -t` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
-*  `edit 3 -a` Removes the address of the 3rd person.
+*  `edit 1 -p 91234567 -e johndoe@example.com` Edits the phone number and email address of the 1st contact to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 2 -n Betsy Crower -t` Edits the name of the 2nd contact to be `Betsy Crower` and clears all existing tags.
+*  `edit 3 -a` Removes the address of the 3rd contact.
 
-### Locating persons by criteria: `find`
+### Locating contacts by criteria: `find`
 
-Finds persons in the address book matching the supplied criteria.
+Finds contacts in the address book matching the supplied criteria.
 
 Format: `find [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_CATEGORY TAG_NAME]...`
 
 * At least one criterion must be specified.
 * Multiple tags can be supplied, but other parameters (name, phone, email, address) may only be specified once.
-* Every criterion supplied must match to find a person.
+* Every criterion supplied must match to find a contact.
 * Search criteria are case-insensitive. For example, `-n hans` matches `-n Hans`.
-* Persons are matched if the search criterion is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
+* Contacts are matched if the search criterion is a substring of the actual field; for example `-n John` matches `John` and `Johnny`.
 * For tag criteria, both a valid category (i.e. `module`, `faculty` or `others`) and the tag name must be supplied.
-* Refer to [Tagging a person](#tagging-a-person) for a list of valid tag categories.
+* Refer to [Tagging a contact](#tagging-a-contact) for a list of valid tag categories.
 
 Examples:
 * `find -n john` returns `John`, `Johnny`.
 * `find -e alice` returns `alice@example.com`, `alicelow@gmail.com`
 * `find -p 92` returns `92005000`, `88922301`
-* `find -t others Friend -t faculty Computing` returns persons who have both tags.<br>
+* `find -t others Friend -t faculty Computing` returns contacts who have both tags.<br>
   ![result for 'find -t others Friend -t faculty Computing'](images/findMultipleTagsResult.png)
 
 ### Deleting a contact or multiple contacts: `delete`
@@ -170,27 +189,27 @@ Examples:
   * `TJ3000` tag of the "module" category.
   * `Badminton` tag of the "others" category.
 
-### Pinning and unpinning a person
+### Pinning and unpinning a contact
 
-Persons can be pinned to be displayed on top of unpinned contacts, and unpinned to be displayed amongst unpinned contacts.
+Contacts can be pinned to be displayed on top of unpinned contacts, and unpinned to be displayed amongst unpinned contacts.
 
 Format: `pin INDEX`, `unpin INDEX`
 
-* Pins the person at the specified `INDEX`.
-* The index refers to the index number specified in the displayed person list (either using `find` or `list`).
+* Pins the contact at the specified `INDEX`.
+* The index refers to the index number specified in the displayed contact list (either using `find` or `list`).
 * Regardless of sort order, a pinned contact will always appear on top of an unpinned contact.
 * The index **must be a positive integer**.
-  * If using `pin`, the person specified at `INDEX` **must be** an unpinned person.
-  * If using `unpin`, the person specified at `INDEX`  **must be** a pinned person.
+  * If using `pin`, the contact specified at `INDEX` **must be** an unpinned contact.
+  * If using `unpin`, the contact specified at `INDEX` **must be** a pinned contact.
 
 Examples:
-* `list` followed by `pin 3` pins the 3rd person in the address book.
-* `find -n Bob` followed by `pin 5` pins the 5th person in the results of the `find` command. 
-* `find -e mary@gmail.com` followed by `unpin 1` unpins the 1st person in the results of the `find` command.
+* `list` followed by `pin 3` pins the 3rd contact in the address book.
+* `find -n Bob` followed by `pin 5` pins the 5th contact in the results of the `find` command. 
+* `find -e mary@gmail.com` followed by `unpin 1` unpins the 1st contact in the results of the `find` command.
 
 ### Sorting contacts
 
-Persons can be sorted according to some attributes, such as their name.
+Contacts can be sorted according to some attributes, such as their name.
 
 Format: `sort (name | email | phone) (asc | desc)`
 
@@ -205,9 +224,9 @@ Examples:
 * `sort name desc` sorts the contacts by their name, in reverse alphabetical order (Z-A).
 * `sort phone asc` sorts the contacts by their phone number, displaying smaller phone numbers first
 
-### Tagging a person
+### Tagging a contact
 
-Tags can be added to a person through the [Edit](#editing-a-person-edit) or the [Add](#adding-a-person-add) commands.
+Tags can be added to a contact through the [Edit](#editing-a-contact-edit) or the [Add](#adding-a-contact-add) commands.
 
 The following tag categories are supported, with each category being assigned a unique colour code:
 - <span style="background-color:#782828; color:white">module</span>
@@ -216,6 +235,11 @@ The following tag categories are supported, with each category being assigned a 
 
 Tag categories are not case-sensitive.
 - `add ... -t OTHERS friend` has the same effect as `add ... -t oThErS friend`.
+
+A contact can only have a maximum of `5` **unique** tags.
+- A tag is unique if the contact does not have another tag with the same `category` and _case-insensitive_ `tag name`
+- For example: `add ... -t others FrIenD -t others friend` adds a contact with only 1 tag, while `add ... -t others friend -t module friend` adds a contact with 2 tags.
+
 
 ### Clearing all entries: `clear`
 
@@ -318,7 +342,7 @@ Format: `exit`
 
 ### Saving the data
 
-coNnectUS automatically saves data after every command. You do not need to save manually.
+Data is saved automatically by coNnectUS after every successful command that modifies the contact list. You do not need to save manually.
 
 Your window size, window position and theme are saved in `[JAR file location]/preferences.json` when you close the app.
 
@@ -329,7 +353,7 @@ The address book application data is saved automatically as a JSON file `[JAR fi
 <box type="warning" seamless>
 
 **Caution:**
-If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run. The invalid file remains on disk until you run a command (coNnectUS saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run.<br> The invalid file remains on disk until coNnectUS next saves the address book, including after a successful import that adds no contacts, where coNnectUS will automatically write to the data file.<br> Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways (e.g., if a value entered is outside the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </box>
 
