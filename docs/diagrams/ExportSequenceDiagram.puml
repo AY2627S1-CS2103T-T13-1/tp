@@ -1,0 +1,59 @@
+@startuml
+
+[-> LogicManager : execute("export -f contacts -n John")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("export -f contacts -n John")
+activate AddressBookParser
+
+create ExportCommandParser
+AddressBookParser -> ExportCommandParser
+activate ExportCommandParser
+
+ExportCommandParser --> AddressBookParser
+deactivate ExportCommandParser
+
+AddressBookParser -> ExportCommandParser : parse(" -f contacts -n John")
+activate ExportCommandParser
+
+create ExportCommand
+ExportCommandParser -> ExportCommand
+activate ExportCommand
+
+ExportCommand --> ExportCommandParser
+deactivate ExportCommand
+
+ExportCommandParser --> AddressBookParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+ExportCommandParser -[hidden]-> AddressBookParser
+destroy ExportCommandParser
+
+AddressBookParser --> LogicManager
+deactivate AddressBookParser
+
+LogicManager -> ExportCommand : execute(m)
+activate ExportCommand
+
+create ExportRequest
+ExportCommand -> ExportRequest
+activate ExportRequest
+
+ExportRequest --> ExportCommand
+deactivate ExportRequest
+
+create CommandResult
+ExportCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> ExportCommand
+deactivate CommandResult
+
+ExportCommand --> LogicManager
+deactivate ExportCommand
+
+LogicManager -> Storage : saveAddressBook(addressBook, filePath)
+activate Storage
+
+Storage --> LogicManager
+deactivate Storage
+@enduml

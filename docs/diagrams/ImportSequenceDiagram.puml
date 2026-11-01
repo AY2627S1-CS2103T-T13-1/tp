@@ -1,0 +1,64 @@
+@startuml
+
+[-> LogicManager : execute("import -f contacts.json")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("import -f contacts.json")
+activate AddressBookParser
+
+create ImportCommandParser
+AddressBookParser -> ImportCommandParser
+activate ImportCommandParser
+
+ImportCommandParser --> AddressBookParser
+deactivate ImportCommandParser
+
+AddressBookParser -> ImportCommandParser : parse(" -f contacts.json")
+activate ImportCommandParser
+
+create ImportCommand
+ImportCommandParser -> ImportCommand
+activate ImportCommand
+
+ImportCommand --> ImportCommandParser
+deactivate ImportCommand
+
+ImportCommandParser --> AddressBookParser
+deactivate ImportCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+ImportCommandParser -[hidden]-> AddressBookParser
+destroy ImportCommandParser
+
+AddressBookParser --> LogicManager
+deactivate AddressBookParser
+
+LogicManager -> ImportCommand : execute(model)
+activate ImportCommand
+
+create ImportRequest
+ImportCommand -> ImportRequest
+activate ImportRequest
+
+ImportRequest --> ImportCommand
+deactivate ImportRequest
+
+create CommandResult
+ImportCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> ImportCommand
+deactivate CommandResult
+
+ImportCommand --> LogicManager : commandResult
+deactivate ImportCommand
+
+LogicManager -> Storage : readAddressBook(filePath)
+activate Storage
+Storage --> LogicManager : importedAddressBook
+deactivate Storage
+
+LogicManager -> Model : mergeAddressBook(importedAddressBook)
+activate Model
+Model --> LogicManager
+deactivate Model
+@enduml
