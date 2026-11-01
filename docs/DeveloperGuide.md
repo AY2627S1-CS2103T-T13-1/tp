@@ -767,6 +767,40 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
+#### Use Case: UC14 - Undo a change
+
+**Actor: User**
+
+**MSS:**
+1. User requests to undo the most recent change to the contacts or their sort order.
+2. coNnectUS restores the contacts and their sort order to the state before that change, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no changes to undo (e.g. no change has been made since the app was started, or all changes have already been undone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no changes to undo.
+
+      Use case ends.
+
+#### Use Case: UC15 - Redo an undone change
+
+**Actor: User**
+
+**Preconditions:** User has undone a change ([UC14](#use-case-uc14-undo-a-change)).
+
+**MSS:**
+1. User requests to redo the most recently undone change.
+2. coNnectUS reapplies the change to the contacts or their sort order, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no undone changes to redo (e.g. a new change to the contacts or their sort order was made after the undo, or all undone changes have already been redone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no undone changes to redo.
+
+      Use case ends.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
