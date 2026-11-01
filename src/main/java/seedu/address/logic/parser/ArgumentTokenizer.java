@@ -51,18 +51,6 @@ public class ArgumentTokenizer {
      * @see #findAllPrefixPositions(String, Prefix...)
      */
     private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
-        /*
-        List<PrefixPosition> positions = new ArrayList<>();
-        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
-                Pattern.UNICODE_CHARACTER_CLASS);
-        Matcher matcher = pattern.matcher(argsString);
-
-        while (matcher.find()) {
-            positions.add(new PrefixPosition(prefix, matcher.start()));
-        }
-
-        return positions;
-        */
         List<PrefixPosition> positions = new ArrayList<>();
         String prefixText = prefix.getPrefix();
         boolean insideQuotes = false;
