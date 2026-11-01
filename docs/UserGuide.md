@@ -400,7 +400,7 @@ Format: `alias COMMAND_WORD ALIAS_TO_SET`
     f -n James -t others friend    # runs the find command with the relevant search criteria
     ```
 
-* The original command word remains usable after an alias is added (as illustrated in the above example).
+* The original command word remains usable after an alias is added.
 * The list of aliases is viewable using the [`list_alias`](#list-all-available-aliases-list-alias) command.
 
 
