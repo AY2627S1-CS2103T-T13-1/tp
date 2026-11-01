@@ -477,11 +477,11 @@ If `data/aliases.json` already exists on the new computer, replacing it will **o
 
 <box type="info" header="****Invalid entries in the alias file****" seamless>
 
-If `data/aliases.json` contains **invalid alias entries** when coNnectUS starts up, the application **skips them** and loads the remaining valid alias entries (if any). A startup warning reports the number of loaded and skipped entries. 
+If `data/aliases.json` contains **invalid alias entries** when coNnectUS starts up, the application **skips them** and loads the remaining valid alias entries (if any). A startup warning reports the number of loaded and skipped entries.
 
 In this situation, use [`list_alias`](#list-all-available-aliases-list-alias) to view the aliases that have been loaded and are available for use. Advanced users may correct the entries directly in the alias file while **coNnectUS is closed** and then restart the application to load the rectified alias entries.
 
-Note that coNnectUS only modifies the file the next time that you **successfully create or delete an alias**. Once the relevant entries have been added/removed, the file will only contain valid registered aliases, while the skipped, invalid alias entries will be discarded from the alias file.
+Note that coNnectUS modifies the alias file the next time that you **successfully create or delete an alias**. Once the relevant entries have been added/removed, the file will only contain valid registered aliases, while the skipped, invalid alias entries will be discarded from the alias file.
 
 In the event that `aliases.json` itself cannot be loaded, coNnectUS starts **without** any loaded aliases and displays a warning message.
 
