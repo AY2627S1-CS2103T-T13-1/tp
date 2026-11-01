@@ -881,7 +881,7 @@ testers are expected to do more *exploratory* testing.
     Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
 
    1. Test case: `unpin 1`<br>
-    Expected: The previously pinned contact is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
+    Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
 
 1. Selected person is already pinned or unpinned
 
@@ -897,7 +897,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Sorting persons using the supported sorts
 
-    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list and none of them are pinned.
 
     1. Test case: `sort name asc`<br>
     Expected: Persons are now ordered by their name in ascending alphabetical order (A-Z).
