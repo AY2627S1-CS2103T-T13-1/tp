@@ -912,6 +912,83 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete 1`, `undo`, `delete 2`, then `redo`<br>
       Expected: The contact list does not change, since `delete 2` cleared the redo history. The status message shows that there are no undone changes to redo.
 
+### Adding and using aliases
+
+1. Registering and using aliases
+
+   1. Prerequisites: Launch the app with multiple contacts. Use `list_alias` to check that no aliases have been registered at this point. If not, delete them using `delete_alias ALIAS_TO_DELETE`.
+
+   1. Test case: `alias find f`, then `list_alias`<br>
+      Expected: A success message confirms the registration. The alias list shows `f` registered to the `find` command.
+
+   1. Test case: `f -n Alex`, then `find -n Alex`<br>
+      Expected: Both commands show contacts whose names match `Alex` (if any). The original command remains usable.
+
+   1. Test case: `f`<br>
+      Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
+
+   1. Test case: `alias list ls`, then execute `ls`<br>
+      Expected: All contacts are shown, just as with `list`.
+
+   1. Test case: `alias list F`, execute `F` and then `f -n Alex`<br>
+      Expected: `F` shows all available contacts per the `list` command, while `f -n Alex` filters contacts by name per the `find` command. Aliases are **case-sensitive**, so `f` and `F` are distinct aliases and can be registered to _different built-in commands_.
+
+   1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
+      Expected: The registered aliases are retained, since aliases are persisted across sessions in `data/aliases.json`.
+
+1. Rejecting invalid registrations
+
+   1. Prerequisites: Keep `f` registered to `find` from the previous tests.
+
+   1. Test case: `alias list f`<br>
+      Expected: An error message states that `f` already exists. Its mapping to `find` is unchanged and was persisted in storage (i.e. `aliases.json`)
+
+   1. Test case: `alias find LIST`<br>
+      Expected: An error message states that the _alias conflicts with a built-in command word_, ignoring case.
+
+   1. Test cases: `alias FIND search`, `alias f search`<br>
+      Expected: Each command is rejected because the target string must be an exact, **lowercase built-in command word**.
+
+   1. Test cases: `alias find f1`, `alias find 搜索`<br>
+      Expected: No alias is added. An error message states that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+
+   1. Test cases: `alias`, `alias find`, `alias find two words`<br>
+      Expected: No alias is added. An error message shows the correct syntax of the command and sample usage instructions.
+
+### Deleting aliases
+
+1. Deleting an alias and checking case sensitivity
+
+   1. Prerequisites: Ensure `f` is registered to `find` and `F` is registered to `list`, using `list_alias` to check the mappings, which should match the output below. Otherwise, use `delete_alias` followed by `alias` to set up these mappings as required.
+
+        ```text
+        Registered alias(es): 
+        find: f
+        list: F
+        ```
+
+   1. Test case: `delete_alias f`, then `list_alias`<br>
+      Expected: A success message confirms the deletion. `f` is no longer listed, while `F` remains registered to `list`.
+
+   1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
+      Expected: `f -n Alex` is rejected as an unknown command, since the alias had been removed. The other two commands continue to be executed successfully: `find -n Alex` still filters contacts by name, and `F` still shows all contacts.
+
+   1. Test case: Close and relaunch the app, then enter `list_alias` and `f -n Alex`.<br>
+      Expected: `f` remains absent from the alias list since it had been removed earlier in Step 2 and is therefore rejected as an unknown command. Meanwhile, `F` remains registered.
+
+   1. Test case: `alias list f`, then `f`<br>
+      Expected: The deleted alias can be registered to a different command. `f` now shows all contacts.
+
+1. Rejecting invalid deletions
+
+   1. Prerequisites: Remove the alias `f` if it is registered (i.e. `delete_alias f`), and keep `F` registered to `list`.
+
+   1. Test case: `delete_alias f`<br>
+      Expected: An error message states that `f` was **not previously registered** (due to it being removed as part of the prerequisite). `F` remains registered at this point.
+
+   1. Test cases: `delete_alias`, `delete_alias f F`<br>
+      Expected: No aliases are deleted as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
+
 ### Saving data
 
 1. Dealing with missing/corrupted data files
