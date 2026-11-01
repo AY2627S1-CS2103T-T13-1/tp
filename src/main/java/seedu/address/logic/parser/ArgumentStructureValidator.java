@@ -73,10 +73,47 @@ public class ArgumentStructureValidator {
      * @throws ParseException if the text contains an unknown parameter
      */
     private static void validateUnknownParameters(String text, String commandName) throws ParseException {
-        for (String token : StringUtil.stripWhitespace(text).split("(?U)\\s+")) {
-            if (token.startsWith("-") && token.length() > 1) {
-                throw new ParseException("Unknown " + commandName + " parameter: '" + token + "'.");
+        String trimmedText = StringUtil.stripWhitespace(text);
+
+        if (trimmedText.isEmpty()) {
+            return;
+        }
+
+        boolean insideQuotes = false;
+        StringBuilder token = new StringBuilder();
+
+        for (int i = 0; i < trimmedText.length(); i++) {
+            char currentCharacter = trimmedText.charAt(i);
+
+            if (currentCharacter == '"') {
+                insideQuotes = !insideQuotes;
+                continue;
             }
+
+            boolean isWhitespace = Character.isWhitespace(currentCharacter)
+                    || Character.isSpaceChar(currentCharacter);
+
+            if (!insideQuotes && isWhitespace) {
+                validateParameterToken(token.toString(), commandName);
+                token.setLength(0);
+            } else {
+                token.append(currentCharacter);
+            }
+        }
+
+        if (insideQuotes) {
+            throw new ParseException(ImportCommandParser.MESSAGE_FILENAME_CONTAINS_QUOTES);
+        }
+
+        validateParameterToken(token.toString(), commandName);
+    }
+
+    private static void validateParameterToken(String token, String commandName)
+            throws ParseException {
+
+        if (token.startsWith("-") && token.length() > 1) {
+            throw new ParseException(
+                    "Unknown " + commandName + " parameter: '" + token + "'.");
         }
     }
 }
