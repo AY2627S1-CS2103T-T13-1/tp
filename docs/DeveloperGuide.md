@@ -179,6 +179,19 @@ The theme feature,
 * keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
+### Finding contacts
+
+Users can search for contacts by supplying one or more criteria, such as name, phone number, email address, address or tags.
+
+<puml src="diagrams/FindSequenceDiagram.puml" alt="Sequence of parsing and executing the find command" />
+
+The `find` feature:
+
+* uses `FindCommandParser` with `ArgumentTokenizer` to separate the search arguments into prefixes and values.
+* uses `ArgumentStructureValidator` to reject unknown parameters, text before the first prefix, empty values and repeated non-tag parameters. Tag parameters can be repeated to search for multiple tags.
+* creates a `PersonMatchesCriteriaPredicate` from the parsed search criteria, requiring all supplied criteria to match.
+* passes the predicate to `FindCommand`, which updates the filtered contact list in the `Model`.
+
 ### Sorting contacts
 <puml src="diagrams/SortSequenceDiagram.puml" alt="Sequence of sort command"/>
 

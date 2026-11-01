@@ -1,0 +1,63 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Find command
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":FindCommandParser" as FindCommandParser LOGIC_COLOR
+participant "ArgumentTokenizer" as ArgumentTokenizer LOGIC_COLOR
+participant "ArgumentStructureValidator" as ArgumentStructureValidator LOGIC_COLOR
+participant "command:FindCommand" as FindCommand LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "model:Model" as Model MODEL_COLOR
+end box
+
+[-> LogicManager : execute("find -n Alex")
+activate LogicManager
+LogicManager -> AddressBookParser : parseCommand("find -n Alex")
+activate AddressBookParser
+AddressBookParser -> FindCommandParser : parse(args)
+activate FindCommandParser
+FindCommandParser -> ArgumentTokenizer : tokenize(args, prefixes)
+activate ArgumentTokenizer
+ArgumentTokenizer --> FindCommandParser : arguments
+deactivate ArgumentTokenizer
+FindCommandParser -> ArgumentStructureValidator : validate arguments
+activate ArgumentStructureValidator
+ArgumentStructureValidator --> FindCommandParser
+deactivate ArgumentStructureValidator
+note right FindCommandParser
+Build PersonMatchesCriteriaPredicate
+from parsed search criteria.
+end note
+create FindCommand
+FindCommandParser -> FindCommand : new FindCommand(predicate)
+activate FindCommand
+FindCommand --> FindCommandParser
+deactivate FindCommand
+FindCommandParser --> AddressBookParser : command
+deactivate FindCommandParser
+AddressBookParser --> LogicManager : command
+deactivate AddressBookParser
+
+LogicManager -> FindCommand : execute(model)
+activate FindCommand
+FindCommand -> Model : updateFilteredPersonList(predicate)
+activate Model
+Model --> FindCommand
+deactivate Model
+FindCommand -> Model : getFilteredPersonList()
+activate Model
+Model --> FindCommand : matching contacts
+deactivate Model
+FindCommand --> LogicManager : CommandResult
+deactivate FindCommand
+[<-- LogicManager : result
+deactivate LogicManager
+
+@enduml
