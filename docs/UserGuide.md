@@ -458,6 +458,21 @@ Examples:
 * `delete_alias f` followed by `alias list f` reassigns `f` to the `list` command.
 
 
+### Transferring aliases to another computer
+To transfer your saved aliases to a new computer:
+1. Close the coNnectUS application on your old computer.
+2. On your old computer, open the `data` folder inside your coNnectUS home folder and copy `aliases.json`.
+3. On your new computer, download coNnectUS and place the JAR file in your preferred folder. This is known as your coNnectUS home folder.
+4. Create a `data` folder within the home folder and then paste the copied `aliases.json` into the `data` folder.
+5. Start coNnectUS on your new computer and enter `list_alias` to verify that your aliases have been transferred successfully.
+
+<box type="warning" header="**Replacing existing aliases on the new computer**" seamless>
+
+If `data/aliases.json` already exists on the new computer, replacing it will **overwrite the aliases** stored there. Back up the existing file beforehand if you want to keep a copy of those aliases.
+
+</box>
+
+
 ### Exiting the program: `exit`
 
 Exits the program.
