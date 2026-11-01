@@ -3,8 +3,6 @@ package seedu.address.logic.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import seedu.address.commons.util.StringUtil;
@@ -52,15 +50,32 @@ public class ArgumentTokenizer {
      */
     private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
         List<PrefixPosition> positions = new ArrayList<>();
-        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
-                Pattern.UNICODE_CHARACTER_CLASS);
-        Matcher matcher = pattern.matcher(argsString);
-
-        while (matcher.find()) {
-            positions.add(new PrefixPosition(prefix, matcher.start()));
+        String prefixText = prefix.getPrefix();
+        boolean insideQuotes = false;
+        for (int i = 0; i <= argsString.length() - prefixText.length(); i++) {
+            char currentCharacter = argsString.charAt(i);
+            if (currentCharacter == '"') {
+                insideQuotes = !insideQuotes;
+                continue;
+            }
+            if (insideQuotes || !argsString.startsWith(prefixText, i)) {
+                continue;
+            }
+            boolean hasWhitespaceBefore = i > 0
+                    && isUnicodeWhitespace(argsString.charAt(i - 1));
+            int endPosition = i + prefixText.length();
+            boolean hasWhitespaceAfter = endPosition == argsString.length()
+                    || isUnicodeWhitespace(argsString.charAt(endPosition));
+            if (hasWhitespaceBefore && hasWhitespaceAfter) {
+                positions.add(new PrefixPosition(prefix, i));
+                i = endPosition - 1;
+            }
         }
-
         return positions;
+    }
+    private static boolean isUnicodeWhitespace(char character) {
+        return Character.isWhitespace(character)
+                || Character.isSpaceChar(character);
     }
 
     /**
