@@ -651,15 +651,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2a. coNnectUS detects an illegal or missing list index (e.g. List index is negative, zero, missing or non-numeric).
     * 2a1. coNnectUS displays an error message informing the user of the correct usage of pin command.
 
-      Use case ends.
+      Use case resumes at Step 2.
 
 * 2b. coNnectUS detects an out-of-bounds index (e.g. Currently displayed list has n contacts, user specifies index of n + 1).
     * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
 
-      Use case ends.
+      Use case resumes at Step 2.
   
-* 2b. coNnectUS detects that the contact at the user-specified index is already pinned.
-    * 2b1. coNnectUS displays an error message informing the user that the contact is already pinned.
+* 2c. coNnectUS detects that the contact at the user-specified index is already pinned.
+    * 2c1. coNnectUS displays an error message informing the user that the contact is already pinned.
 
       Use case ends.
 
@@ -685,7 +685,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 * 1a. coNnectUS detects that an invalid sorting criterion or an invalid sorting order was specified.
     * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly and show sort command's usage.
 
-      Use case ends.
+      Use case resumes at Step 1.
 
 
 #### Use Case: UC11 - Create an alias
