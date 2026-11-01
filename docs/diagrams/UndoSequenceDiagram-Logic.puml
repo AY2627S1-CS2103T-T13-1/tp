@@ -62,12 +62,6 @@ deactivate UndoCommand
 UndoCommand -[hidden]-> LogicManager
 destroy UndoCommand
 
-LogicManager -> Model : commit()
-activate Model
-
-Model --> LogicManager
-deactivate Model
-
 [<--LogicManager
 deactivate LogicManager
 @enduml
