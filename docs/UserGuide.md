@@ -269,7 +269,7 @@ Examples:
 
 Tags can be added to a contact through the [Edit](#editing-a-contact-edit) or the [Add](#adding-a-contact-add) commands.
 
-The following tag categories are supported, with each category being assigned a unique colour code:
+The following tag categories are supported, with each category being assigned a unique color code:
 - <span style="background-color:#782828; color:white">module</span>
 - <span style="background-color:#56478d; color:white">faculty</span>
 - <span style="background-color:#356644; color:white">others</span>
