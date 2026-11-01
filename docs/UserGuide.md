@@ -469,21 +469,21 @@ To transfer your saved aliases to a new computer:
 4. Create a `data` folder within the home folder and then paste the copied `aliases.json` into the `data` folder.
 5. Start coNnectUS on your new computer and enter `list_alias` to verify that your aliases have been transferred successfully.
 
-<box type="warning" header="**Replacing existing aliases on the new computer**" seamless>
+<box type="warning" header="****Replacing existing aliases on the new computer****" seamless>
 
 If `data/aliases.json` already exists on the new computer, replacing it will **overwrite the aliases** stored there. Back up the existing file beforehand if you want to keep a copy of those aliases.
 
 </box>
 
-<box type="info" header="**Invalid entries in the alias file**" seamless>
+<box type="info" header="****Invalid entries in the alias file****" seamless>
 
 If `data/aliases.json` contains **invalid alias entries** when coNnectUS starts up, the application **skips them** and loads the remaining valid alias entries (if any). A startup warning reports the number of loaded and skipped entries. 
 
 In this situation, use [`list_alias`](#list-all-available-aliases-list-alias) to view the aliases that have been loaded and are available for use. Advanced users may correct the entries directly in the alias file while **coNnectUS is closed** and then restart the application to load the rectified alias entries.
 
-Note that coNnectUS only modifies the file the next time that you successfully create or delete an alias. Once the relevant entries have been added/removed, the file will only contain valid registered aliases, while the skipped, invalid alias entries will be discarded from the alias file.
+Note that coNnectUS only modifies the file the next time that you **successfully create or delete an alias**. Once the relevant entries have been added/removed, the file will only contain valid registered aliases, while the skipped, invalid alias entries will be discarded from the alias file.
 
-In the event that `aliases.json` itself cannot be loaded, coNnectUS starts without aliases and displays a warning message.
+In the event that `aliases.json` itself cannot be loaded, coNnectUS starts **without** any loaded aliases and displays a warning message.
 
 </box>
 
