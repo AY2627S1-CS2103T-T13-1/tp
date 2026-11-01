@@ -79,10 +79,10 @@ coNnectUS is a **desktop Address Book application designed for NUS students** to
 Property        | Accepted Values | Accepted Length and Format (if any)
 ----------------|--------------------------------------------------------------------------|-----------------
 Name            | English Letters (A-Z, a-z) and spaces only                               | Must contain `1-70` characters and must not start with a space.
-Email           | Alphabets, Digits and some special characters: `@`, `.`, `+`, `_` and `-`.| Must follow `local-part@domain` and contain at most **254 characters**.<br><ul><li>Local part allows letters, digits separated by single `+`, `_`, `.`, or `-` characters.</li> <li>The domain consists of dot-separated parts containing letters, digits, or hyphens. Each part must start and end with a letter or digit, with the last part being at least two characters long.</li>
+Email           | Alphabets, Digits and some special characters: `@`, `.`, `+`, `_` and `-`.| Must follow `local-part@domain` and contain at most **254 characters**.<br><ul><li>Local part allows letters and digits separated by single `+`, `_`, `.`, or `-` characters.</li> <li>The domain consists of dot-separated parts containing letters, digits, or hyphens. Hyphens should not be repeated consecutively and each part must start and end with a letter or digit, with the last part being at least two characters long.</li>
 Phone           | Digits only.                                                             | Must contain `3-15` digits.
 Address         | All characters are permitted.                                            | Must contain `1-105` characters and must not start with a space.
-Tag             | English Letters (A-Z, a-z), spaces and apostrophes only.                 | Must contain `1-30` characters and must not start with a space.
+Tag             | English Letters (A-Z, a-z), digits (0-9), spaces, and apostrophes only.   | Must contain `1-30` characters and must not start with a space.
 
 </box>
 
@@ -113,7 +113,7 @@ Examples:
 * `add -n Betsy Crowe -t others friend -e betsycrowe@example.com -a Newgate Prison -p 1234567 -t others criminal`
 * `add -n Jane Tan -p 87654321 -e janetan@example.com`
 
-### Listing all contact: `list`
+### Listing all contacts: `list`
 
 Shows a list of all contacts in the address book.
 
@@ -136,7 +136,7 @@ Format: `edit INDEX [-n NAME] [-p PHONE_NUMBER] [-e EMAIL] [-a ADDRESS] [-t TAG_
 
 
 Examples:
-*  `edit 1 -p 91234567 -e johndoe@example.com` Edits the phone number and email address of the 1st contcat to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 1 -p 91234567 -e johndoe@example.com` Edits the phone number and email address of the 1st contact to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 -n Betsy Crower -t` Edits the name of the 2nd contact to be `Betsy Crower` and clears all existing tags.
 *  `edit 3 -a` Removes the address of the 3rd contact.
 
@@ -334,7 +334,7 @@ The address book application data is saved automatically as a JSON file `[JAR fi
 <box type="warning" seamless>
 
 **Caution:**
-If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run.<br> The invalid file remains on disk until you run a successful command that modifies the contact list, where coNnectUS will automatically write to the data file.<br> Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, coNnectUS starts with an empty address book at the next run.<br> The invalid file remains on disk until coNnectUS next saves the address book, including after a successful import that adds no contacts, where coNnectUS will automatically write to the data file.<br> Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the coNnectUS to behave in unexpected ways (e.g., if a value entered is outside the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </box>
 
