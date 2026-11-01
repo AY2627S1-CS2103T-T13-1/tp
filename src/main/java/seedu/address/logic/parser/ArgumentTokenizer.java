@@ -52,7 +52,7 @@ public class ArgumentTokenizer {
         List<PrefixPosition> positions = new ArrayList<>();
         String prefixText = prefix.getPrefix();
         boolean insideQuotes = false;
-        for (int i = 0; i < argsString.length() - prefixText.length(); i++) {
+        for (int i = 0; i <= argsString.length() - prefixText.length(); i++) {
             char currentCharacter = argsString.charAt(i);
             if (currentCharacter == '"') {
                 insideQuotes = !insideQuotes;
