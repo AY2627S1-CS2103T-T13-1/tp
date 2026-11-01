@@ -454,6 +454,7 @@ Format: `delete_alias ALIAS_TO_DELETE`
     ```
 
 Examples:
+Assume that the alias `f` is registered to the built-in command, `find`.
 * `delete_alias f` removes the alias `f`. You can still use the original `find` command thereafter.
 * `delete_alias f` followed by `alias list f` reassigns `f` to the `list` command.
 
