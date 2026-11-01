@@ -40,22 +40,14 @@ public class ImportCommandParser implements Parser<ImportCommand> {
      */
     @Override
     public ImportCommand parse(String args) throws ParseException {
-        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(
-                args,
-                IMPORT_PREFIXES);
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, IMPORT_PREFIXES);
 
-        ArgumentStructureValidator.validate(
-                arguments,
-                IMPORT_PREFIXES,
-                ImportCommand.COMMAND_WORD);
+        ArgumentStructureValidator.validate(arguments, IMPORT_PREFIXES, ImportCommand.COMMAND_WORD);
 
         Optional<String> filePath = arguments.getValue(PREFIX_FILENAME);
 
         if (filePath.isEmpty()) {
-            throw new ParseException(
-                    MESSAGE_MISSING_FILE_PATH
-                            + "\n"
-                            + ImportCommand.MESSAGE_USAGE);
+            throw new ParseException(MESSAGE_MISSING_FILE_PATH + "\n" + ImportCommand.MESSAGE_USAGE);
         }
 
         String trimmedFilePath = parseQuotedFilePath(filePath.get());

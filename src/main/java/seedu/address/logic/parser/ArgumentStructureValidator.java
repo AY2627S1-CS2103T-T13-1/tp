@@ -75,7 +75,6 @@ public class ArgumentStructureValidator {
      */
     private static void validateUnknownParameters(String text, String commandName) throws ParseException {
         String trimmedText = StringUtil.stripWhitespace(text);
-
         if (trimmedText.isEmpty()) {
             return;
         }
@@ -105,7 +104,6 @@ public class ArgumentStructureValidator {
         if (insideQuotes) {
             throw new ParseException(ImportCommandParser.MESSAGE_FILENAME_CONTAINS_QUOTES);
         }
-
         validateParameterToken(token.toString(), commandName);
     }
 
