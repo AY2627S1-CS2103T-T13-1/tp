@@ -131,7 +131,8 @@ The `Model` component,
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * keeps a history of address book states in a `VersionedAddressBook`, so that changes can be undone and redone (see [Undo/redo feature](#undo-redo-feature)).
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
-* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
+* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components).
+* stores alias-to-command-word mappings in an `AliasRegistry`, exposing operations to register, delete and retrieve aliases. Alias mappings are _maintained independently_ from the address book’s undo/redo history.
 
 
 <box type="info" seamless>
@@ -149,9 +150,10 @@ The `Model` component,
 <puml src="diagrams/StorageClassDiagram.puml" width="550" />
 
 The `Storage` component,
-* can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
-* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+* can save address book data, alias data and user preference data in the JSON format, and read them back into corresponding objects.
+* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage`, `JsonUserPrefsStorage` and `JsonAliasStorage` (one class per data file).
+* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`).
+* uses `AliasLoadResult` to bundle `AliasRegistry` with warnings for skipped alias entries. `MainApp` uses this result to initialize the model and generate startup warnings.
 
 ### Common classes
 
@@ -223,8 +225,8 @@ Users are able to register aliases for commands, enabling a more customized expe
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
-`alias find f`.
+The sequence diagram above illustrates the successful execution of
+`alias find f`, before the alias `f` can be used in place of `find`.
 
 The `alias` feature:
 * maintains alias-to-command-word mappings in `AliasRegistry`.
@@ -239,7 +241,15 @@ The `alias` feature:
 * resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
-<box type="warning" header="**Important Note**" seamless>
+<box type="info" header="****Using a registered alias****" seamless>
+
+`AddressBookParser` uses the model’s `AliasRegistry#resolve()` to resolve command aliases before dispatching to the appropriate command parser. For example, `f -n Alex` resolves to `find -n Alex`, with the command's arguments passed to `FindCommandParser`.
+
+User-supplied commands which are not registered aliases remain unchanged, preserving the built-in command handling and unknown-command error handling.
+
+</box>
+
+<box type="warning" header="****Important Note****" seamless>
 
 When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
 </box>
@@ -250,7 +260,7 @@ Users are able to remove previously registered alias entries that they do not re
 
 <puml src="diagrams/DeleteAliasSequenceDiagram.puml" alt="Sequence for delete_alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
+The sequence diagram above illustrates the successful execution of
 `delete_alias s`, assuming that the user has previously registered `s` as an alias for `sort`.
 
 The `delete_alias` feature:
@@ -859,7 +869,6 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases … }_
 
 ### Changing the theme
 
@@ -914,6 +923,93 @@ testers are expected to do more *exploratory* testing.
    1. Other incorrect add commands to try: `add`, `add -n Amy1 -p 81111111 -e amylee@example.com`, `add -n Amy Lee -p 81111111 -e amylee`, `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
       Expected: No person is added. An error message shows what is wrong with the command.
 
+### Pinning and Unpinning contacts
+
+1. Pinning and then unpinning the same contact
+
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Ensure that none of them are currently pinned.
+
+    1. Test case: `pin 2`<br>
+    Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
+
+    1. Test case: `unpin 1`<br>
+    Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
+
+1. Selected contact is already pinned or unpinned
+
+    1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
+
+    1. Test case: `pin 1`, where the contact at index `1` is pinned<br>
+    Expected: The contact at index `1` is not modified and an error message is returned, stating that the selected contact is already pinned.
+
+    1. Test case: `unpin 3`, where the contact at index `3` is unpinned <br>
+    Expected: The contact at index `3` is not modified and an error message is returned, stating that the selected contact is already unpinned.
+
+### Sorting contacts
+
+1. Sorting contacts using the supported sorts
+
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list and none of them are pinned.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Contacts are now ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+    Expected: Contacts are now ordered by their name in descending alphabetical order (Z-A).
+
+    1. Test case: `sort NaMe DeSc`<br>
+    Expected: Sorting criteria and order are _case-insensitive_. Contacts are now ordered by their name in descending alphabetical order (Z-A).
+
+1. Sorting with pinned contacts in the contact list
+
+    1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in descending alphabetical order (Z-A).
+
+1. Attempting to sort with unsupported sorts
+
+    1. Test case: `sort tag asc`<br>
+    Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+   
+    1. Test case: `sort name`<br>
+    Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+
+       
+### Tagging a contact
+
+1. Adding a contact with tags
+
+    1. Test case: `add -n Bobby -e Bobby@gmail.com -p 91234567 -t others Friend -t module CS2103`<br>
+    Expected: A contact named `Bobby` is created with 2 tags, an `others` tag with the tag name `Friend` and a `module` tag with the tag name `CS2103`.
+
+    1. Test case: `add -n Alice -e Alice@gmail.com -p 98765432 -t others friend -t others friend -t others FrIeNd`<br>
+    Expected: A contact named `Alice` is created with 1 tag, an `others` tag with the tag name `friend`, due to _case-insensitive_ deduplication of tags.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others 1 + 1 = 2`<br>
+    Expected: No contacts are created. An error message is displayed, describing the accepted values for tag names.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+    Expected: No contacts are created. An error message is displayed, warning that a contact should not have more than 5 tags.
+   
+
+1. Editing an existing contact
+
+    1. Prerequisites: List all contacts using the `list` command, with at least one contact in the list.
+
+    1. Test case: `edit 1 -t others friend`<br>
+    Expected: The contact at index `1` now has only an `others` tag with the tag name `friend`. Any other tags prior to running `edit` are removed.
+
+    1. Test case: `edit 1 -t`, where the contact at index `1` already has tags.<br>
+    Expected: The contact at index `1` now has no tags. Other properties are unmodified.
+
+    1. Test case: `edit 1 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+    Expected: The contact at index `1` is not modified. An error message is displayed, warning that a contact should not have more than 5 tags.
+
+
 ### Deleting a person
 
 1. Deleting a person while all persons are being shown
@@ -928,8 +1024,6 @@ testers are expected to do more *exploratory* testing.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
-
-1. _{ more test cases … }_
 
 ### Undoing and redoing changes
 
@@ -957,10 +1051,90 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete 1`, `undo`, `delete 2`, then `redo`<br>
       Expected: The contact list does not change, since `delete 2` cleared the redo history. The status message shows that there are no undone changes to redo.
 
+### Adding and using aliases
+
+1. Registering and using aliases
+
+   1. Prerequisites: Launch the app with multiple contacts. Use `list_alias` to check that no aliases have been registered at this point. If not, delete them using `delete_alias ALIAS_TO_DELETE`.
+
+   1. Test case: `alias find f`, then `list_alias`<br>
+      Expected: A success message confirms the registration. The alias list shows `f` registered to the `find` command.
+
+   1. Test case: `f -n Alex`, then `find -n Alex`<br>
+      Expected: Both commands show contacts whose names match `Alex` (if any). The original `find` command remains usable.
+
+   1. Test case: `f`<br>
+      Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
+
+   1. Test case: `alias list ls`, then execute `ls`<br>
+      Expected: All available contacts are shown.
+
+   1. Test case: `alias list F`, execute `F` and then `f -n Alex`<br>
+      Expected: `F` shows all available contacts, while `f -n Alex` filters contacts by name, with `F` and `f` being distinct aliases.
+
+   1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
+      Expected: The registered aliases are retained, since aliases are persisted across sessions.
+
+1. Rejecting invalid registrations
+
+   1. Prerequisites: Keep `f` registered to `find` from the previous tests.
+
+   1. Test case: `alias list f`<br>
+      Expected: An error message states that `f` already exists. Its mapping to `find` is unchanged and is persisted in storage (i.e. `aliases.json`)
+
+   1. Test case: `alias find LIST`<br>
+      Expected: An error message states that the _alias conflicts with a built-in command word_.
+
+   1. Test cases: `alias FIND search`, `alias f search`<br>
+      Expected: Each command is rejected because the target command must be an existing **lowercase built-in command word**.
+
+   1. Test cases: `alias find f1`, `alias find 搜索`<br>
+      Expected: None of the alias creation commands are successful. The error message informs the users aliases may only contain lowercase and uppercase ASCII letters in both test cases.
+
+   1. Test cases: `alias`, `alias find`, `alias find two words`<br>
+      Expected: None of the alias creation commands are successful. An error message shows the correct syntax of the command and sample usage instructions.
+
+### Deleting aliases
+
+1. Deleting an alias and checking case sensitivity
+
+   1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and/or add the necessary aliases to set up the mappings as required.
+
+        ```text
+        Registered alias(es):
+        find: f
+        list: F
+        ```
+
+   1. Test case: `delete_alias f`, then `list_alias`<br>
+      Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
+
+   1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
+      Expected: The first command is rejected as unknown because the alias had previously been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
+
+   1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
+      Expected: `f` is rejected as an unknown command as its successful deletion is persisted in the alias data file.
+
+   1. Test case: `alias list f`, then `f`<br>
+      Expected: The deleted alias can now be registered to a different command. `f` shows all contacts after being registered as a new alias.
+
+1. Rejecting invalid deletions
+
+   1. Prerequisites: **Remove the alias `f`** if it is still registered, and keep `F` registered to `list`. The `list_alias` output should look like:
+
+        ```text
+        Registered alias(es): 
+        list: F
+        ```
+
+   1. Test case: `delete_alias f`<br>
+      Expected: An error message states that `f` was **not previously registered**.
+
+   1. Test cases: `delete_alias`, `delete_alias f F`<br>
+      Expected: No aliases are removed as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
+
 ### Saving data
 
 1. Dealing with missing/corrupted data files
 
    1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
-
-1. _{ more test cases … }_
