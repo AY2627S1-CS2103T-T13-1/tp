@@ -23,7 +23,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
     public static final String MESSAGE_INVALID_FILE_PATH =
             "The provided file path is invalid: %s.";
     public static final String MESSAGE_FILENAME_CONTAINS_QUOTES =
-            "Filename must not contain double quotes.";
+            "File path must not contain double quotes.";
     public static final String MESSAGE_UNMATCHED_QUOTES =
             "The file path contains unmatched double quotes.";
     public static final String MESSAGE_TEXT_AFTER_CLOSING_QUOTE =

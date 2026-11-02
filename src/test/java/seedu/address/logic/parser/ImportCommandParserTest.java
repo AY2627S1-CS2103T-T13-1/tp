@@ -103,9 +103,15 @@ public class ImportCommandParserTest {
     }
 
     @Test
-    public void parse_filenameContainsQuotes_throwsParseException() {
+    public void parse_unquotedPathWithOddQuotes_throwsParseException() {
         String filePath = "contacts\".json";
         assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
+    }
+
+    @Test
+    public void parse_unquotedPathWithQuotes_throwsParseException() {
+        String filePath = "a\"b\"c.json";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_FILENAME_CONTAINS_QUOTES);
     }
 
     private void assertParseFailure(String userInput, String expectedMessage) {
