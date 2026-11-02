@@ -18,7 +18,7 @@ We have used [JavaFX](https://openjfx.io/) for the GUI, [Jackson](https://github
 
 
 In addition, we also:
-* adapted [this solution](https://stackoverflow.com/a/5226244) to open the User Guide URL from the `UserGuideAccessWindow` in user's default browser.
+* adapted [this solution](https://stackoverflow.com/a/5226244) to configure opening this User Guide's URL in `UserGuideAccessWindow`.
 
 #### AI Usage
 - [@shijieteo](https://github.com/shijieteo/) — Identifying singleton design pattern in `PersonComparatorFactory`, Modifying CSS/Ui elements to include tag colors, tag legend and writing of test cases.
