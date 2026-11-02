@@ -22,12 +22,11 @@ import seedu.address.commons.util.StringUtil;
 public class ArgumentTokenizer {
 
     /**
-     * Tokenizes an arguments string and returns an {@code ArgumentMultimap} object that maps prefixes to their
-     * respective argument values. Only the given prefixes will be recognized in the arguments string.
+     * Tokenizes {@code argsString} into an {@code ArgumentMultimap}, recognizing only the given prefixes.
      *
      * @param argsString Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
-     * @param prefixes   Prefixes to tokenize the arguments string with
-     * @return           ArgumentMultimap object that maps prefixes to their arguments
+     * @param prefixes   Prefixes to recognize
+     * @return           Map of prefixes to their argument values
      */
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
         return tokenize(argsString, false, prefixes);
