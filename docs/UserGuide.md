@@ -89,7 +89,7 @@ Tag             | English Letters (A-Z, a-z), digits (0-9), spaces, and apostrop
 ### Getting help: `help`
 
 Displays a command reference in coNnectUS's result display area, including command formats, descriptions, examples where applicable, as well as a link to this User Guide.
-* Scroll through the results area to view the "built-in" commands available for your use.
+* Scroll through the results area to view the built-in commands available for use.
 
 Format: `help`
 
