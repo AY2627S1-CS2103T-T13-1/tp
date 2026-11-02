@@ -40,9 +40,9 @@ public class ImportCommandParser implements Parser<ImportCommand> {
      */
     @Override
     public ImportCommand parse(String args) throws ParseException {
-        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, IMPORT_PREFIXES);
+        ArgumentMultimap arguments = ArgumentTokenizer.tokenize(args, true, IMPORT_PREFIXES);
 
-        ArgumentStructureValidator.validate(arguments, IMPORT_PREFIXES, ImportCommand.COMMAND_WORD);
+        ArgumentStructureValidator.validate(arguments, IMPORT_PREFIXES, ImportCommand.COMMAND_WORD, true);
 
         Optional<String> filePath = arguments.getValue(PREFIX_FILENAME);
 
@@ -90,9 +90,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
             }
         }
 
-        filePath = StringUtil.stripWhitespace(filePath);
-
-        if (filePath.isEmpty()) {
+        if (StringUtil.stripWhitespace(filePath).isEmpty()) {
             throw new ParseException(
                     MESSAGE_MISSING_FILE_PATH
                             + "\n"

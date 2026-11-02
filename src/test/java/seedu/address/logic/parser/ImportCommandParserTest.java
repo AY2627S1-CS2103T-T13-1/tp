@@ -33,7 +33,7 @@ public class ImportCommandParserTest {
 
     @Test
     public void parse_fileEnclosedInQuotes_returnsImportCommand() throws ParseException {
-        ImportCommand command = parser.parse(" -f \ndata/exports/contacts.json\n");
+        ImportCommand command = parser.parse(" -f \"data/exports/contacts.json\"");
 
         assertEquals(new ImportCommand(Path.of("data", "exports", "contacts.json")), command);
     }

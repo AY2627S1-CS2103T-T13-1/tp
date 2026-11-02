@@ -3,6 +3,8 @@ package seedu.address.logic.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import seedu.address.commons.util.StringUtil;
@@ -28,54 +30,56 @@ public class ArgumentTokenizer {
      * @return           ArgumentMultimap object that maps prefixes to their arguments
      */
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
-        List<PrefixPosition> positions = findAllPrefixPositions(argsString, prefixes);
+        return tokenize(argsString, false, prefixes);
+    }
+
+    /**
+     * Tokenizes an arguments string like {@link #tokenize(String, Prefix...)}. If {@code isQuoteAware} is true,
+     * prefixes enclosed in double quotes are not recognized.
+     *
+     * @param argsString   Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
+     * @param isQuoteAware Whether prefixes enclosed in double quotes should be ignored
+     * @param prefixes     Prefixes to tokenize the arguments string with
+     * @return             ArgumentMultimap object that maps prefixes to their arguments
+     */
+    public static ArgumentMultimap tokenize(String argsString, boolean isQuoteAware, Prefix... prefixes) {
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, isQuoteAware, prefixes);
         return extractArguments(argsString, positions);
     }
 
     /**
      * Finds all zero-based prefix positions in the given arguments string.
      *
-     * @param argsString Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
-     * @param prefixes   Prefixes to find in the arguments string
-     * @return           List of zero-based prefix positions in the given arguments string
+     * @param argsString   Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
+     * @param isQuoteAware Whether prefixes enclosed in double quotes should be ignored
+     * @param prefixes     Prefixes to find in the arguments string
+     * @return             List of zero-based prefix positions in the given arguments string
      */
-    private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
+    private static List<PrefixPosition> findAllPrefixPositions(String argsString, boolean isQuoteAware,
+                                                               Prefix... prefixes) {
         return Arrays.stream(prefixes)
-                .flatMap(prefix -> findPrefixPositions(argsString, prefix).stream())
+                .flatMap(prefix -> findPrefixPositions(argsString, prefix, isQuoteAware).stream())
                 .collect(Collectors.toList());
     }
 
     /**
-     * @see #findAllPrefixPositions(String, Prefix...)
+     * @see #findAllPrefixPositions(String, boolean, Prefix...)
      */
-    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
+    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix,
+                                                            boolean isQuoteAware) {
         List<PrefixPosition> positions = new ArrayList<>();
-        String prefixText = prefix.getPrefix();
-        boolean insideQuotes = false;
-        for (int i = 0; i <= argsString.length() - prefixText.length(); i++) {
-            char currentCharacter = argsString.charAt(i);
-            if (currentCharacter == '"') {
-                insideQuotes = !insideQuotes;
-                continue;
-            }
-            if (insideQuotes || !argsString.startsWith(prefixText, i)) {
-                continue;
-            }
-            boolean hasWhitespaceBefore = i > 0
-                    && isUnicodeWhitespace(argsString.charAt(i - 1));
-            int endPosition = i + prefixText.length();
-            boolean hasWhitespaceAfter = endPosition == argsString.length()
-                    || isUnicodeWhitespace(argsString.charAt(endPosition));
-            if (hasWhitespaceBefore && hasWhitespaceAfter) {
-                positions.add(new PrefixPosition(prefix, i));
-                i = endPosition - 1;
+        Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
+                Pattern.UNICODE_CHARACTER_CLASS);
+        Matcher matcher = pattern.matcher(argsString);
+
+        while (matcher.find()) {
+            boolean isInsideQuotes = isQuoteAware
+                    && argsString.substring(0, matcher.start()).chars().filter(c -> c == '"').count() % 2 == 1;
+            if (!isInsideQuotes) {
+                positions.add(new PrefixPosition(prefix, matcher.start()));
             }
         }
         return positions;
-    }
-    private static boolean isUnicodeWhitespace(char character) {
-        return Character.isWhitespace(character)
-                || Character.isSpaceChar(character);
     }
 
     /**
