@@ -7,9 +7,7 @@ participant ":LogicManager" as LogicManager LOGIC_COLOR
 participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
 participant ":ImportCommandParser" as ImportCommandParser LOGIC_COLOR
 participant "i:ImportCommand" as ImportCommand LOGIC_COLOR
-participant "ir:ImportRequest" as ImportRequest LOGIC_COLOR
 participant "r:CommandResult" as CommandResult LOGIC_COLOR
-participant "s:CommandResult" as SummaryResult LOGIC_COLOR
 end box
 
 box Storage STORAGE_COLOR_T1
@@ -43,27 +41,20 @@ activate ImportCommand
 ImportCommand --> ImportCommandParser
 deactivate ImportCommand
 
-ImportCommandParser --> AddressBookParser : i
+ImportCommandParser --> AddressBookParser
 deactivate ImportCommandParser
 'Hidden arrow to position the destroy marker below the end of the activation bar.'
 ImportCommandParser -[hidden]-> AddressBookParser
 destroy ImportCommandParser
 
-AddressBookParser --> LogicManager : i
+AddressBookParser --> LogicManager
 deactivate AddressBookParser
 
 LogicManager -> ImportCommand : execute(m)
 activate ImportCommand
 
-create ImportRequest
-ImportCommand -> ImportRequest : ImportRequest(filePath)
-activate ImportRequest
-
-ImportRequest --> ImportCommand
-deactivate ImportRequest
-
 create CommandResult
-ImportCommand -> CommandResult : CommandResult(message, ir)
+ImportCommand -> CommandResult : CommandResult(message, ImportRequest(filePath))
 activate CommandResult
 
 CommandResult --> ImportCommand
@@ -71,9 +62,6 @@ deactivate CommandResult
 
 ImportCommand --> LogicManager : r
 deactivate ImportCommand
-
-LogicManager -> LogicManager : executeImport(ir)
-activate LogicManager
 
 LogicManager -> Storage : readAddressBook(filePath)
 activate Storage
@@ -85,26 +73,6 @@ activate Model
 Model --> LogicManager : summary
 deactivate Model
 
-create SummaryResult
-LogicManager -> SummaryResult : CommandResult(summaryMessage)
-activate SummaryResult
-
-SummaryResult --> LogicManager
-deactivate SummaryResult
-
-LogicManager --> LogicManager : s
-deactivate LogicManager
-
-LogicManager -> Model : commit()
-activate Model
-Model --> LogicManager
-deactivate Model
-
-LogicManager -> Storage : saveAddressBook(addressBook)
-activate Storage
-Storage --> LogicManager
-deactivate Storage
-
-[<-- LogicManager : s
+[<-- LogicManager : result with summary
 deactivate LogicManager
 @enduml

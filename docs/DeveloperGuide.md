@@ -272,7 +272,7 @@ The `import` feature:
 
 * uses `ImportCommandParser` to validate a filepath is supplied before creating an `ImportCommand`.
 * `ImportCommand` creates an `ImportRequest` containing the path of the file to be imported.
-* `ImportCommand` creates an `ImportRequest` containing the output path and filtered contacts, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
+* `ImportCommand` creates an `ImportRequest` containing the path of file to be imported, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
 * `LogicManager` calls `executeImport`, which invokes `Storage` to read the file from the path provided.
 * `LogicManager` invokes `Model` to merge the imported contacts with the current list of contacts.
 
@@ -281,6 +281,8 @@ The `import` feature:
 Users are able to save a list of contacts based on a set of criteria into a `.json` file.
 
 <puml src="diagrams/ExportSequenceDiagram.puml" alt="Sequence for ExportCommand"/>
+
+The above sequence diagram illustrates the successful execution of `export -f contacts -n John`.
 
 The `export` feature:
 

@@ -8,13 +8,11 @@ participant ":LogicManager" as LogicManager LOGIC_COLOR
 participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
 participant ":ExportCommandParser" as ExportCommandParser LOGIC_COLOR
 participant "e:ExportCommand" as ExportCommand LOGIC_COLOR
-participant "er:ExportRequest" as ExportRequest LOGIC_COLOR
 participant "r:CommandResult" as CommandResult LOGIC_COLOR
 end box
 
 box Model MODEL_COLOR_T1
 participant "m:Model" as Model MODEL_COLOR
-participant "exportBook:AddressBook" as ExportBook MODEL_COLOR
 end box
 
 box Storage STORAGE_COLOR_T1
@@ -44,13 +42,13 @@ activate ExportCommand
 ExportCommand --> ExportCommandParser
 deactivate ExportCommand
 
-ExportCommandParser --> AddressBookParser : e
+ExportCommandParser --> AddressBookParser
 deactivate ExportCommandParser
 'Hidden arrow to position the destroy marker below the end of the activation bar.'
 ExportCommandParser -[hidden]-> AddressBookParser
 destroy ExportCommandParser
 
-AddressBookParser --> LogicManager : e
+AddressBookParser --> LogicManager
 deactivate AddressBookParser
 
 LogicManager -> ExportCommand : execute(m)
@@ -62,52 +60,24 @@ Model --> ExportCommand : addressBook
 deactivate Model
 
 note right of ExportCommand
-  Persons in addressBook are filtered
-  with the predicate to obtain matches.
+  Filters contacts with the
+  predicate into exportBook.
 end note
 
-alt matches is not empty
-    create ExportBook
-    ExportCommand -> ExportBook
-    activate ExportBook
-    ExportBook --> ExportCommand
-    deactivate ExportBook
-
-    ExportCommand -> ExportBook : setPersons(matches)
-    activate ExportBook
-    ExportBook --> ExportCommand
-    deactivate ExportBook
-
-    create ExportRequest
-    ExportCommand -> ExportRequest : ExportRequest(exportBook, filePath)
-    activate ExportRequest
-
-    ExportRequest --> ExportCommand
-    deactivate ExportRequest
-end
-
 create CommandResult
-ExportCommand -> CommandResult : CommandResult(message, er)
+ExportCommand -> CommandResult : CommandResult(message, ExportRequest(exportBook, filePath))
 activate CommandResult
 
 CommandResult --> ExportCommand
 deactivate CommandResult
 
-note right of CommandResult
-  If no contacts match, r contains
-  only a no-match message and no er.
-end note
-
 ExportCommand --> LogicManager : r
 deactivate ExportCommand
 
-opt r contains an ExportRequest
-    LogicManager -> Storage : saveAddressBook(exportBook, filePath)
-    activate Storage
-
-    Storage --> LogicManager
-    deactivate Storage
-end
+LogicManager -> Storage : saveAddressBook(exportBook, filePath)
+activate Storage
+Storage --> LogicManager
+deactivate Storage
 
 [<-- LogicManager : r
 deactivate LogicManager
