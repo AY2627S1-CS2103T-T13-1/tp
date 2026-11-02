@@ -1051,7 +1051,7 @@ testers are expected to do more *exploratory* testing.
     Expected: The contact at index `1` is unmodified as the email address `bob@@gmail..com` is invalid. An error message is displayed, describing the accepted values for email addresses.
 
     1. Test case: `edit`<br>
-    Expected: No changes are made. The command is rejected and an error message is displayed, describing the correct usage for the edit command.
+    Expected: No contacts are modified. The command is rejected and an error message is displayed, describing the correct usage for the edit command.
    
     1. Test case: `edit 1`<br>
     Expected: The contact at index `1` is unmodified. The command is rejected and an error message is displayed, warning that a field must be specified for the edit operation.
@@ -1066,7 +1066,7 @@ testers are expected to do more *exploratory* testing.
     1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Ensure that none of them are currently pinned.
 
     1. Test case: `pin 2`<br>
-    Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
+    Expected: The second contact in the list now appears above other unpinned contactgs, with a red pin icon attached.
 
     1. Test case: `unpin 1`<br>
     Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
