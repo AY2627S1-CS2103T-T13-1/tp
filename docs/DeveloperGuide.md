@@ -190,7 +190,7 @@ Users can search for contacts by supplying one or more criteria, such as name, p
 The `find` feature:
 
 * uses `FindCommandParser` with `ArgumentTokenizer` to separate the search arguments into prefixes and values.
-* uses `ArgumentStructureValidator` to reject unknown parameters, text before the first prefix, empty values and repeated non-tag parameters. Tag parameters can be repeated to search for multiple tags.
+* uses `ArgumentStructureValidator` to reject unknown parameters, text before the first prefix, empty values and repeated non-tag parameters. Tag parameters can be repeated as search criteria.
 * creates a `PersonMatchesCriteriaPredicate` from the parsed search criteria, requiring all supplied criteria to match.
 * passes the predicate to `FindCommand`, which updates the filtered contact list in the `Model`.
 
@@ -1120,11 +1120,11 @@ testers are expected to do more *exploratory* testing.
 
 1. Invalid inputs
 
-    1. Test case: `delete 0`<br>
-       Expected: No contact is deleted. An error message stating that the list index must be a positive integer is shown.
+   1. Test case: `delete 0`<br>
+      Expected: No contact is deleted. An error message stating that the list index must be a positive integer is shown, together with the `delete` command format and sample usage.
 
-    1. Test case: `delete INDEX_OUT_OF_RANGE` (where `INDEX_OUT_OF_RANGE` is any integer larger than the current list size)<br>
-       Expected: No contact is deleted. An error message stating that the list index is invalid is shown.
+   1. Test case: `delete INDEX_OUT_OF_RANGE` (where `INDEX_OUT_OF_RANGE` is any integer larger than the current list size)<br>
+      Expected: No contact is deleted. An error message stating that the list index is invalid is shown.
 
 ### Deleting a contact by tags
 
@@ -1142,12 +1142,12 @@ testers are expected to do more *exploratory* testing.
       Expected: Aaron Tan is deleted. Beth Lim remains, with the others tag `Friend` removed. Chloe Lee is not affected by this command. A status message shows that one contact was deleted, and all instances of others tag `Friend` are removed.
 
    1. Test case: `delete -t faculty cde`<br>
-      Expected: Only Chloe Lee is affected, with the faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
+      Expected: Only Chloe Lee's contact information is affected, with the faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
 
 1. Invalid inputs
 
-   1. Test case: `delete -t CS3000` <br>
-      Expected: An error message stating that a valid tag category and tag name are required is shown.
+   1. Test case: `delete -t CS3000`<br>
+      Expected: An error message stating that a valid tag category and tag name are required is shown, together with the `delete` command format and sample usage.
 
    1. Test case: `delete -n others Friend`<br>
       Expected: An error message stating that `-n` is an unknown delete parameter is shown.
@@ -1156,7 +1156,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Finding a contact when the contact list is populated
 
-   1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts match the supplied criteria.
+   1. Prerequisites: Clear the contact list using `clear`, then add only the following three contacts, running each command separately.
 
       ```text
       add -n Alice Tan -p 81234561 -e alicetan@example.com -t others Friend
@@ -1165,21 +1165,21 @@ testers are expected to do more *exploratory* testing.
       ```
 
    1. Test case: `find -n alice`<br>
-      Expected: Alice Tan and Alice Lim are displayed. The status message shows that 2 contacts were found.
+      Expected: Alice Tan and Alice Lim are displayed in the contact list. The status message indicates that 2 contacts were found.
 
    1. Test case: `find -t others friend -e alex`<br>
-      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included. The status message shows that one contact was found.
+      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included in the output. The status message indicates that one contact was found.
 
    1. Test case: `find -p 9200`<br>
-      Expected: A status message shows that no contacts were found, and an empty list is displayed. _(Assuming the above contact list of 3 contacts)_
+      Expected: A status message indicates that no contacts were found, and an empty list is displayed.
 
 1. Invalid inputs
 
-    1. Test case: `find alice`<br>
-       Expected: An error message stating that `alice` appears before the first parameter is shown. To search by name, use `find -n alice`.
+   1. Test case: `find alice`<br>
+      Expected: An error message stating that `alice` appears before the first parameter is shown, together with the `find` command format and sample usage. To search by name, use `find -n alice`.
 
-    1. Test case: `find -a -t faculty Science`<br>
-       Expected: An error message stating that the field for `-a` cannot be empty is shown.
+   1. Test case: `find -a -t faculty Science`<br>
+      Expected: An error message stating that the field for `-a` cannot be empty is shown, together with the `find` command format and sample usage.
 
 ### Undoing and redoing changes
 
@@ -1288,9 +1288,3 @@ testers are expected to do more *exploratory* testing.
 
    1. Test cases: `delete_alias`, `delete_alias f F`<br>
       Expected: No aliases are removed as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
-
-### Saving data
-
-1. Dealing with missing/corrupted data files
-
-   1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
