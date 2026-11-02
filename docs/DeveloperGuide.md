@@ -972,7 +972,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting an alias and checking case sensitivity
 
-   1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and add the necessary aliases to set up the mappings as required.
+   1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and/or add the necessary aliases to set up the mappings as required.
 
         ```text
         Registered alias(es): 
@@ -984,7 +984,7 @@ testers are expected to do more *exploratory* testing.
       Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
 
    1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
-      Expected: The first command is rejected as unknown as the command alias had been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
+      Expected: The first command is rejected as an unknown command because the alias had previously been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
 
    1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
       Expected: `f` is rejected as an unknown command as its successful deletion is persisted in the alias data file.
@@ -994,7 +994,12 @@ testers are expected to do more *exploratory* testing.
 
 1. Rejecting invalid deletions
 
-   1. Prerequisites: Remove the alias `f` if it is registered, and keep `F` registered to `list`.
+   1. Prerequisites: **Remove the alias `f`** if it is still registered, and keep `F` registered to `list`. The `list_alias` output should look like:
+
+        ```text
+        Registered alias(es): 
+        list: F
+        ```
 
    1. Test case: `delete_alias f`<br>
       Expected: An error message states that `f` was **not previously registered**.
