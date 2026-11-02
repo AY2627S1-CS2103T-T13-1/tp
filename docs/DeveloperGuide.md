@@ -132,7 +132,7 @@ The `Model` component,
 * keeps a history of address book states in a `VersionedAddressBook`, so that changes can be undone and redone (see [Undo/redo feature](#undo-redo-feature)).
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components).
-* * stores alias-to-command-word mappings in an `AliasRegistry`, exposing operations to register, delete and retrieve aliases. Alias mappings are _maintained independently_ from the address book’s undo/redo history.
+* stores alias-to-command-word mappings in an `AliasRegistry`, exposing operations to register, delete and retrieve aliases. Alias mappings are _maintained independently_ from the address book’s undo/redo history.
 
 
 <box type="info" seamless>
