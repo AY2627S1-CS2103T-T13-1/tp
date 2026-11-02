@@ -18,10 +18,15 @@ Class ArgumentTokenizer
 Class Prefix
 }
 
+package Model <<Rectangle>> {
+Class AliasRegistry MODEL_COLOR
+}
+
 Class HiddenOutside #FFFFFF
 HiddenOutside ..> AddressBookParser
 
 AddressBookParser .down.> XYZCommandParser: <<create>>
+AddressBookParser -right-> AliasRegistry
 
 XYZCommandParser ..> XYZCommand : <<create>>
 AddressBookParser ..> Command : <<use>>
