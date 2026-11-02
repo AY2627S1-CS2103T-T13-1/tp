@@ -1,0 +1,84 @@
+@startuml
+
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":ExportCommandParser" as ExportCommandParser LOGIC_COLOR
+participant "e:ExportCommand" as ExportCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
+end box
+
+box Storage STORAGE_COLOR_T1
+participant ":Storage" as Storage STORAGE_COLOR
+end box
+
+[-> LogicManager : execute("export -f contacts -n John")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("export -f contacts -n John")
+activate AddressBookParser
+
+create ExportCommandParser
+AddressBookParser -> ExportCommandParser
+activate ExportCommandParser
+
+ExportCommandParser --> AddressBookParser
+deactivate ExportCommandParser
+
+AddressBookParser -> ExportCommandParser : parse(" -f contacts -n John")
+activate ExportCommandParser
+
+create ExportCommand
+ExportCommandParser -> ExportCommand : ExportCommand(fileName, predicate)
+activate ExportCommand
+
+ExportCommand --> ExportCommandParser
+deactivate ExportCommand
+
+ExportCommandParser --> AddressBookParser
+deactivate ExportCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+ExportCommandParser -[hidden]-> AddressBookParser
+destroy ExportCommandParser
+
+AddressBookParser --> LogicManager
+deactivate AddressBookParser
+
+LogicManager -> ExportCommand : execute(m)
+activate ExportCommand
+
+ExportCommand -> Model : getAddressBook()
+activate Model
+Model --> ExportCommand : addressBook
+deactivate Model
+
+note right of ExportCommand
+  Filters contacts with the
+  predicate into exportBook.
+end note
+
+create CommandResult
+ExportCommand -> CommandResult : CommandResult(message, ExportRequest(exportBook, filePath))
+activate CommandResult
+
+CommandResult --> ExportCommand
+deactivate CommandResult
+
+ExportCommand --> LogicManager : r
+deactivate ExportCommand
+
+LogicManager -> Storage : saveAddressBook(exportBook, filePath)
+activate Storage
+Storage --> LogicManager
+deactivate Storage
+
+[<-- LogicManager : r
+deactivate LogicManager
+@enduml

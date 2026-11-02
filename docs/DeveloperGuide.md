@@ -290,6 +290,36 @@ The `delete_alias` feature:
 * rejects an unregistered alias with an `IllegalArgumentException`, which `DeleteAliasCommand` converts into a `CommandException` for display to the user.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved deletions persist across sessions.
 
+### Import feature
+
+Users are able to merge a list of contacts from a `.json` file with their current contact list.
+
+<puml src="diagrams/ImportSequenceDiagram.puml" alt="Sequence for ImportCommand"/>
+
+The above sequence diagram illustrates the successful execution of `import -f contacts.json`.
+
+The `import` feature:
+
+* uses `ImportCommandParser` to validate a filepath is supplied before creating an `ImportCommand`.
+* `ImportCommand` creates an `ImportRequest` containing the path of file to be imported, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
+* `LogicManager` calls `executeImport()`, which invokes `Storage` to read the file from the path provided.
+* `LogicManager` invokes `Model` to merge the imported contacts with the current list of contacts.
+
+### Export feature
+
+Users are able to save a list of contacts based on a set of criteria into a `.json` file.
+
+<puml src="diagrams/ExportSequenceDiagram.puml" alt="Sequence for ExportCommand"/>
+
+The above sequence diagram illustrates the successful execution of `export -f contacts -n John`.
+
+The `export` feature:
+
+* `ExportCommandParser` validates the filename and constructs a predicate, then passes both to `ExportCommand`.
+* `ExportCommand` uses the supplied `Predicate` to retrieve the filtered list of contacts.
+* `ExportCommand` creates an `ExportRequest` containing the output path and filtered contacts, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
+* `LogicManager` invokes `Storage` to save the filtered contacts to a file with the supplied filename.
+
 ### Tags for contacts
 
 #### Implementation
@@ -476,9 +506,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **Extensions:**
 
-* 1a. coNnectUS detects that the contact list is empty. 
-  * 1a1. coNnectUS displays an error message indicating the need to populate the contact list. 
-    
+* 1a. coNnectUS detects that the contact list is empty.
+  * 1a1. coNnectUS displays an error message indicating the need to populate the contact list.
+
     Use case ends.
 
 #### Use Case: UC02 - Add Contacts
@@ -498,7 +528,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. coNnectUS displays an error message, detailing the issue with the user's command.
 
       Use case resumes from Step 1.
-  
+
 * 1b. coNnectUS detects a duplicated contact (Shared phone number/email address).
     * 1b1. coNnectUS displays an error message, indicating whether the phone number, email address or both are already used by another contact.
 
@@ -522,15 +552,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1a1. coNnectUS displays an error message informing the user about the empty contact list.
 
         Use case ends.
-  
+
 * 2a. coNnectUS detects an illegal (i.e. missing, zero, negative or non-numeric) list index supplied.
     * 2a1. coNnectUS displays an error message with the expected usage instructions
 
         Use case resumes from Step 2.
 
 * 2b. coNnectUS detects the positive index supplied is outside the currently displayed contact list.
-    * 2b1. coNnectUS displays an error message warning the user of the invalid index. 
-  
+    * 2b1. coNnectUS displays an error message warning the user of the invalid index.
+
         Use case resumes from Step 2.
 
 #### Use Case: UC04 - Delete Multiple Contacts
@@ -567,7 +597,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS:**
 1. User searches for a contact using any of its fields.
-2. coNnectUS returns a list containing the contacts matching all the fields provided. 
+2. coNnectUS returns a list containing the contacts matching all the fields provided.
 
    Use case ends.
 
@@ -575,10 +605,10 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 1a. coNnectUS detects that no contacts match all the fields provided.
     * 1a1. coNnectUS displays a message informing the user that no contacts were found.
-    
+
       Use case resumes at step 1.
 
-* 1b. coNnectUS detects that no fields were provided. 
+* 1b. coNnectUS detects that no fields were provided.
     * 1b1. coNnectUS displays an invalid command format message with the expected usage instructions.
 
       Use case resumes at step 1.
@@ -592,7 +622,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 1d1. coNnectUS displays a warning message of the unknown field being entered.
 
       Use case resumes at step 1.
-    
+
 #### Use Case: UC06 - Edit Contacts
 
 **Actor: User**
@@ -687,7 +717,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
     * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
 
       Use case resumes at Step 2.
-  
+
 * 2c. coNnectUS detects that the contact at the user-specified index is already pinned.
     * 2c1. coNnectUS displays an error message informing the user that the contact is already pinned.
 
@@ -750,8 +780,8 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
     Use case resumes at Step 1.
 
 * 1e. coNnectUS detects that the alias supplied is already registered, using a case-sensitive comparison.
-  * 1e1. coNnectUS displays an error message informing the user about the existing alias. 
-  
+  * 1e1. coNnectUS displays an error message informing the user about the existing alias.
+
     Use case resumes at Step 1.
 
 #### Use Case: UC12 - List available aliases
