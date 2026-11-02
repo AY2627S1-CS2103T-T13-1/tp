@@ -271,7 +271,6 @@ The above sequence diagram illustrates the successful execution of `import -f co
 The `import` feature:
 
 * uses `ImportCommandParser` to validate a filepath is supplied before creating an `ImportCommand`.
-* `ImportCommand` creates an `ImportRequest` containing the path of the file to be imported.
 * `ImportCommand` creates an `ImportRequest` containing the path of file to be imported, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
 * `LogicManager` calls `executeImport`, which invokes `Storage` to read the file from the path provided.
 * `LogicManager` invokes `Model` to merge the imported contacts with the current list of contacts.

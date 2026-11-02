@@ -14,10 +14,6 @@ box Storage STORAGE_COLOR_T1
 participant ":Storage" as Storage STORAGE_COLOR
 end box
 
-box Model MODEL_COLOR_T1
-participant "m:Model" as Model MODEL_COLOR
-end box
-
 [-> LogicManager : execute("import -f contacts.json")
 activate LogicManager
 
@@ -60,19 +56,25 @@ activate CommandResult
 CommandResult --> ImportCommand
 deactivate CommandResult
 
-ImportCommand --> LogicManager : r
+ImportCommand --> LogicManager : r (containing ir)
 deactivate ImportCommand
 
-LogicManager -> Storage : readAddressBook(filePath)
+LogicManager -> LogicManager : executeImport(ir)
+activate LogicManager
+
+note right of LogicManager
+  Reads the file via Storage and
+  merges its contacts into Model.
+end note
+
+LogicManager --> LogicManager
+deactivate LogicManager
+
+LogicManager -> Storage : saveAddressBook(model.getAddressBook())
 activate Storage
-Storage --> LogicManager : importedAddressBook
+Storage --> LogicManager : Summary
 deactivate Storage
 
-LogicManager -> Model : mergeAddressBook(importedAddressBook)
-activate Model
-Model --> LogicManager : summary
-deactivate Model
-
-[<-- LogicManager : result with summary
+[<-- LogicManager : Result With Summary
 deactivate LogicManager
 @enduml
