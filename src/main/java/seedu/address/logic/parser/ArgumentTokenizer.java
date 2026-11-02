@@ -22,44 +22,62 @@ import seedu.address.commons.util.StringUtil;
 public class ArgumentTokenizer {
 
     /**
-     * Tokenizes an arguments string and returns an {@code ArgumentMultimap} object that maps prefixes to their
-     * respective argument values. Only the given prefixes will be recognized in the arguments string.
+     * Tokenizes {@code argsString} into an {@code ArgumentMultimap}, recognizing only the given prefixes.
      *
      * @param argsString Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
-     * @param prefixes   Prefixes to tokenize the arguments string with
-     * @return           ArgumentMultimap object that maps prefixes to their arguments
+     * @param prefixes   Prefixes to recognize
+     * @return           Map of prefixes to their argument values
      */
     public static ArgumentMultimap tokenize(String argsString, Prefix... prefixes) {
-        List<PrefixPosition> positions = findAllPrefixPositions(argsString, prefixes);
+        return tokenize(argsString, false, prefixes);
+    }
+
+    /**
+     * Tokenizes an arguments string like {@link #tokenize(String, Prefix...)}. If {@code isQuoteAware} is true,
+     * prefixes enclosed in double quotes are not recognized.
+     *
+     * @param argsString   Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
+     * @param isQuoteAware Whether prefixes enclosed in double quotes should be ignored
+     * @param prefixes     Prefixes to tokenize the arguments string with
+     * @return             ArgumentMultimap object that maps prefixes to their arguments
+     */
+    public static ArgumentMultimap tokenize(String argsString, boolean isQuoteAware, Prefix... prefixes) {
+        List<PrefixPosition> positions = findAllPrefixPositions(argsString, isQuoteAware, prefixes);
         return extractArguments(argsString, positions);
     }
 
     /**
      * Finds all zero-based prefix positions in the given arguments string.
      *
-     * @param argsString Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
-     * @param prefixes   Prefixes to find in the arguments string
-     * @return           List of zero-based prefix positions in the given arguments string
+     * @param argsString   Arguments string of the form: {@code preamble <prefix> value <prefix> value ...}
+     * @param isQuoteAware Whether prefixes enclosed in double quotes should be ignored
+     * @param prefixes     Prefixes to find in the arguments string
+     * @return             List of zero-based prefix positions in the given arguments string
      */
-    private static List<PrefixPosition> findAllPrefixPositions(String argsString, Prefix... prefixes) {
+    private static List<PrefixPosition> findAllPrefixPositions(String argsString, boolean isQuoteAware,
+                                                               Prefix... prefixes) {
         return Arrays.stream(prefixes)
-                .flatMap(prefix -> findPrefixPositions(argsString, prefix).stream())
+                .flatMap(prefix -> findPrefixPositions(argsString, prefix, isQuoteAware).stream())
                 .collect(Collectors.toList());
     }
 
     /**
-     * @see #findAllPrefixPositions(String, Prefix...)
+     * @see #findAllPrefixPositions(String, boolean, Prefix...)
      */
-    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix) {
+    private static List<PrefixPosition> findPrefixPositions(String argsString, Prefix prefix,
+                                                            boolean isQuoteAware) {
         List<PrefixPosition> positions = new ArrayList<>();
         Pattern pattern = Pattern.compile("(?<=\\s)" + Pattern.quote(prefix.getPrefix()) + "(?=\\s|$)",
                 Pattern.UNICODE_CHARACTER_CLASS);
         Matcher matcher = pattern.matcher(argsString);
 
         while (matcher.find()) {
-            positions.add(new PrefixPosition(prefix, matcher.start()));
+            boolean isInsideQuotes = isQuoteAware
+                    && argsString.substring(0, matcher.start()).chars().filter(c -> c == '"').count() % 2 == 1;
+            if (!isInsideQuotes) {
+                positions.add(new PrefixPosition(prefix, matcher.start()));
+            }
         }
-
         return positions;
     }
 

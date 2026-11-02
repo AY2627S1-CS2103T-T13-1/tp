@@ -32,6 +32,13 @@ public class ImportCommandParserTest {
     }
 
     @Test
+    public void parse_fileEnclosedInQuotes_returnsImportCommand() throws ParseException {
+        ImportCommand command = parser.parse(" -f \"data/exports/contacts.json\"");
+
+        assertEquals(new ImportCommand(Path.of("data", "exports", "contacts.json")), command);
+    }
+
+    @Test
     public void parse_missingFilePath_throwsParseException() {
         assertParseFailure("", MESSAGE_MISSING_FILE_PATH + "\n" + MESSAGE_USAGE);
         assertParseFailure(" ", MESSAGE_MISSING_FILE_PATH + "\n" + MESSAGE_USAGE);
@@ -69,6 +76,42 @@ public class ImportCommandParserTest {
         assertParseFailure(
                 "contacts.json -f contacts.json",
                 "Unexpected text before the first parameter: 'contacts.json'.");
+    }
+
+    @Test
+    public void parse_unmatchedOpeningQuote_throwsParseException() {
+        String filePath = "\"contacts.json";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
+    }
+
+    @Test
+    public void parse_unmatchedClosingQuote_throwsParseException() {
+        String filePath = "contacts.json\"";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
+    }
+
+    @Test
+    public void parse_singleDoubleQuote_throwsParseException() {
+        String filePath = "\"";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
+    }
+
+    @Test
+    public void parse_emptyQuotes_throwsParseException() {
+        String filePath = "\"\"";
+        assertParseFailure(" -f " + filePath, MESSAGE_MISSING_FILE_PATH + "\n" + ImportCommand.MESSAGE_USAGE);
+    }
+
+    @Test
+    public void parse_unquotedPathWithOddQuotes_throwsParseException() {
+        String filePath = "contacts\".json";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_UNMATCHED_QUOTES);
+    }
+
+    @Test
+    public void parse_unquotedPathWithQuotes_throwsParseException() {
+        String filePath = "a\"b\"c.json";
+        assertParseFailure(" -f " + filePath, ImportCommandParser.MESSAGE_FILENAME_CONTAINS_QUOTES);
     }
 
     private void assertParseFailure(String userInput, String expectedMessage) {
