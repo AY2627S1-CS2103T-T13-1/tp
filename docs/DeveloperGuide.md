@@ -905,20 +905,32 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 ### Glossary
 
 * **Alias**: A user-defined, case-sensitive alternative command word that invokes a built-in coNnectUS command.
+* **Alphanumeric**: Consisting of letters (A–Z, a–z) and digits (0–9), without spaces or special characters.
 * **ASCII (American Standard Code for Information Interchange)**: A character-encoding standard containing 128 characters, including letters, digits, punctuation, and control characters.
 * **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
+* **Case-sensitive / Case-insensitive**: Whether uppercase and lowercase letters are treated as different. For example, case-sensitive matching distinguishes `f` from `F`.
+* **CLI (Command Line Interface)**: A way to interact with an application by typing commands.
 * **Command**: The string of words you enter in order to make use of a feature of the program.
 * **(Command-line) Parameters/Arguments/Fields**: The input that you add into commands.
 * **(Command) Switch**: An argument modifier added to a command to change how it behaves.
+* **Comparator**: An object that determines the ordering of contacts. coNnectUS uses comparators to keep pinned contacts first and apply the selected sorting criterion and order.
 * **Context**: Where/how a user of coNnectUS met the corresponding contact.
 * **Domain Name**: Refers to a human-readable string used to visit a website.
 * **Export**: Create a data file that contains a number of contacts specified by the user.
+* **Filtered Contact List**: The contacts currently selected for display by the active filter, such as search results. List indices refer to positions in this displayed list.
 * **GUI**: Graphical User Interface / User Interface. Refers to the visual elements with which you interact with to use the program.
+* **Home Folder**: The folder containing the coNnectUS JAR, where the app’s data and preference files are stored.
 * **Import**: Using information from an existing data file to create contacts previously specified.
+* **JAR** (Java Archive): The `.jar` file used to distribute and launch coNnectUS.
+* **JSON (JavaScript Object Notation)**: A text-based data format used to store coNnectUS contacts, command aliases and user preferences, and to import and export contacts.
 * **List Index**: The item’s position in the contact list. This always begins at `1`.
 * **Mainstream OS**: Windows, Linux, Unix, or macOS.
-* **Special Characters**: Symbols on your keyboard that are not alpha-numeric.
+* **Pinned Contact**: A contact marked to appear above unpinned contacts. Any selected sorting criterion is applied within the pinned and unpinned groups.
+* **Prefix**: A command token that identifies the field supplied by the following value, such as `-n` for a name or `-t` for a tag.
+* **Substring**: A continuous sequence of characters within a larger string. For example, `John` is a substring of `Johnny`.
+* **Special Characters**: Symbols on your keyboard that are not alphanumeric.
 * **Tag**: A string label attached to a contact item, as a means to identify attributes related to the contact or group contacts with similar associations.
+* **Tag Category**: The type of a tag: `module`, `faculty` or `others`. A tag is specified using both its category and its name.
 
 
 --------------------------------------------------------------------------------------------------------------------
