@@ -851,22 +851,45 @@ testers are expected to do more *exploratory* testing.
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
 
-### Deleting a person
+### Deleting a contact
 
-1. Deleting a person while all persons are being shown
+1. Deleting a contact while all contacts are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
-   1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+1. Invalid inputs
 
-   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
-      Expected: Similar to previous.
+    1. Test case: `delete 0`<br>
+       Expected: No contact is deleted. An error message stating that the list index must be a positive integer is shown.
 
-1. _{ more test cases … }_
+    1. Test case: `delete INDEX_OUT_OF_RANGE` (where `INDEX_OUT_OF_RANGE` is any integer larger than the current list size)<br>
+       Expected: No contact is deleted. An error message stating that the list index is invalid is shown.
+
+### Deleting a contact by tags
+
+1. Deleting a contact when tags are present
+
+   1. Prerequisites: Populate the contact list with a few contacts, with the following tags:<br>
+      - Contact A: others tag `Friend`
+      - Contact B: others tag `Friend`, module tag `CS3000`
+      - Contact C: faculty tag `CDE`, module tag `Friend`
+
+   1. Test case: `delete -t others Friend`<br>
+      Expected: Contact __A__ is deleted, while contact __B__ is not deleted, but loses its others tag `Friend`. Contact __C__ is not affected by this command. A status message shows that one contact was deleted, and all instances of others tag `Friend` are removed.
+
+   1. Test case: `delete -t faculty cde`<br>
+      Expected: Only contact __C__ is affected, with its faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
+
+1. Invalid inputs
+
+   1. Test case: `delete -t CS3000` <br>
+      Expected: An error message stating that a valid tag category and tag name are required is shown.
+
+   1. Test case: `delete -n others Friend`<br>
+      Expected: An error message stating that `-n` is an unknown delete parameter is shown.
 
 ### Undoing and redoing changes
 
