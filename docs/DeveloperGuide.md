@@ -224,7 +224,7 @@ Users are able to register aliases for commands, enabling a more customized expe
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
 The above sequence diagram above illustrates the successful execution of
-`alias find f`.
+`alias find f`, before the alias `f` can be used in place of `find`.
 
 The `alias` feature:
 * maintains alias-to-command-word mappings in `AliasRegistry`.
@@ -239,7 +239,15 @@ The `alias` feature:
 * resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
-<box type="warning" header="**Important Note**" seamless>
+<box type="info" header="****Using a registered alias****" seamless>
+
+`AddressBookParser` uses the model’s `AliasRegistry#resolve()` to resolve command aliases before dispatching to the appropriate command parser. For example, `f -n Alex` resolves to `find -n Alex`, with the command's arguments passed to `FindCommandParser`. 
+
+User-supplied commands which are not registered aliases remain unchanged, preserving the built-in command handling and unknown-command error handling.
+
+</box>
+
+<box type="warning" header="****Important Note****" seamless>
 
 When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
 </box>
