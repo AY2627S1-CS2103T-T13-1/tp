@@ -63,7 +63,7 @@ public class ImportCommandParser implements Parser<ImportCommand> {
     }
 
     /**
-     * Parses and validates a file path that may be enclosed in double quotes.
+     * Parses and validates a raw file path that may be enclosed in double quotes.
      *
      * @throws ParseException if the quotes are unmatched, the file path contains
      *         additional double quotes, or the file path is empty
