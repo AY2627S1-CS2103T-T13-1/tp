@@ -872,6 +872,48 @@ testers are expected to do more *exploratory* testing.
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
 
+### Adding a person
+
+1. Adding a person
+
+   1. Prerequisites: Launch the app with the sample contacts.
+
+   1. Test case: `add -n Jane Tan -p 87654321 -e janetan@example.com`<br>
+      Expected: Jane Tan is added to the bottom of the list, without an address. The status message shows her details.
+
+   1. Test case: `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01 -t module CS2103T -t others friend`<br>
+      Expected: John Doe is added with the address and both tags. The status message shows his details.
+
+   1. Test case: `add -n Alex Yeoh -p 81234567 -e alexyeoh2@example.com`<br>
+      Expected: A second Alex Yeoh is added, since names do not need to be unique.
+
+1. Adding a person with a phone number or email address that is already used
+
+   1. Prerequisites: Launch the app with the sample contacts.
+
+   1. Test case: `add -n Amy Lee -p 87438807 -e amylee@example.com`<br>
+      Expected: No person is added. The status message shows that the phone number is already used by another contact.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -e alexyeoh@example.com`<br>
+      Expected: No person is added. The status message shows that the email address is already used by another contact.
+
+   1. Test case: `add -n Amy Lee -p 87438807 -e berniceyu@example.com`<br>
+      Expected: No person is added. The status message shows that the phone number and email address are already used by existing contacts.
+
+1. Adding a person with invalid values
+
+   1. Test case: `add -n Amy Lee -e amylee@example.com`<br>
+      Expected: No person is added. An error message shows the correct format.
+
+   1. Test case: `add -n Amy Lee -p 12 -e amylee@example.com`<br>
+      Expected: No person is added. An error message shows that phone numbers should be 3 to 15 digits long.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -e amylee@example.com -t club chess`<br>
+      Expected: No person is added. An error message shows the supported tag categories.
+
+   1. Other incorrect add commands to try: `add`, `add -n Amy1 -p 81111111 -e amylee@example.com`, `add -n Amy Lee -p 81111111 -e amylee`, `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
+      Expected: No person is added. An error message shows what is wrong with the command.
+
 ### Deleting a person
 
 1. Deleting a person while all persons are being shown
