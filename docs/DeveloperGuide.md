@@ -262,29 +262,31 @@ The `delete_alias` feature:
 
 ### Import feature
 
-Users are able to merge a list of contacts from a .json file with their current contact list.
+Users are able to merge a list of contacts from a `.json` file with their current contact list.
 
 <puml src="diagrams/ImportSequenceDiagram.puml" alt="Sequence for ImportCommand"/>
 
 The above sequence diagram illustrates the successful execution of `import -f contacts.json`.
 
 The `import` feature:
+
 * uses `ImportCommandParser` to validate a filepath is supplied before creating an `ImportCommand`.
 * `ImportCommand` creates an `ImportRequest` containing the path of the file to be imported.
-* `ImportRequest` is placed inside a `CommandResult`, and is returned to `LogicManager`.
+* `ImportCommand` creates an `ImportRequest` containing the output path and filtered contacts, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
 * `LogicManager` calls `executeImport`, which invokes `Storage` to read the file from the path provided.
 * `LogicManager` invokes `Model` to merge the imported contacts with the current list of contacts.
 
 ### Export feature
 
-Users are able to save a list of contacts based on a set of criterion into a .json file.
+Users are able to save a list of contacts based on a set of criteria into a `.json` file.
 
 <puml src="diagrams/ExportSequenceDiagram.puml" alt="Sequence for ExportCommand"/>
 
 The `export` feature:
-* uses `ExportCommandParser` to validate a supplied filename, and a `Predicate` to filter contacts before creating an `ExportCommand`.
+
+* `ExportCommandParser` validates the filename and constructs a predicate, then passes both to `ExportCommand`.
 * `ExportCommand` uses the supplied `Predicate` to retrieve the filtered list of contacts.
-* `ExportCommand` creates an `ExportRequest` containing the filename and filtered contacts, and is returned to `LogicManager`.
+* `ExportCommand` creates an `ExportRequest` containing the output path and filtered contacts, wraps it in a `CommandResult`, and returns the result to `LogicManager`.
 * `LogicManager` invokes `Storage` to save the filtered contacts to a file with the supplied filename.
 
 ### Tags for contacts
