@@ -905,9 +905,11 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 ### Glossary
 
 * **Alias**: A user-defined, case-sensitive alternative command word that invokes a built-in coNnectUS command.
+* **Alphanumeric**: Consisting of letters (A–Z, a–z) and digits (0–9), without spaces or special characters.
 * **ASCII (American Standard Code for Information Interchange)**: A character-encoding standard containing 128 characters, including letters, digits, punctuation, and control characters.
 * **(Built-in) command word**: A predefined, case-sensitive keyword that identifies a supported command in coNnectUS, such as `add`, `find`, or `delete`.
 * **Case-sensitive / Case-insensitive**: Whether uppercase and lowercase letters are treated as different. For example, case-sensitive matching distinguishes `f` from `F`.
+* **CLI (Command Line Interface)**: A way to interact with an application by typing commands.
 * **Command**: The string of words you enter in order to make use of a feature of the program.
 * **(Command-line) Parameters/Arguments/Fields**: The input that you add into commands.
 * **(Command) Switch**: An argument modifier added to a command to change how it behaves.
