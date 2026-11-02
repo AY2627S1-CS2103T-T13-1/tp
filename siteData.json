@@ -52,6 +52,7 @@
         "common-classes": "Common classes",
         "implementation": "Implementation",
         "dark-and-light-themes": "Dark and light themes",
+        "finding-contacts": "Finding contacts",
         "sorting-contacts": "Sorting contacts",
         "pinning-a-contact": "Pinning a contact",
         "bulk-deletion-by-tags": "Bulk deletion by tags",
@@ -74,11 +75,12 @@
         "pinning-and-unpinning-contacts": "Pinning and Unpinning contacts",
         "sorting-contacts-2": "Sorting contacts",
         "tagging-a-contact": "Tagging a contact",
-        "deleting-a-person": "Deleting a person",
+        "deleting-a-contact": "Deleting a contact",
+        "deleting-a-contact-by-tags": "Deleting a contact by tags",
+        "finding-a-contact": "Finding a contact",
         "undoing-and-redoing-changes": "Undoing and redoing changes",
         "adding-and-using-aliases": "Adding and using aliases",
-        "deleting-aliases": "Deleting aliases",
-        "saving-data": "Saving data"
+        "deleting-aliases": "Deleting aliases"
       },
       "headingKeywords": {}
     },
