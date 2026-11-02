@@ -883,24 +883,24 @@ testers are expected to do more *exploratory* testing.
     1. Test case: `unpin 1`<br>
     Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
 
-1. Selected person is already pinned or unpinned
+1. Selected contact is already pinned or unpinned
 
     1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
 
-    1. Test case: `pin 1`, where contact at index `1` is pinned<br>
+    1. Test case: `pin 1`, where the contact at index `1` is pinned<br>
     Expected: The contact at index `1` is not modified and an error message is returned, stating that the selected contact is already pinned.
 
-    1. Test case: `unpin 3`, where contact at index `3` is unpinned <br>
+    1. Test case: `unpin 3`, where the contact at index `3` is unpinned <br>
     Expected: The contact at index `3` is not modified and an error message is returned, stating that the selected contact is already unpinned.
 
-### Sorting persons
+### Sorting contacts
 
 1. Sorting contacts using the supported sorts
 
     1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list and none of them are pinned.
 
     1. Test case: `sort name asc`<br>
-    Expected: Contact are now ordered by their name in ascending alphabetical order (A-Z).
+    Expected: Contacts are now ordered by their name in ascending alphabetical order (A-Z).
 
     1. Test case: `sort name desc`<br>
     Expected: Contacts are now ordered by their name in descending alphabetical order (Z-A).
@@ -913,10 +913,10 @@ testers are expected to do more *exploratory* testing.
     1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
 
     1. Test case: `sort name asc`<br>
-    Expected: Pinned contacts still appear above unpinned persons. Pinned and unpinned contacts are ordered by their name in ascending alphabetical order (A-Z).
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in ascending alphabetical order (A-Z).
 
     1. Test case: `sort name desc`<br>
-    Expected: Pinned contacts still appear above unpinned persons. Pinned and unpinned contacts are ordered by their name in descending alphabetical order (Z-A).
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in descending alphabetical order (Z-A).
 
 1. Attempting to sort with unsupported sorts
 
@@ -941,7 +941,7 @@ testers are expected to do more *exploratory* testing.
     Expected: No contacts are created. An error message is displayed, describing the accepted values for tag names.
 
     1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
-    Expected: No contacts are created. An error message is displayed, warning that a person should not have more than 5 tags.
+    Expected: No contacts are created. An error message is displayed, warning that a contact should not have more than 5 tags.
    
 
 1. Editing an existing contact
@@ -951,7 +951,7 @@ testers are expected to do more *exploratory* testing.
     1. Test case: `edit 1 -t others friend`<br>
     Expected: The contact at index `1` now has only an `others` tag with the tag name `friend`. Any other tags prior to running `edit` are removed.
 
-    1. Test case: `edit 1 -t`, where contact at index `1` already has tags.<br>
+    1. Test case: `edit 1 -t`, where the contact at index `1` already has tags.<br>
     Expected: The contact at index `1` now has no tags. Other properties are unmodified.
 
     1. Test case: `edit 1 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
