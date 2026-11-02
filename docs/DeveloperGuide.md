@@ -807,7 +807,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
 **MSS:**
 
-1. User specifies the `export` command with a filename and optional contact filtering criterion.
+1. User specifies the `export` command with a filename and optional contact filtering criteria.
 2. coNnectUS identifies all contacts matching every specified criterion.
 3. coNnectUS saves all matching contacts to a JSON file with the user-specified file name.
 4. coNnectUS displays a success message indicating the exported filename.
