@@ -243,7 +243,7 @@ The `alias` feature:
 
 <box type="info" header="****Using a registered alias****" seamless>
 
-`AddressBookParser` uses the model’s `AliasRegistry#resolve()` to resolve command aliases before dispatching to the appropriate command parser. For example, `f -n Alex` resolves to `find -n Alex`, with the command's arguments passed to `FindCommandParser`. 
+`AddressBookParser` uses the model’s `AliasRegistry#resolve()` to resolve command aliases before dispatching to the appropriate command parser. For example, `f -n Alex` resolves to `find -n Alex`, with the command's arguments passed to `FindCommandParser`.
 
 User-supplied commands which are not registered aliases remain unchanged, preserving the built-in command handling and unknown-command error handling.
 
@@ -936,7 +936,7 @@ testers are expected to do more *exploratory* testing.
 
    1. Test case: `f -n Alex`, then `find -n Alex`<br>
       Expected: Both commands show contacts whose names match `Alex` (if any). The original `find` command remains usable.
-      
+
    1. Test case: `f`<br>
       Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
 
@@ -975,7 +975,7 @@ testers are expected to do more *exploratory* testing.
    1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and/or add the necessary aliases to set up the mappings as required.
 
         ```text
-        Registered alias(es): 
+        Registered alias(es):
         find: f
         list: F
         ```
@@ -984,7 +984,7 @@ testers are expected to do more *exploratory* testing.
       Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
 
    1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
-      Expected: The first command is rejected as an unknown command because the alias had previously been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
+      Expected: The first command is rejected as unknown because the alias had previously been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
 
    1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
       Expected: `f` is rejected as an unknown command as its successful deletion is persisted in the alias data file.
