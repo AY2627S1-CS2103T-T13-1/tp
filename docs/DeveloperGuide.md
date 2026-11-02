@@ -150,8 +150,8 @@ The `Model` component,
 <puml src="diagrams/StorageClassDiagram.puml" width="550" />
 
 The `Storage` component,
-* can save both address book data, alias data and user preference data in JSON format, and read them back into corresponding objects.
-* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
+* can save address book data, alias data and user preference data in the JSON format, and read them back into corresponding objects.
+* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage`, `JsonUserPrefsStorage` and `JsonAliasStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`).
 * uses `AliasLoadResult` to bundle `AliasRegistry` with warnings for skipped alias entries. `MainApp` uses this result to initialize the model and generate startup warnings.
 
@@ -225,7 +225,7 @@ Users are able to register aliases for commands, enabling a more customized expe
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
+The sequence diagram above illustrates the successful execution of
 `alias find f`, before the alias `f` can be used in place of `find`.
 
 The `alias` feature:
@@ -260,7 +260,7 @@ Users are able to remove previously registered alias entries that they do not re
 
 <puml src="diagrams/DeleteAliasSequenceDiagram.puml" alt="Sequence for delete_alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
+The sequence diagram above illustrates the successful execution of
 `delete_alias s`, assuming that the user has previously registered `s` as an alias for `sort`.
 
 The `delete_alias` feature:
@@ -936,7 +936,7 @@ testers are expected to do more *exploratory* testing.
 
    1. Test case: `f -n Alex`, then `find -n Alex`<br>
       Expected: Both commands show contacts whose names match `Alex` (if any). The original `find` command remains usable.
-
+      
    1. Test case: `f`<br>
       Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
 
@@ -944,7 +944,7 @@ testers are expected to do more *exploratory* testing.
       Expected: All available contacts are shown.
 
    1. Test case: `alias list F`, execute `F` and then `f -n Alex`<br>
-      Expected: The second command shows all available contacts, while the third command filters contacts by name. Aliases are **case-sensitive**, enabling users to register distinct to _different built-in commands_.
+      Expected: `F` shows all available contacts, while `f -n Alex` filters contacts by name, with `F` and `f` being distinct aliases.
 
    1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
       Expected: The registered aliases are retained, since aliases are persisted across sessions.
@@ -960,10 +960,10 @@ testers are expected to do more *exploratory* testing.
       Expected: An error message states that the _alias conflicts with a built-in command word_.
 
    1. Test cases: `alias FIND search`, `alias f search`<br>
-      Expected: Each command is rejected because the target string must be a **lowercase built-in command word**.
+      Expected: Each command is rejected because the target command must be an existing **lowercase built-in command word**.
 
    1. Test cases: `alias find f1`, `alias find 搜索`<br>
-      Expected: None of the alias creation commands are successful. An error message states that aliases must contain only lowercase and uppercase ASCII letters in both cases.
+      Expected: None of the alias creation commands are successful. The error message informs the users aliases may only contain lowercase and uppercase ASCII letters in both test cases.
 
    1. Test cases: `alias`, `alias find`, `alias find two words`<br>
       Expected: None of the alias creation commands are successful. An error message shows the correct syntax of the command and sample usage instructions.
@@ -972,7 +972,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting an alias and checking case sensitivity
 
-   1. Prerequisites: Ensure `f` is registered to `find` and `F` is registered to `list`. An listing of current aliases should **match the output below**. Otherwise, delete and then add the necessary aliases to set up these mappings as required.
+   1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and add the necessary aliases to set up the mappings as required.
 
         ```text
         Registered alias(es): 
@@ -984,10 +984,10 @@ testers are expected to do more *exploratory* testing.
       Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
 
    1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
-      Expected: The first command is rejected as an unknown as the command alias had been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
+      Expected: The first command is rejected as unknown as the command alias had been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
 
    1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
-      Expected: `f` is rejected as an unknown command, since the change in Step 2 is persisted in storage.
+      Expected: `f` is rejected as an unknown command as its successful deletion is persisted in the alias data file.
 
    1. Test case: `alias list f`, then `f`<br>
       Expected: The deleted alias can now be registered to a different command. `f` shows all contacts after being registered as a new alias.
@@ -997,7 +997,7 @@ testers are expected to do more *exploratory* testing.
    1. Prerequisites: Remove the alias `f` if it is registered, and keep `F` registered to `list`.
 
    1. Test case: `delete_alias f`<br>
-      Expected: An error message states that `f` was **not previously registered** (after executing the prerequisite step).
+      Expected: An error message states that `f` was **not previously registered**.
 
    1. Test cases: `delete_alias`, `delete_alias f F`<br>
       Expected: No aliases are removed as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
