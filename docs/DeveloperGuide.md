@@ -820,7 +820,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
 1. User specifies the `import` command with the path to a JSON address book file.
 2. coNnectUS reads the contacts from the specified file.
-3. coNnectUs merges the imported contacts into the current address book, retaining existing contacts and skipping contacts that share an existing phone number or email address.
+3. coNnectUS merges the imported contacts into the current address book, retaining existing contacts and skipping imported contacts that share an existing phone number or email address.
 4. coNnectUS displays the number of imported contacts and skipped duplicates.
 
    Use case ends.
@@ -837,10 +837,10 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes from Step 1.
 
-* 2a. The specified file cannot be found.
+* 2a. The specified file cannot be read, as it cannot be found.
     * 2a1. coNnectUS displays an error message indicating that the file was not found.
 
-      Use case ends.
+      Use case resumes from Step 1.
 
 * 2b. The specified file cannot be read due to insufficient permissions.
     * 2b1. coNnectUS displays an error message indicating that the file cannot be read.
@@ -850,7 +850,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 * 2c. The specified file is not a valid address book JSON file.
     * 2c1. coNnectUS displays an error message indicating that the file format is invalid.
 
-      Use case ends.
+      Use case resumes from Step 1.
 
 ### Non-Functional Requirements
 
