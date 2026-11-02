@@ -22,7 +22,7 @@ In addition, we also:
 
 #### AI Usage
 - [@shijieteo](https://github.com/shijieteo/) — Identifying singleton design pattern in `PersonComparatorFactory`, modifying CSS/Ui elements to include tag colors, tag legend and writing of test cases.
-- [@RyanNgCT](https://github.com/RyanNgCT/) — Modifying the behavior of GUI elements in the migration of `HelpWindow` to `UserGuideAccessWindow`, scaffolding the architecture for [Alias Storage](#storage-component) (and its sub-components), first-pass scanning of PRs in code reviews (flagged nits and issues are subject to my scrutiny and evaluation) and my writing of test cases.
+- [@RyanNgCT](https://github.com/RyanNgCT/) — Modifying the behavior of GUI elements in the migration of `HelpWindow` to `UserGuideAccessWindow`, scaffolding the architecture for [Alias Storage](#storage-component) (and its sub-components), first-pass scanning of PRs in code reviews (flagged nits and issues are subject to my scrutiny and evaluation) and writing of test cases.
 - [@draxche](https://github.com/draxche/) — Clarifying of logic for deleting tag instances in `DeleteCommand`, checking and rectifying of edge cases (i.e. dealing with whitespace in argument parsing), idea generation for documentation, writing of test cases.
 - [@Alloyshoes](https://github.com/Alloyshoes) — Bug testing, ensuring code conformance to Java/Git standards, writing of test cases.
 - [@idealfarhand](https://github.com/idealfarhand) — Bug testing, code refactoring, implementation idea generation and writing of test cases.
