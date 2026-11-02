@@ -26,10 +26,12 @@ public class ImportCommandParser implements Parser<ImportCommand> {
             "Filename must not contain double quotes.";
     public static final String MESSAGE_UNMATCHED_QUOTES =
             "The file path contains unmatched double quotes.";
+    public static final String MESSAGE_TEXT_AFTER_CLOSING_QUOTE =
+            "The file path contains text after the closing quote.";
+
     private static final Prefix[] IMPORT_PREFIXES = {
         PREFIX_FILENAME
     };
-
     /**
      * Parses the supplied arguments and creates an import command.
      *
@@ -71,30 +73,23 @@ public class ImportCommandParser implements Parser<ImportCommand> {
     private String parseQuotedFilePath(String rawFilePath) throws ParseException {
         String filePath = StringUtil.stripWhitespace(rawFilePath);
 
-        boolean startsWithQuote = filePath.startsWith("\"");
-        boolean endsWithQuote = filePath.endsWith("\"");
+        if (filePath.startsWith("\"")) {
+            int closingQuoteIndex = filePath.indexOf('"', 1);
+            String remainder = filePath.substring(closingQuoteIndex + 1);
 
-        if (startsWithQuote != endsWithQuote) {
-            throw new ParseException(MESSAGE_UNMATCHED_QUOTES);
+            if (!remainder.isEmpty()) {
+                throw new ParseException(String.format(MESSAGE_TEXT_AFTER_CLOSING_QUOTE, remainder));
+            }
+
+            filePath = filePath.substring(1, closingQuoteIndex);
         }
 
-        if (startsWithQuote) {
-            if (filePath.length() < 2) {
-                throw new ParseException(MESSAGE_UNMATCHED_QUOTES);
-            }
-
-            filePath = filePath.substring(1, filePath.length() - 1);
-
-            if (filePath.contains("\"")) {
-                throw new ParseException(String.format(MESSAGE_FILENAME_CONTAINS_QUOTES));
-            }
+        if (filePath.contains("\"")) {
+            throw new ParseException(MESSAGE_FILENAME_CONTAINS_QUOTES);
         }
 
         if (StringUtil.stripWhitespace(filePath).isEmpty()) {
-            throw new ParseException(
-                    MESSAGE_MISSING_FILE_PATH
-                            + "\n"
-                            + ImportCommand.MESSAGE_USAGE);
+            throw new ParseException(MESSAGE_MISSING_FILE_PATH + "\n" + ImportCommand.MESSAGE_USAGE);
         }
 
         return filePath;
