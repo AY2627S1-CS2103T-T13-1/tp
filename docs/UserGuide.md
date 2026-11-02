@@ -245,7 +245,7 @@ Format: `pin INDEX`, `unpin INDEX`
 
 Examples:
 * `list` followed by `pin 3` pins the 3rd contact in the address book.
-* `find -n Bob` followed by `pin 5` pins the 5th contact in the results of the `find` command. 
+* `find -n Bob` followed by `pin 5` pins the 5th contact in the results of the `find` command.
 * `find -e mary@gmail.com` followed by `unpin 1` unpins the 1st contact in the results of the `find` command.
 
 ### Sorting contacts
