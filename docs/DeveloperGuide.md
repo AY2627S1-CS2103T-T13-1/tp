@@ -131,7 +131,8 @@ The `Model` component,
 * stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
 * keeps a history of address book states in a `VersionedAddressBook`, so that changes can be undone and redone (see [Undo/redo feature](#undo-redo-feature)).
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
-* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
+* does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components).
+* stores alias-to-command-word mappings in an `AliasRegistry`, exposing operations to register, delete and retrieve aliases. Alias mappings are _maintained independently_ from the address book’s undo/redo history.
 
 
 <box type="info" seamless>
@@ -149,9 +150,10 @@ The `Model` component,
 <puml src="diagrams/StorageClassDiagram.puml" width="550" />
 
 The `Storage` component,
-* can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
-* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
-* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+* can save address book data, alias data and user preference data in the JSON format, and read them back into corresponding objects.
+* is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage`, `JsonUserPrefsStorage` and `JsonAliasStorage` (one class per data file).
+* depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`).
+* uses `AliasLoadResult` to bundle `AliasRegistry` with warnings for skipped alias entries. `MainApp` uses this result to initialize the model and generate startup warnings.
 
 ### Common classes
 
@@ -236,8 +238,8 @@ Users are able to register aliases for commands, enabling a more customized expe
 
 <puml src="diagrams/AliasSequenceDiagram.puml" alt="Sequence for alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
-`alias find f`.
+The sequence diagram above illustrates the successful execution of
+`alias find f`, before the alias `f` can be used in place of `find`.
 
 The `alias` feature:
 * maintains alias-to-command-word mappings in `AliasRegistry`.
@@ -252,7 +254,15 @@ The `alias` feature:
 * resolves an alias to its command word before parsing the target command's arguments. Argument values remain unchanged.
 * saves the updated alias mappings through `LogicManager` and the storage component, so that successfully saved registrations persist across sessions, through `data/aliases.json`.
 
-<box type="warning" header="**Important Note**" seamless>
+<box type="info" header="****Using a registered alias****" seamless>
+
+`AddressBookParser` uses the model’s `AliasRegistry#resolve()` to resolve command aliases before dispatching to the appropriate command parser. For example, `f -n Alex` resolves to `find -n Alex`, with the command's arguments passed to `FindCommandParser`.
+
+User-supplied commands which are not registered aliases remain unchanged, preserving the built-in command handling and unknown-command error handling.
+
+</box>
+
+<box type="warning" header="****Important Note****" seamless>
 
 When adding a new built-in command, add its `COMMAND_WORD` to `CommandCatalog.BUILT_IN_COMMAND_WORDS` so that aliases can be registered to it.
 </box>
@@ -263,7 +273,7 @@ Users are able to remove previously registered alias entries that they do not re
 
 <puml src="diagrams/DeleteAliasSequenceDiagram.puml" alt="Sequence for delete_alias command"/>
 
-The above sequence diagram above illustrates the successful execution of
+The sequence diagram above illustrates the successful execution of
 `delete_alias s`, assuming that the user has previously registered `s` as an alias for `sort`.
 
 The `delete_alias` feature:
@@ -292,13 +302,15 @@ The `delete_alias` feature:
 
 The undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
 
-* `VersionedAddressBook#commit()` -- Saves a copy of the current address book state in its history, if it differs from the current saved state.
-* `VersionedAddressBook#undo()` -- Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` -- Restores a previously undone address book state from its history.
+* `VersionedAddressBook#commit(Comparator<Person>)` -- Saves a copy of the current address book state and its sort order in its history, if either differs from the current saved state.
+* `VersionedAddressBook#undo()` -- Restores the previous address book state and its sort order from its history.
+* `VersionedAddressBook#redo()` -- Restores a previously undone address book state and its sort order from its history.
 
-These operations are exposed in the `Model` interface as `Model#commit()`, `Model#undo()` and `Model#redo()` respectively, together with `Model#canUndo()` and `Model#canRedo()`. The method names do not mention the address book, so that other data (e.g. aliases) can be added to the saved state in the future.
+Each saved state is a `SavedState`, which holds a copy of the address book and the comparator that it is sorted by. This is so that undoing a `sort` command restores the previous order.
 
-`LogicManager` calls `Model#commit()` after every command that executes successfully. Individual commands do not need to commit, and a command that does not change the contact list (e.g. `list`, `find`, `theme` or `alias`) does not save a new state.
+These operations are exposed in the `Model` interface as `Model#commit()`, `Model#undo()` and `Model#redo()` respectively, together with `Model#canUndo()` and `Model#canRedo()`. Only the contacts and their sort order are saved in the history. Aliases are kept separately in `AliasRegistry`, so changes made with `alias` and `delete_alias` are not undone or redone.
+
+`LogicManager` calls `Model#commit()` after every command that executes successfully, except `undo` and `redo`, which move through the history instead of adding to it. Individual commands do not need to commit, and a command that changes neither the contact list nor its sort order (e.g. `list`, `find`, `theme` or `alias`) does not save a new state.
 
 Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
 
@@ -319,7 +331,7 @@ Step 3. The user executes `add -n David …​` to add a new person. `LogicManag
 **Note:** If a command fails its execution, `LogicManager` will not call `Model#commit()`, so the address book state will not be saved into the `addressBookStateList`.
 </box>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undo()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state. The contacts are then sorted again so that pinned contacts stay on top, and all contacts are shown.
+Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undo()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state. The sort order saved with that state is also restored, and all contacts are shown.
 
 <puml src="diagrams/UndoRedoState3.puml" alt="UndoRedoState3" />
 
@@ -339,13 +351,11 @@ The following sequence diagram shows how an undo operation goes through the `Log
 **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </box>
 
-The `Model#commit()` call made after the `undo` command does not save a new state, since the address book is the same as the restored state.
-
 Similarly, how an undo operation goes through the `Model` component is shown below:
 
 <puml src="diagrams/UndoSequenceDiagram-Model.puml" alt="UndoSequenceDiagram-Model" />
 
-The `redo` command does the opposite — it calls `Model#redo()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+The `redo` command does the opposite — it calls `Model#redo()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book and its sort order to that state. Like `undo`, `redo` is not followed by a call to `Model#commit()`.
 
 <box type="info" seamless>
 
@@ -368,7 +378,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 **Aspect: How undo & redo execute:**
 
-* **Alternative 1 (current choice):** Saves the entire address book.
+* **Alternative 1 (current choice):** Saves the entire address book, together with its sort order.
   * Pros: Easy to implement.
   * Cons: May have performance issues in terms of memory usage.
 
@@ -379,9 +389,9 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 **Aspect: Where the address book state is saved:**
 
-* **Alternative 1 (current choice):** `LogicManager` calls `Model#commit()` after every command, and a state is only saved if the address book has changed.
+* **Alternative 1 (current choice):** `LogicManager` calls `Model#commit()` after every command except `undo` and `redo`, and a state is only saved if the address book or its sort order has changed.
   * Pros: New commands that change the contact list can be undone without extra code.
-  * Cons: The address book is compared with the current saved state after every command.
+  * Cons: The address book and its sort order are compared with the current saved state after every command.
 
 * **Alternative 2:** Each command that changes the contact list calls `Model#commit()` itself.
   * Pros: No comparison is needed after each command.
@@ -780,6 +790,120 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
+#### Use Case: UC14 - Undo a change
+
+**Actor: User**
+
+**MSS:**
+1. User requests to undo the most recent change to the contacts or their sort order.
+2. coNnectUS restores the contacts and their sort order to the state before that change, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no changes to undo (e.g. no change has been made since the app was started, or all changes have already been undone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no changes to undo.
+
+      Use case ends.
+
+#### Use Case: UC15 - Redo an undone change
+
+**Actor: User**
+
+**Preconditions:** User has undone a change ([UC14](#use-case-uc14-undo-a-change)).
+
+**MSS:**
+1. User requests to redo the most recently undone change.
+2. coNnectUS reapplies the change to the contacts or their sort order, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no undone changes to redo (e.g. a new change to the contacts or their sort order was made after the undo, or all undone changes have already been redone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no undone changes to redo.
+
+      Use case ends.
+
+#### Use Case: UC16 - Export Contacts
+
+**Actor: User**
+
+**MSS:**
+
+1. User specifies the `export` command with a filename and optional contact filtering criteria.
+2. coNnectUS identifies all contacts matching every specified criterion.
+3. coNnectUS saves all matching contacts to a JSON file with the user-specified file name.
+4. coNnectUS displays a success message indicating the exported filename.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. User does not provide a filename.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
+
+      Use case resumes from Step 1.
+
+* 1b. User provides an invalid filename.
+    * 1b1. coNnectUS displays an error message explaining the filename requirements.
+
+      Use case resumes from Step 1.
+
+* 1c. User provides an invalid, unknown parameter.
+    * 1c1. coNnectUS displays an error message indicating that an unknown export parameter has been provided.
+
+      Use case resumes from Step 1.
+
+* 2a. No contacts match all the specified criteria.
+    * 2a1. coNnectUS displays a message indicating that no matching contacts were found.
+
+      Use case resumes from Step 1.
+
+* 3a. coNnectUS is unable to create or write to the export file.
+    * 3a1. coNnectUS displays an error message indicating that the file could not be saved.
+
+      Use case ends.
+
+#### Use Case: UC17 - Import Contacts
+
+**Actor: User**
+
+**MSS:**
+
+1. User specifies the `import` command with the path to a JSON address book file.
+2. coNnectUS reads the contacts from the specified file.
+3. coNnectUS merges the imported contacts into the current address book, retaining existing contacts and skipping imported contacts that share an existing phone number or email address.
+4. coNnectUS displays the number of imported contacts and skipped duplicates.
+
+   Use case ends.
+
+**Extensions:**
+
+* 1a. User does not provide a file path.
+    * 1a1. coNnectUS displays an error message with the correct command format and usage instructions.
+
+      Use case resumes from Step 1.
+
+* 1b. User provides an invalid command format or unknown parameter.
+    * 1b1. coNnectUS displays an error message indicating that the parameter is either unknown, or cannot be specified more than once.
+
+      Use case resumes from Step 1.
+
+* 2a. The specified file cannot be read, as it cannot be found.
+    * 2a1. coNnectUS displays an error message indicating that the file was not found.
+
+      Use case resumes from Step 1.
+
+* 2b. The specified file cannot be read due to insufficient permissions.
+    * 2b1. coNnectUS displays an error message indicating that the file cannot be read.
+
+      Use case ends.
+
+* 2c. The specified file is not a valid address book JSON file.
+    * 2c1. coNnectUS displays an error message indicating that the file format is invalid.
+
+      Use case resumes from Step 1.
+
 ### Non-Functional Requirements
 
 1. Should work without an internet connection.
@@ -838,7 +962,6 @@ testers are expected to do more *exploratory* testing.
    1. Relaunch the app by double-clicking the JAR file.<br>
        Expected: The most recent window size and location are retained.
 
-1. _{ more test cases … }_
 
 ### Changing the theme
 
@@ -850,6 +973,141 @@ testers are expected to do more *exploratory* testing.
 
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
+
+### Adding a contact
+
+1. Adding a contact with valid values
+
+   1. Prerequisites: Launch the app with the sample contacts.
+
+   1. Test case: `add -n Jane Tan -p 87654321 -e janetan@example.com`<br>
+      Expected: A new contact, Jane Tan, is added to the bottom of the list, without an address. The status message shows that she has been added, together with her details.
+
+   1. Test case: `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01 -t module CS2103T -t others friend`<br>
+      Expected: John Doe is added with the address and both tags. The status message shows that he has been added, together with his details.
+
+   1. Test case: `add -n Alex Yeoh -p 81234567 -e alexyeoh2@example.com`<br>
+      Expected: A second Alex Yeoh is added, since names do not need to be unique.
+
+1. Adding a contact with a phone number or email address that is already used
+
+   1. Prerequisites: Launch the app with the sample contacts.
+
+   1. Test case: `add -n Amy Lee -p 87438807 -e amylee@example.com`<br>
+      Expected: No contact is added, as the phone number is already used by Alex Yeoh. The status message shows that the phone number is already used by another contact.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -e alexyeoh@example.com`<br>
+      Expected: No contact is added, as the email address is already used by Alex Yeoh. The status message shows that the email address is already used by another contact.
+
+   1. Test case: `add -n Amy Lee -p 87438807 -e berniceyu@example.com`<br>
+      Expected: No contact is added, as the phone number is already used by Alex Yeoh and the email address is already used by Bernice Yu. The status message shows that the phone number and email address are already used by existing contacts.
+
+1. Adding a contact with invalid values
+
+   1. Test cases: `add`, `add -n Amy Lee -e amylee@example.com`<br>
+      Expected: No contact is added. An error message shows the command syntax and sample usage.
+
+   1. Test case: `add -n Amy Lee -p 12 -e amylee@example.com`<br>
+      Expected: No contact is added. An error message shows that phone numbers should be between 3 and 15 digits long.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -e amylee@example.com -t club chess`<br>
+      Expected: No contact is added. An error message shows that the specified tag category is unsupported and lists the supported categories.
+
+   1. Test case: `add -n Amy1 -p 81111111 -e amylee@example.com`<br>
+      Expected: No contact is added. An error message shows that names should only contain letters and spaces, and should start with a letter.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -e amylee`<br>
+      Expected: No contact is added. An error message shows the constraints for valid email addresses.
+
+   1. Test case: `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
+      Expected: No contact is added. An error message shows that `-p` is supplied more than once, which is not allowed since a contact can only have one phone number.
+
+### Pinning and Unpinning contacts
+
+1. Pinning and then unpinning the same contact
+
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Ensure that none of them are currently pinned.
+
+    1. Test case: `pin 2`<br>
+    Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
+
+    1. Test case: `unpin 1`<br>
+    Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
+
+1. Selected contact is already pinned or unpinned
+
+    1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
+
+    1. Test case: `pin 1`, where the contact at index `1` is pinned<br>
+    Expected: The contact at index `1` is not modified and an error message is returned, stating that the selected contact is already pinned.
+
+    1. Test case: `unpin 3`, where the contact at index `3` is unpinned <br>
+    Expected: The contact at index `3` is not modified and an error message is returned, stating that the selected contact is already unpinned.
+
+### Sorting contacts
+
+1. Sorting contacts using the supported sorts
+
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list and none of them are pinned.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Contacts are now ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+    Expected: Contacts are now ordered by their name in descending alphabetical order (Z-A).
+
+    1. Test case: `sort NaMe DeSc`<br>
+    Expected: Sorting criteria and order are _case-insensitive_. Contacts are now ordered by their name in descending alphabetical order (Z-A).
+
+1. Sorting with pinned contacts in the contact list
+
+    1. Prerequisites: List all contacts using the `list` command, with pinned and unpinned contacts in the list.
+
+    1. Test case: `sort name asc`<br>
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in ascending alphabetical order (A-Z).
+
+    1. Test case: `sort name desc`<br>
+    Expected: Pinned contacts still appear above unpinned contacts. Pinned and unpinned contacts are ordered by their name in descending alphabetical order (Z-A).
+
+1. Attempting to sort with unsupported sorts
+
+    1. Test case: `sort tag asc`<br>
+    Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+   
+    1. Test case: `sort name`<br>
+    Expected: No sorts are applied and an error message is displayed, describing the correct command usage and currently supported sorts.
+
+       
+### Tagging a contact
+
+1. Adding a contact with tags
+
+    1. Test case: `add -n Bobby -e Bobby@gmail.com -p 91234567 -t others Friend -t module CS2103`<br>
+    Expected: A contact named `Bobby` is created with 2 tags, an `others` tag with the tag name `Friend` and a `module` tag with the tag name `CS2103`.
+
+    1. Test case: `add -n Alice -e Alice@gmail.com -p 98765432 -t others friend -t others friend -t others FrIeNd`<br>
+    Expected: A contact named `Alice` is created with 1 tag, an `others` tag with the tag name `friend`, due to _case-insensitive_ deduplication of tags.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others 1 + 1 = 2`<br>
+    Expected: No contacts are created. An error message is displayed, describing the accepted values for tag names.
+
+    1. Test case: `add -n Charlie -e Char@gmail.com -p 97538642 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+    Expected: No contacts are created. An error message is displayed, warning that a contact should not have more than 5 tags.
+   
+
+1. Editing an existing contact
+
+    1. Prerequisites: List all contacts using the `list` command, with at least one contact in the list.
+
+    1. Test case: `edit 1 -t others friend`<br>
+    Expected: The contact at index `1` now has only an `others` tag with the tag name `friend`. Any other tags prior to running `edit` are removed.
+
+    1. Test case: `edit 1 -t`, where the contact at index `1` already has tags.<br>
+    Expected: The contact at index `1` now has no tags. Other properties are unmodified.
+
+    1. Test case: `edit 1 -t others tag1 -t others tag2 -t others tag3 -t others tag4 -t others tag5 -t others tag6`<br>
+    Expected: The contact at index `1` is not modified. An error message is displayed, warning that a contact should not have more than 5 tags.
+
 
 ### Deleting a contact
 
@@ -937,6 +1195,9 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete 1`, `list`, then `undo`<br>
       Expected: `list` is skipped, and the deleted contact is back in the list.
 
+   1. Test case: `sort name asc`, `sort phone desc`, `undo`, then `add -n Zack Lim -p 99999999 -e zack@example.com`<br>
+      Expected: After `undo`, the contacts are sorted by name again. Zack Lim is placed in name order (at the bottom of the sample data), not by phone number (at the top of the unpinned contacts), since the name order is restored.
+
 1. Nothing to undo or redo
 
    1. Test case: Relaunch the app, then `undo`<br>
@@ -945,10 +1206,90 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete 1`, `undo`, `delete 2`, then `redo`<br>
       Expected: The contact list does not change, since `delete 2` cleared the redo history. The status message shows that there are no undone changes to redo.
 
+### Adding and using aliases
+
+1. Registering and using aliases
+
+   1. Prerequisites: Launch the app with multiple contacts. Use `list_alias` to check that no aliases have been registered at this point. If not, delete them using `delete_alias ALIAS_TO_DELETE`.
+
+   1. Test case: `alias find f`, then `list_alias`<br>
+      Expected: A success message confirms the registration. The alias list shows `f` registered to the `find` command.
+
+   1. Test case: `f -n Alex`, then `find -n Alex`<br>
+      Expected: Both commands show contacts whose names match `Alex` (if any). The original `find` command remains usable.
+
+   1. Test case: `f`<br>
+      Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
+
+   1. Test case: `alias list ls`, then execute `ls`<br>
+      Expected: All available contacts are shown.
+
+   1. Test case: `alias list F`, execute `F` and then `f -n Alex`<br>
+      Expected: `F` shows all available contacts, while `f -n Alex` filters contacts by name, with `F` and `f` being distinct aliases.
+
+   1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
+      Expected: The registered aliases are retained, since aliases are persisted across sessions.
+
+1. Rejecting invalid registrations
+
+   1. Prerequisites: Keep `f` registered to `find` from the previous tests.
+
+   1. Test case: `alias list f`<br>
+      Expected: An error message states that `f` already exists. Its mapping to `find` is unchanged and is persisted in storage (i.e. `aliases.json`)
+
+   1. Test case: `alias find LIST`<br>
+      Expected: An error message states that the _alias conflicts with a built-in command word_.
+
+   1. Test cases: `alias FIND search`, `alias f search`<br>
+      Expected: Each command is rejected because the target command must be an existing **lowercase built-in command word**.
+
+   1. Test cases: `alias find f1`, `alias find 搜索`<br>
+      Expected: None of the alias creation commands are successful. The error message informs the users aliases may only contain lowercase and uppercase ASCII letters in both test cases.
+
+   1. Test cases: `alias`, `alias find`, `alias find two words`<br>
+      Expected: None of the alias creation commands are successful. An error message shows the correct syntax of the command and sample usage instructions.
+
+### Deleting aliases
+
+1. Deleting an alias and checking case sensitivity
+
+   1. Prerequisites: Ensure that you only have two entries — `f` is registered to `find` and `F` is registered to `list`. A listing of the current aliases using `list_alias` should **match the output below**. Otherwise, delete and/or add the necessary aliases to set up the mappings as required.
+
+        ```text
+        Registered alias(es):
+        find: f
+        list: F
+        ```
+
+   1. Test case: `delete_alias f`, then `list_alias`<br>
+      Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
+
+   1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
+      Expected: The first command is rejected as unknown because the alias had previously been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
+
+   1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
+      Expected: `f` is rejected as an unknown command as its successful deletion is persisted in the alias data file.
+
+   1. Test case: `alias list f`, then `f`<br>
+      Expected: The deleted alias can now be registered to a different command. `f` shows all contacts after being registered as a new alias.
+
+1. Rejecting invalid deletions
+
+   1. Prerequisites: **Remove the alias `f`** if it is still registered, and keep `F` registered to `list`. The `list_alias` output should look like:
+
+        ```text
+        Registered alias(es): 
+        list: F
+        ```
+
+   1. Test case: `delete_alias f`<br>
+      Expected: An error message states that `f` was **not previously registered**.
+
+   1. Test cases: `delete_alias`, `delete_alias f F`<br>
+      Expected: No aliases are removed as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
+
 ### Saving data
 
 1. Dealing with missing/corrupted data files
 
    1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
-
-1. _{ more test cases … }_

@@ -10,13 +10,18 @@ start
 
 if () then ([command executes
 successfully])
-    :LogicManager calls
-    Model#commit();
-    if () then ([AddressBook differs from
-    current state])
-        :Purge redundant states;
-        :Save AddressBook to
-        addressBookStateList;
+    if () then ([command is not
+    undo or redo])
+        :LogicManager calls
+        Model#commit();
+        if () then ([AddressBook or
+        sort order changed])
+            :Purge redundant states;
+            :Save AddressBook and its
+            sort order to
+            addressBookStateList;
+        else ([else])
+        endif
     else ([else])
     endif
 else ([else])
