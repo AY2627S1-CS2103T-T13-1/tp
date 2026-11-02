@@ -327,6 +327,8 @@ Imports contacts from a JSON address book file and merges them into the current 
 Format: `import -f FILE_PATH`
 
 * `FILE_PATH` is the path to a JSON address book file.
+* If `FILE_PATH` contains a word starting with `-` (e.g. `contacts -backup.json`), wrap the whole path in double quotes.
+* `FILE_PATH` must not contain double quotes other than the surrounding pair.
 * Contacts with the same phone number or email address as an existing contact are skipped.
 * Imported contacts are added to the current address book; existing contacts are not replaced.
 * The command displays the number of imported and skipped contacts.
@@ -334,6 +336,7 @@ Format: `import -f FILE_PATH`
 
 Example:
 * `import -f data/exports/contacts.json`
+* `import -f "data/exports/contacts -backup.json"`
 
 ### Exporting contacts: `export`
 
