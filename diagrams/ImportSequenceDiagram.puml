@@ -1,0 +1,80 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":ImportCommandParser" as ImportCommandParser LOGIC_COLOR
+participant "i:ImportCommand" as ImportCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
+end box
+
+box Storage STORAGE_COLOR_T1
+participant ":Storage" as Storage STORAGE_COLOR
+end box
+
+[-> LogicManager : execute("import -f contacts.json")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("import -f contacts.json")
+activate AddressBookParser
+
+create ImportCommandParser
+AddressBookParser -> ImportCommandParser
+activate ImportCommandParser
+
+ImportCommandParser --> AddressBookParser
+deactivate ImportCommandParser
+
+AddressBookParser -> ImportCommandParser : parse(" -f contacts.json")
+activate ImportCommandParser
+
+create ImportCommand
+ImportCommandParser -> ImportCommand : ImportCommand(filePath)
+activate ImportCommand
+
+ImportCommand --> ImportCommandParser
+deactivate ImportCommand
+
+ImportCommandParser --> AddressBookParser
+deactivate ImportCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+ImportCommandParser -[hidden]-> AddressBookParser
+destroy ImportCommandParser
+
+AddressBookParser --> LogicManager
+deactivate AddressBookParser
+
+LogicManager -> ImportCommand : execute(m)
+activate ImportCommand
+
+create CommandResult
+ImportCommand -> CommandResult : CommandResult(message, ImportRequest(filePath))
+activate CommandResult
+
+CommandResult --> ImportCommand
+deactivate CommandResult
+
+ImportCommand --> LogicManager : r (containing ir)
+deactivate ImportCommand
+
+LogicManager -> LogicManager : executeImport(ir)
+activate LogicManager
+
+note right of LogicManager
+  Reads the file via Storage and
+  merges its contacts into Model.
+end note
+
+LogicManager --> LogicManager
+deactivate LogicManager
+
+LogicManager -> Storage : saveAddressBook(model.getAddressBook())
+activate Storage
+Storage --> LogicManager : Summary
+deactivate Storage
+
+[<-- LogicManager : Result With Summary
+deactivate LogicManager
+@enduml

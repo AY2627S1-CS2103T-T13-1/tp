@@ -58,6 +58,8 @@
         "bulk-deletion-by-tags": "Bulk deletion by tags",
         "registering-an-alias-for-a-command": "Registering an alias for a command",
         "deleting-a-particular-alias": "Deleting a particular alias",
+        "import-feature": "Import feature",
+        "export-feature": "Export feature",
         "tags-for-contacts": "Tags for contacts",
         "undo-redo-feature": "Undo/redo feature",
         "documentation-logging-testing-dev-ops": "Documentation, logging, testing, dev-ops",
