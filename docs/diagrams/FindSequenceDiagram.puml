@@ -2,8 +2,6 @@
 !include style.puml
 skinparam ArrowFontStyle plain
 
-title Find command
-
 box Logic LOGIC_COLOR_T1
 participant ":LogicManager" as LogicManager LOGIC_COLOR
 participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
@@ -11,6 +9,7 @@ participant ":FindCommandParser" as FindCommandParser LOGIC_COLOR
 participant "ArgumentTokenizer" as ArgumentTokenizer LOGIC_COLOR
 participant "ArgumentStructureValidator" as ArgumentStructureValidator LOGIC_COLOR
 participant "command:FindCommand" as FindCommand LOGIC_COLOR
+participant "r:CommandResult" as CommandResult LOGIC_COLOR
 end box
 
 box Model MODEL_COLOR_T1
@@ -62,7 +61,6 @@ destroy FindCommandParser
 AddressBookParser --> LogicManager : command
 deactivate AddressBookParser
 
-
 LogicManager -> FindCommand : execute(model)
 activate FindCommand
 
@@ -71,10 +69,17 @@ activate Model
 Model --> FindCommand
 deactivate Model
 
-FindCommand --> LogicManager : CommandResult
+create CommandResult
+FindCommand -> CommandResult
+activate CommandResult
+
+CommandResult --> FindCommand
+deactivate CommandResult
+
+FindCommand --> LogicManager : r
 deactivate FindCommand
 
-[<-- LogicManager : result
+[<-- LogicManager : r
 deactivate LogicManager
 
 @enduml
