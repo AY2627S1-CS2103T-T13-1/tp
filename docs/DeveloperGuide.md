@@ -153,7 +153,6 @@ The `Storage` component,
 * can save both address book data, alias data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`).
-* uses `JsonSerializableAliases` as the JSON representation of alias mappings stored in `data/aliases.json`.
 * uses `AliasLoadResult` to bundle `AliasRegistry` with warnings for skipped alias entries. `MainApp` uses this result to initialize the model and generate startup warnings.
 
 ### Common classes
