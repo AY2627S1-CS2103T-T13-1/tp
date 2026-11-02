@@ -1,0 +1,80 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+title Find command
+
+box Logic LOGIC_COLOR_T1
+participant ":LogicManager" as LogicManager LOGIC_COLOR
+participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
+participant ":FindCommandParser" as FindCommandParser LOGIC_COLOR
+participant "ArgumentTokenizer" as ArgumentTokenizer LOGIC_COLOR
+participant "ArgumentStructureValidator" as ArgumentStructureValidator LOGIC_COLOR
+participant "command:FindCommand" as FindCommand LOGIC_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "model:Model" as Model MODEL_COLOR
+end box
+
+[-> LogicManager : execute("find -n Alex")
+activate LogicManager
+
+LogicManager -> AddressBookParser : parseCommand("find -n Alex")
+activate AddressBookParser
+
+create FindCommandParser
+AddressBookParser -> FindCommandParser : new FindCommandParser()
+activate FindCommandParser
+FindCommandParser --> AddressBookParser
+deactivate FindCommandParser
+
+AddressBookParser -> FindCommandParser : parse(args)
+activate FindCommandParser
+
+FindCommandParser -> ArgumentTokenizer : tokenize(args, prefixes)
+activate ArgumentTokenizer
+ArgumentTokenizer --> FindCommandParser : arguments
+deactivate ArgumentTokenizer
+
+FindCommandParser -> ArgumentStructureValidator : Validate arguments
+activate ArgumentStructureValidator
+ArgumentStructureValidator --> FindCommandParser
+deactivate ArgumentStructureValidator
+
+note right of FindCommandParser
+Builds PersonMatchesCriteriaPredicate
+from parsed search criteria.
+end note
+
+create FindCommand
+FindCommandParser -> FindCommand : new FindCommand(predicate)
+activate FindCommand
+FindCommand --> FindCommandParser
+deactivate FindCommand
+
+FindCommandParser --> AddressBookParser : command
+deactivate FindCommandParser
+'Hidden arrow to position the destroy marker below the end of the activation bar.'
+FindCommandParser -[hidden]-> AddressBookParser
+destroy FindCommandParser
+
+AddressBookParser --> LogicManager : command
+deactivate AddressBookParser
+
+
+LogicManager -> FindCommand : execute(model)
+activate FindCommand
+
+FindCommand -> Model : updateFilteredPersonList(predicate)
+activate Model
+Model --> FindCommand
+deactivate Model
+
+FindCommand --> LogicManager : CommandResult
+deactivate FindCommand
+
+[<-- LogicManager : result
+deactivate LogicManager
+
+@enduml

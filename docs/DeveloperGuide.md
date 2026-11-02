@@ -179,6 +179,19 @@ The theme feature,
 * keeps the current theme and shows an error message if the stylesheet of the new theme cannot be found.
 * saves the theme in `GuiSettings`, which is written to `preferences.json` on exit. If no theme is saved, `Theme.DARK` is used.
 
+### Finding contacts
+
+Users can search for contacts by supplying one or more criteria, such as name, phone number, email address, address or tags.
+
+<puml src="diagrams/FindSequenceDiagram.puml" alt="Sequence of parsing and executing the find command" />
+
+The `find` feature:
+
+* uses `FindCommandParser` with `ArgumentTokenizer` to separate the search arguments into prefixes and values.
+* uses `ArgumentStructureValidator` to reject unknown parameters, text before the first prefix, empty values and repeated non-tag parameters. Tag parameters can be repeated to search for multiple tags.
+* creates a `PersonMatchesCriteriaPredicate` from the parsed search criteria, requiring all supplied criteria to match.
+* passes the predicate to `FindCommand`, which updates the filtered contact list in the `Model`.
+
 ### Sorting contacts
 <puml src="diagrams/SortSequenceDiagram.puml" alt="Sequence of sort command"/>
 
@@ -872,22 +885,76 @@ testers are expected to do more *exploratory* testing.
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
 
-### Deleting a person
+### Deleting a contact
 
-1. Deleting a person while all persons are being shown
+1. Deleting a contact while all contacts are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
-   1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+1. Invalid inputs
 
-   1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
-      Expected: Similar to previous.
+    1. Test case: `delete 0`<br>
+       Expected: No contact is deleted. An error message stating that the list index must be a positive integer is shown.
 
-1. _{ more test cases … }_
+    1. Test case: `delete INDEX_OUT_OF_RANGE` (where `INDEX_OUT_OF_RANGE` is any integer larger than the current list size)<br>
+       Expected: No contact is deleted. An error message stating that the list index is invalid is shown.
+
+### Deleting a contact by tags
+
+1. Deleting a contact when tags are present
+
+   1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts have matching tags.
+
+      ```text
+      add -n Aaron Tan -p 82345671 -e aarontan@example.com -t others Friend
+      add -n Beth Lim -p 82345672 -e bethlim@example.com -t others Friend -t module CS3000
+      add -n Chloe Lee -p 82345673 -e chloelee@example.com -t faculty CDE -t module Friend
+      ```
+
+   1. Test case: `delete -t others Friend`<br>
+      Expected: Aaron Tan is deleted. Beth Lim remains, with the others tag `Friend` removed. Chloe Lee is not affected by this command. A status message shows that one contact was deleted, and all instances of others tag `Friend` are removed.
+
+   1. Test case: `delete -t faculty cde`<br>
+      Expected: Only Chloe Lee is affected, with the faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
+
+1. Invalid inputs
+
+   1. Test case: `delete -t CS3000` <br>
+      Expected: An error message stating that a valid tag category and tag name are required is shown.
+
+   1. Test case: `delete -n others Friend`<br>
+      Expected: An error message stating that `-n` is an unknown delete parameter is shown.
+
+### Finding a contact
+
+1. Finding a contact when the contact list is populated
+
+   1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts match the supplied criteria.
+      ```text
+      add -n Alice Tan -p 81234561 -e alicetan@example.com -t others Friend
+      add -n Alice Lim -p 81234562 -e alexlim@example.com -t others Colleague
+      add -n Alex Lee -p 81234563 -e alexlee@example.com -t others Friend
+      ```
+      
+   1. Test case: `find -n alice`<br>
+      Expected: Alice Tan and Alice Lim are displayed. The status message shows that 2 contacts were found.
+
+   1. Test case: `find -t others friend -e alex`<br>
+      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included. The status message shows that one contact was found. 
+
+   1. Test case: `find -p 9200`<br>
+      Expected: A status message shows that no contacts were found, and an empty list is displayed. _(Assuming the above contact list of 3 contacts)_
+
+1. Invalid inputs
+
+    1. Test case: `find alice`<br>
+       Expected: An error message stating that there was unexpected text `alice` before the first parameter is shown. This means that a parameter such as `-a,-e,-t` must be supplied before `alice`. 
+
+    1. Test case: `find -a -t faculty Science`<br> 
+       Expected: An error message stating that the field for `-a` cannot be empty is shown. 
 
 ### Undoing and redoing changes
 
