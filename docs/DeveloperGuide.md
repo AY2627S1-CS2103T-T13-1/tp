@@ -266,13 +266,13 @@ Users are able to merge a list of contacts from a .json file with their current 
 
 <puml src="diagrams/ImportSequenceDiagram.puml" alt="Sequence for ImportCommand"/>
 
-The above sequence diagram illustrates the successful execution of `import -f contacts.json`,
+The above sequence diagram illustrates the successful execution of `import -f contacts.json`.
 
 The `import` feature:
 * uses `ImportCommandParser` to validate a filepath is supplied before creating an `ImportCommand`.
-* `ImportCommand` creates an `ImportRequest` containing the path of file to be imported.
+* `ImportCommand` creates an `ImportRequest` containing the path of the file to be imported.
 * `ImportRequest` is placed inside a `CommandResult`, and is returned to `LogicManager`.
-* `LogicManager` invokes `Storage` to read the file from the path provided.
+* `LogicManager` calls `executeImport`, which invokes `Storage` to read the file from the path provided.
 * `LogicManager` invokes `Model` to merge the imported contacts with the current list of contacts.
 
 ### Export feature
@@ -285,7 +285,7 @@ The `export` feature:
 * uses `ExportCommandParser` to validate a supplied filename, and a `Predicate` to filter contacts before creating an `ExportCommand`.
 * `ExportCommand` uses the supplied `Predicate` to retrieve the filtered list of contacts.
 * `ExportCommand` creates an `ExportRequest` containing the filename and filtered contacts, and is returned to `LogicManager`.
-* `LogicManager` invokes `Storage` to save the filtered contacts to a file with the supplied filename, appending `.json` to the end of the filename.
+* `LogicManager` invokes `Storage` to save the filtered contacts to a file with the supplied filename.
 
 ### Tags for contacts
 
