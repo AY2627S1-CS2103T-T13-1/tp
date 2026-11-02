@@ -16,9 +16,7 @@
 This brownfield project is built upon the [**AddressBook-Level3 project**](https://se-education.org/addressbook-level3/) created by the [SE-EDU initiative](https://se-education.org/).
 We have used [JavaFX](https://openjfx.io/) for the GUI, [Jackson](https://github.com/FasterXML/jackson) for JSON format manipulation and [JUnit](https://junit.org/) for writing and performing tests. This site is built using [Markbind](https://markbind.org/) and the diagrams within it are created using [PlantUML](https://plantuml.com/).
 
-
-In addition, we also:
-* adapted [this solution](https://stackoverflow.com/a/5226244) to configure opening this User Guide's URL in `UserGuideAccessWindow`.
+In addition, we also adapted [this solution](https://stackoverflow.com/a/5226244) to configure opening this User Guide's URL in `UserGuideAccessWindow`.
 
 #### AI Usage
 - [@shijieteo](https://github.com/shijieteo/) — Identifying singleton design pattern in `PersonComparatorFactory`, modifying CSS/Ui elements to include tag colors, tag legend and writing of test cases.
