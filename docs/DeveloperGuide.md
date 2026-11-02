@@ -1066,7 +1066,7 @@ testers are expected to do more *exploratory* testing.
     1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Ensure that none of them are currently pinned.
 
     1. Test case: `pin 2`<br>
-    Expected: The second contact in the list now appears above other unpinned contactgs, with a red pin icon attached.
+    Expected: The second contact in the list now appears above other unpinned contacts, with a red pin icon attached.
 
     1. Test case: `unpin 1`<br>
     Expected: The contact at index `1` is now unpinned and the red pin icon is removed. The contact may still appear at position 1, but is no longer pinned.
