@@ -51,7 +51,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[portfolio](team/RyanNgCT.md)]
 
 * Role: Team Member
-* Responsibilities: Testing
+* Responsibilities: Code Review Lead
 
 ### Chong Kai Le
 

@@ -279,13 +279,15 @@ The `delete_alias` feature:
 
 The undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
 
-* `VersionedAddressBook#commit()` -- Saves a copy of the current address book state in its history, if it differs from the current saved state.
-* `VersionedAddressBook#undo()` -- Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` -- Restores a previously undone address book state from its history.
+* `VersionedAddressBook#commit(Comparator<Person>)` -- Saves a copy of the current address book state and its sort order in its history, if either differs from the current saved state.
+* `VersionedAddressBook#undo()` -- Restores the previous address book state and its sort order from its history.
+* `VersionedAddressBook#redo()` -- Restores a previously undone address book state and its sort order from its history.
 
-These operations are exposed in the `Model` interface as `Model#commit()`, `Model#undo()` and `Model#redo()` respectively, together with `Model#canUndo()` and `Model#canRedo()`. The method names do not mention the address book, so that other data (e.g. aliases) can be added to the saved state in the future.
+Each saved state is a `SavedState`, which holds a copy of the address book and the comparator that it is sorted by. This is so that undoing a `sort` command restores the previous order.
 
-`LogicManager` calls `Model#commit()` after every command that executes successfully. Individual commands do not need to commit, and a command that does not change the contact list (e.g. `list`, `find`, `theme` or `alias`) does not save a new state.
+These operations are exposed in the `Model` interface as `Model#commit()`, `Model#undo()` and `Model#redo()` respectively, together with `Model#canUndo()` and `Model#canRedo()`. Only the contacts and their sort order are saved in the history. Aliases are kept separately in `AliasRegistry`, so changes made with `alias` and `delete_alias` are not undone or redone.
+
+`LogicManager` calls `Model#commit()` after every command that executes successfully, except `undo` and `redo`, which move through the history instead of adding to it. Individual commands do not need to commit, and a command that changes neither the contact list nor its sort order (e.g. `list`, `find`, `theme` or `alias`) does not save a new state.
 
 Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
 
@@ -306,7 +308,7 @@ Step 3. The user executes `add -n David …​` to add a new person. `LogicManag
 **Note:** If a command fails its execution, `LogicManager` will not call `Model#commit()`, so the address book state will not be saved into the `addressBookStateList`.
 </box>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undo()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state. The contacts are then sorted again so that pinned contacts stay on top, and all contacts are shown.
+Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undo()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state. The sort order saved with that state is also restored, and all contacts are shown.
 
 <puml src="diagrams/UndoRedoState3.puml" alt="UndoRedoState3" />
 
@@ -326,13 +328,11 @@ The following sequence diagram shows how an undo operation goes through the `Log
 **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
 </box>
 
-The `Model#commit()` call made after the `undo` command does not save a new state, since the address book is the same as the restored state.
-
 Similarly, how an undo operation goes through the `Model` component is shown below:
 
 <puml src="diagrams/UndoSequenceDiagram-Model.puml" alt="UndoSequenceDiagram-Model" />
 
-The `redo` command does the opposite — it calls `Model#redo()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+The `redo` command does the opposite — it calls `Model#redo()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book and its sort order to that state. Like `undo`, `redo` is not followed by a call to `Model#commit()`.
 
 <box type="info" seamless>
 
@@ -355,7 +355,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 **Aspect: How undo & redo execute:**
 
-* **Alternative 1 (current choice):** Saves the entire address book.
+* **Alternative 1 (current choice):** Saves the entire address book, together with its sort order.
   * Pros: Easy to implement.
   * Cons: May have performance issues in terms of memory usage.
 
@@ -366,18 +366,13 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 **Aspect: Where the address book state is saved:**
 
-* **Alternative 1 (current choice):** `LogicManager` calls `Model#commit()` after every command, and a state is only saved if the address book has changed.
+* **Alternative 1 (current choice):** `LogicManager` calls `Model#commit()` after every command except `undo` and `redo`, and a state is only saved if the address book or its sort order has changed.
   * Pros: New commands that change the contact list can be undone without extra code.
-  * Cons: The address book is compared with the current saved state after every command.
+  * Cons: The address book and its sort order are compared with the current saved state after every command.
 
 * **Alternative 2:** Each command that changes the contact list calls `Model#commit()` itself.
   * Pros: No comparison is needed after each command.
   * Cons: A developer may forget to call `Model#commit()` in a new command, which then cannot be undone.
-
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -431,7 +426,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `*` | Regular User | Sort my contacts | I can find my contacts more easily |
 | `*` | Regular User | Have favourite / most-frequented contacts | I can easily navigate to frequently-contacted contacts |
 | `*` | Regular User | Store and be reminded of regular meeting times with contacts | I don't forget to show up for them |
-| `*` | Expert user | Set aliases for the commands | I can customise the command syntax to my liking |
+| `*` | Expert user | Set aliases for the commands | I can customise the available command words to my liking |
 | `*` | Expert user | Delete all contacts with a certain tag | I can remove multiple contacts that are not needed easily. |
 | `*` | Expert user | Change the storage location for data files | I can store it at a location I can easily access |
 
@@ -656,15 +651,15 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * 2a. coNnectUS detects an illegal or missing list index (e.g. List index is negative, zero, missing or non-numeric).
     * 2a1. coNnectUS displays an error message informing the user of the correct usage of pin command.
 
-      Use case ends.
+      Use case resumes at Step 2.
 
 * 2b. coNnectUS detects an out-of-bounds index (e.g. Currently displayed list has n contacts, user specifies index of n + 1).
     * 2b1. coNnectUS displays an error message informing the user that the provided index is invalid.
 
-      Use case ends.
+      Use case resumes at Step 2.
   
-* 2b. coNnectUS detects that the contact at the user-specified index is already pinned.
-    * 2b1. coNnectUS displays an error message informing the user that the contact is already pinned.
+* 2c. coNnectUS detects that the contact at the user-specified index is already pinned.
+    * 2c1. coNnectUS displays an error message informing the user that the contact is already pinned.
 
       Use case ends.
 
@@ -690,7 +685,7 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 * 1a. coNnectUS detects that an invalid sorting criterion or an invalid sorting order was specified.
     * 1a1. coNnectUS displays an error message informing the user that the command was specified incorrectly and show sort command's usage.
 
-      Use case ends.
+      Use case resumes at Step 1.
 
 
 #### Use Case: UC11 - Create an alias
@@ -772,13 +767,47 @@ The use case for `UC09` is mostly identical to ([UC08](#use-case-uc08-pin-contac
 
       Use case resumes at Step 2.
 
+#### Use Case: UC14 - Undo a change
+
+**Actor: User**
+
+**MSS:**
+1. User requests to undo the most recent change to the contacts or their sort order.
+2. coNnectUS restores the contacts and their sort order to the state before that change, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no changes to undo (e.g. no change has been made since the app was started, or all changes have already been undone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no changes to undo.
+
+      Use case ends.
+
+#### Use Case: UC15 - Redo an undone change
+
+**Actor: User**
+
+**Preconditions:** User has undone a change ([UC14](#use-case-uc14-undo-a-change)).
+
+**MSS:**
+1. User requests to redo the most recently undone change.
+2. coNnectUS reapplies the change to the contacts or their sort order, and displays a success message.
+
+   Use case ends.
+
+**Extensions:**
+* 1a. coNnectUS detects that there are no undone changes to redo (e.g. a new change to the contacts or their sort order was made after the undo, or all undone changes have already been redone).
+    * 1a1. coNnectUS displays an error message informing the user that there are no undone changes to redo.
+
+      Use case ends.
+
 #### Use Case: UC16 - Export Contacts
 
 **Actor: User**
 
 **MSS:**
 
-1. User specifies the `export` command with a filename and optional contact filtering criterion.            
+1. User specifies the `export` command with a filename and optional contact filtering criterion.
 2. coNnectUS identifies all contacts matching every specified criterion.
 3. coNnectUS saves all matching contacts to a JSON file with the user-specified file name.
 4. coNnectUS displays a success message indicating the exported filename.
@@ -954,6 +983,9 @@ testers are expected to do more *exploratory* testing.
 
    1. Test case: `delete 1`, `list`, then `undo`<br>
       Expected: `list` is skipped, and the deleted contact is back in the list.
+
+   1. Test case: `sort name asc`, `sort phone desc`, `undo`, then `add -n Zack Lim -p 99999999 -e zack@example.com`<br>
+      Expected: After `undo`, the contacts are sorted by name again. Zack Lim is placed in name order (at the bottom of the sample data), not by phone number (at the top of the unpinned contacts), since the name order is restored.
 
 1. Nothing to undo or redo
 

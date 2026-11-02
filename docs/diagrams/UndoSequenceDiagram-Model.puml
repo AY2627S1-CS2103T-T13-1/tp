@@ -15,18 +15,8 @@ activate VersionedAddressBook
 
 VersionedAddressBook -> VersionedAddressBook : canUndo()
 VersionedAddressBook -> VersionedAddressBook : resetData(ReadOnlyAddressBook)
-VersionedAddressBook --> Model
+VersionedAddressBook --> Model : comparator
 deactivate VersionedAddressBook
-
-Model -> Model : sortAddressBook(Comparator)
-activate Model
-
-Model -> VersionedAddressBook : sortPersons(Comparator)
-activate VersionedAddressBook
-
-VersionedAddressBook --> Model
-deactivate VersionedAddressBook
-deactivate Model
 
 [<-- Model
 deactivate Model
