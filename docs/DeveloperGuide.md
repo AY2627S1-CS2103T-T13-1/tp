@@ -1029,7 +1029,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Editing a contact to use a phone number or email address that is already used by another contact
 
-    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Add a contact with phone number `91234567` and email address `bob@gmail.com`. The contact at index `1` should not be using the phone number `91234567` or an email address of `bob@gmail.com`.
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Add a contact with phone number `91234567` and email address `bob@gmail.com`. The contact at index `1` should not be using the phone number `91234567` or the email address `bob@gmail.com`.
 
     1. Test case: `edit 1 -p 91234567`<br>
     Expected: The contact at index `1` is unmodified as the phone number `91234567` is already used by another contact. An error message is displayed, warning that the phone number is already used by another contact.
