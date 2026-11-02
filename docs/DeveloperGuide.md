@@ -927,7 +927,7 @@ testers are expected to do more *exploratory* testing.
       Expected: No contact is added. An error message shows the constraints for valid email addresses.
 
    1. Test case: `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
-      Expected: No contact is added. An error message shows that `-p` is given more than once, which is not allowed since a contact can only have one phone number.
+      Expected: No contact is added. An error message shows that `-p` is supplied more than once, which is not allowed since a contact can only have one phone number.
 
 ### Pinning and Unpinning contacts
 
