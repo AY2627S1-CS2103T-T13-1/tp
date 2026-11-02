@@ -925,16 +925,16 @@ testers are expected to do more *exploratory* testing.
       Expected: A success message confirms the registration. The alias list shows `f` registered to the `find` command.
 
    1. Test case: `f -n Alex`, then `find -n Alex`<br>
-      Expected: Both commands show contacts whose names match `Alex` (if any). The original command remains usable.
+      Expected: Both commands show contacts whose names match `Alex` (if any). The original `find` command remains usable.
 
    1. Test case: `f`<br>
       Expected: An error message shows the correct format for `find`. Using an alias **still requires** the original command's **parameters**.
 
    1. Test case: `alias list ls`, then execute `ls`<br>
-      Expected: All contacts are shown, just as with `list`.
+      Expected: All available contacts are shown.
 
    1. Test case: `alias list F`, execute `F` and then `f -n Alex`<br>
-      Expected: `F` shows all available contacts per the `list` command, while `f -n Alex` filters contacts by name per the `find` command. Aliases are **case-sensitive**, so `f` and `F` are distinct aliases and can be registered to _different built-in commands_.
+      Expected: The second command shows all available contacts, while the third command filters contacts by name. Aliases are **case-sensitive**, enabling users to register distinct to _different built-in commands_.
 
    1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
       Expected: The registered aliases are retained, since aliases are persisted across sessions in `data/aliases.json`.
@@ -944,19 +944,19 @@ testers are expected to do more *exploratory* testing.
    1. Prerequisites: Keep `f` registered to `find` from the previous tests.
 
    1. Test case: `alias list f`<br>
-      Expected: An error message states that `f` already exists. Its mapping to `find` is unchanged and was persisted in storage (i.e. `aliases.json`)
+      Expected: An error message states that `f` already exists. Its mapping to `find` is unchanged and is persisted in storage (i.e. `aliases.json`)
 
    1. Test case: `alias find LIST`<br>
-      Expected: An error message states that the _alias conflicts with a built-in command word_, ignoring case.
+      Expected: An error message states that the _alias conflicts with a built-in command word_.
 
    1. Test cases: `alias FIND search`, `alias f search`<br>
-      Expected: Each command is rejected because the target string must be an exact, **lowercase built-in command word**.
+      Expected: Each command is rejected because the target string must be a **lowercase built-in command word**.
 
    1. Test cases: `alias find f1`, `alias find 搜索`<br>
-      Expected: No alias is added. An error message states that aliases must contain only ASCII letters (`a-z` or `A-Z`).
+      Expected: None of the alias creation commands are successful. An error message states that aliases must contain only lowercase and uppercase ASCII letters in both cases.
 
    1. Test cases: `alias`, `alias find`, `alias find two words`<br>
-      Expected: No alias is added. An error message shows the correct syntax of the command and sample usage instructions.
+      Expected: None of the alias creation commands are successful. An error message shows the correct syntax of the command and sample usage instructions.
 
 ### Deleting aliases
 
