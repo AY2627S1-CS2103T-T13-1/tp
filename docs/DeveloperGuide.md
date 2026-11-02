@@ -881,53 +881,53 @@ testers are expected to do more *exploratory* testing.
 1. Click the theme button, close the app, then relaunch it.<br>
    Expected: The app opens in the theme that was last selected.
 
-### Adding a person
+### Adding a contact
 
-1. Adding a person
+1. Adding a contact with valid values
 
    1. Prerequisites: Launch the app with the sample contacts.
 
    1. Test case: `add -n Jane Tan -p 87654321 -e janetan@example.com`<br>
-      Expected: A new contact, Jane Tan, is added to the bottom of the list, without an address. The status message shows her details.
+      Expected: A new contact, Jane Tan, is added to the bottom of the list, without an address. The status message shows that she has been added, together with her details.
 
    1. Test case: `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01 -t module CS2103T -t others friend`<br>
-      Expected: John Doe is added with the address and both tags. The status message shows his details.
+      Expected: John Doe is added with the address and both tags. The status message shows that he has been added, together with his details.
 
    1. Test case: `add -n Alex Yeoh -p 81234567 -e alexyeoh2@example.com`<br>
       Expected: A second Alex Yeoh is added, since names do not need to be unique.
 
-1. Adding a person with a phone number or email address that is already used
+1. Adding a contact with a phone number or email address that is already used
 
    1. Prerequisites: Launch the app with the sample contacts.
 
    1. Test case: `add -n Amy Lee -p 87438807 -e amylee@example.com`<br>
-      Expected: No person is added, since Alex Yeoh already uses this phone number. The status message shows that the phone number is already used by another contact.
+      Expected: No contact is added, as the phone number is already used by Alex Yeoh. The status message shows that the phone number is already used by another contact.
 
    1. Test case: `add -n Amy Lee -p 81111111 -e alexyeoh@example.com`<br>
-      Expected: No person is added, since Alex Yeoh already uses this email address. The status message shows that the email address is already used by another contact.
+      Expected: No contact is added, as the email address is already used by Alex Yeoh. The status message shows that the email address is already used by another contact.
 
    1. Test case: `add -n Amy Lee -p 87438807 -e berniceyu@example.com`<br>
-      Expected: No person is added, since Alex Yeoh already uses this phone number and Bernice Yu already uses this email address. The status message shows that the phone number and email address are already used by existing contacts.
+      Expected: No contact is added, as the phone number is already used by Alex Yeoh and the email address is already used by Bernice Yu. The status message shows that the phone number and email address are already used by existing contacts.
 
-1. Adding a person with invalid values
+1. Adding a contact with invalid values
 
    1. Test cases: `add`, `add -n Amy Lee -e amylee@example.com`<br>
-      Expected: No person is added. An error message shows the command syntax and sample usage.
+      Expected: No contact is added. An error message shows the command syntax and sample usage.
 
    1. Test case: `add -n Amy Lee -p 12 -e amylee@example.com`<br>
-      Expected: No person is added. An error message shows that phone numbers should be between 3 and 15 digits long.
+      Expected: No contact is added. An error message shows that phone numbers should be between 3 and 15 digits long.
 
    1. Test case: `add -n Amy Lee -p 81111111 -e amylee@example.com -t club chess`<br>
-      Expected: No person is added. An error message shows that the specified tag category is unsupported and lists the supported categories.
+      Expected: No contact is added. An error message shows that the specified tag category is unsupported and lists the supported categories.
 
    1. Test case: `add -n Amy1 -p 81111111 -e amylee@example.com`<br>
-      Expected: No person is added. An error message shows that names should only contain letters and spaces, and should start with a letter.
+      Expected: No contact is added. An error message shows that names should only contain letters and spaces, and should start with a letter.
 
    1. Test case: `add -n Amy Lee -p 81111111 -e amylee`<br>
-      Expected: No person is added. An error message shows the constraints for email addresses.
+      Expected: No contact is added. An error message shows the constraints for valid email addresses.
 
    1. Test case: `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
-      Expected: No person is added. An error message shows that multiple values are given for `-p`.
+      Expected: No contact is added. An error message shows that `-p` is given more than once, which is not allowed since a contact can only have one phone number.
 
 ### Pinning and Unpinning contacts
 
