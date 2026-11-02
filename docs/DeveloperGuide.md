@@ -1050,9 +1050,12 @@ testers are expected to do more *exploratory* testing.
     1. Test case: `edit 1 -e bob@@gmail..com`<br>
     Expected: The contact at index `1` is unmodified as the email address `bob@@gmail..com` is invalid. An error message is displayed, describing the accepted values for email addresses.
 
-    1. Test case: `edit`, then `edit 1`<br>
-    Expected: No changes are made. The commands are rejected and an error message is displayed, describing the correct usage for edit command.
-
+    1. Test case: `edit`<br>
+    Expected: No changes are made. The command is rejected and an error message is displayed, describing the correct usage for edit command.
+   
+    1. Test case: `edit 1`<br>
+    Expected: No changes are made. The command is rejected and an error message is displayed, warning that a field must be specified for editing.
+   
     1. Test case: `edit 1 -p 91234567 -p 90001234`<br>
     Expected: No changes are made as the `-p` prefix is supplied twice. An error message is displayed, warning that `-p` has been supplied twice.
 
