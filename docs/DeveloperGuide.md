@@ -872,16 +872,19 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting a contact when tags are present
 
-   1. Prerequisites: Populate the contact list with a few contacts, with the following tags:<br>
-      - Contact A: others tag `Friend`
-      - Contact B: others tag `Friend`, module tag `CS3000`
-      - Contact C: faculty tag `CDE`, module tag `Friend`
+   1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts have matching tags.
+
+      ```text
+      add -n Aaron Tan -p 82345671 -e aarontan@example.com -t others Friend
+      add -n Beth Lim -p 82345672 -e bethlim@example.com -t others Friend -t module CS3000
+      add -n Chloe Lee -p 82345673 -e chloelee@example.com -t faculty CDE -t module Friend
+      ```
 
    1. Test case: `delete -t others Friend`<br>
-      Expected: Contact __A__ is deleted, while contact __B__ is not deleted, but loses its others tag `Friend`. Contact __C__ is not affected by this command. A status message shows that one contact was deleted, and all instances of others tag `Friend` are removed.
+      Expected: Aaron Tan is deleted. Beth Lim remains, with the others tag `Friend` removed. Chloe Lee is not affected by this command. A status message shows that one contact was deleted, and all instances of others tag `Friend` are removed.
 
    1. Test case: `delete -t faculty cde`<br>
-      Expected: Only contact __C__ is affected, with its faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
+      Expected: Only Chloe Lee is affected, with the faculty tag `CDE` being removed. This shows that the tag-name matching is case-insensitive. A status message shows that all instances of faculty tag `cde` are removed.
 
 1. Invalid inputs
 
@@ -895,7 +898,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Finding a contact when the contact list is populated
 
-   1. Prerequisites: Add the following three contacts, running each command separately. If address book has other contacts, the find output could be different but the behavior for the 3 contacts added will be the same. 
+   1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts match the supplied criteria.
       ```text
       add -n Alice Tan -p 81234561 -e alicetan@example.com -t others Friend
       add -n Alice Lim -p 81234562 -e alexlim@example.com -t others Colleague
