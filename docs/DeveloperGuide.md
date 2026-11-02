@@ -937,7 +937,7 @@ testers are expected to do more *exploratory* testing.
       Expected: The second command shows all available contacts, while the third command filters contacts by name. Aliases are **case-sensitive**, enabling users to register distinct to _different built-in commands_.
 
    1. Test case: Close the app with `exit` and relaunch it, then enter `list_alias`.<br>
-      Expected: The registered aliases are retained, since aliases are persisted across sessions in `data/aliases.json`.
+      Expected: The registered aliases are retained, since aliases are persisted across sessions.
 
 1. Rejecting invalid registrations
 
@@ -962,7 +962,7 @@ testers are expected to do more *exploratory* testing.
 
 1. Deleting an alias and checking case sensitivity
 
-   1. Prerequisites: Ensure `f` is registered to `find` and `F` is registered to `list`, using `list_alias` to check the mappings, which should match the output below. Otherwise, use `delete_alias` followed by `alias` to set up these mappings as required.
+   1. Prerequisites: Ensure `f` is registered to `find` and `F` is registered to `list`. An listing of current aliases should **match the output below**. Otherwise, delete and then add the necessary aliases to set up these mappings as required.
 
         ```text
         Registered alias(es): 
@@ -971,26 +971,26 @@ testers are expected to do more *exploratory* testing.
         ```
 
    1. Test case: `delete_alias f`, then `list_alias`<br>
-      Expected: A success message confirms the deletion. `f` is no longer listed, while `F` remains registered to `list`.
+      Expected: A message that confirms alias deletion. Notice that `f` is no longer available, while `F` remains registered to `list`.
 
    1. Test case: `f -n Alex`, then `find -n Alex` and `F`<br>
-      Expected: `f -n Alex` is rejected as an unknown command, since the alias had been removed. The other two commands continue to be executed successfully: `find -n Alex` still filters contacts by name, and `F` still shows all contacts.
+      Expected: The first command is rejected as an unknown as the command alias had been removed. The other two commands continue to be executed successfully: `find` still filters contacts and `F` still displays all contacts.
 
-   1. Test case: Close and relaunch the app, then enter `list_alias` and `f -n Alex`.<br>
-      Expected: `f` remains absent from the alias list since it had been removed earlier in Step 2 and is therefore rejected as an unknown command. Meanwhile, `F` remains registered.
+   1. Test case: Close and relaunch the app, then enter `f -n Alex`.<br>
+      Expected: `f` is rejected as an unknown command, since the change in Step 2 is persisted in storage.
 
    1. Test case: `alias list f`, then `f`<br>
-      Expected: The deleted alias can be registered to a different command. `f` now shows all contacts.
+      Expected: The deleted alias can now be registered to a different command. `f` shows all contacts after being registered as a new alias.
 
 1. Rejecting invalid deletions
 
-   1. Prerequisites: Remove the alias `f` if it is registered (i.e. `delete_alias f`), and keep `F` registered to `list`.
+   1. Prerequisites: Remove the alias `f` if it is registered, and keep `F` registered to `list`.
 
    1. Test case: `delete_alias f`<br>
-      Expected: An error message states that `f` was **not previously registered** (due to it being removed as part of the prerequisite). `F` remains registered at this point.
+      Expected: An error message states that `f` was **not previously registered** (after executing the prerequisite step).
 
    1. Test cases: `delete_alias`, `delete_alias f F`<br>
-      Expected: No aliases are deleted as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
+      Expected: No aliases are removed as the number of arguments supplied is incorrect. An error message shows the correct syntax of the command and sample usage instructions.
 
 ### Saving data
 
