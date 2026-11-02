@@ -1009,6 +1009,56 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `add -n Amy Lee -p 81111111 -p 82222222 -e amylee@example.com`<br>
       Expected: No contact is added. An error message shows that `-p` is supplied more than once, which is not allowed since a contact can only have one phone number.
 
+### Editing a contact
+
+1. Editing a contact with valid values
+
+    1.  Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. There should be no contact using the phone number `9000123456` or `bobby@gmail.com`. The contact at index `1` should have an address.
+
+    1. Test case: `edit 1 -n Bob`<br>
+    Expected: The name of the contact at index `1` is now set to `Bob`.
+
+    1. Test case: `edit 1 -p 9000123456`<br>
+    Expected: The phone number of the contact at index `1` is now set to `9000123456`.
+
+    1. Test case: `edit 1 -e bobby@gmail.com`<br>
+    Expected: The email address of the contact at index `1` is now set to `bobby@gmail.com`.
+
+    1. Test case: `edit 1 -a`<br>
+    Expected: The contact at index `1` now has no address as it has been cleared by the command.
+
+1. Editing a contact to use a phone number or email address that is already used by another contact
+
+    1. Prerequisites: List all contacts using the `list` command, with multiple contacts in the list. Add a contact with phone number `91234567` and email address `bob@gmail.com`. The contact at index `1` should not be using the phone number `91234567` or the email address `bob@gmail.com`.
+
+    1. Test case: `edit 1 -p 91234567`<br>
+    Expected: The contact at index `1` is unmodified as the phone number `91234567` is already used by another contact. An error message is displayed, warning that the phone number is already used by another contact.
+
+    1. Test case: `edit 1 -e bob@gmail.com`<br>
+    Expected: The contact at index `1` is unmodified as the email address `bob@gmail.com` is already used by another contact. An error message is displayed, warning that the email address is already used by another contact.
+
+1. Editing a contact with invalid values
+
+    1.  Prerequisites: List all contacts using the `list` command, with multiple contacts in the list.
+
+    1. Test case: `edit 1 -n Marie123`<br>
+    Expected: The contact at index `1` is unmodified as the name `Marie123` is invalid. An error message is displayed, showing that names should only contain letters and spaces, and should start with a letter.
+
+    1. Test case: `edit 1 -p +1-123-456-1234`<br>
+    Expected: The contact at index `1` is unmodified as the phone number `+1-123-456-1234` is invalid. An error message is displayed, describing the accepted values for phone numbers.
+
+    1. Test case: `edit 1 -e bob@@gmail..com`<br>
+    Expected: The contact at index `1` is unmodified as the email address `bob@@gmail..com` is invalid. An error message is displayed, describing the accepted values for email addresses.
+
+    1. Test case: `edit`<br>
+    Expected: No contacts are modified. The command is rejected and an error message is displayed, describing the correct usage for the edit command.
+   
+    1. Test case: `edit 1`<br>
+    Expected: The contact at index `1` is unmodified. The command is rejected and an error message is displayed, warning that a field must be specified for the edit operation.
+   
+    1. Test case: `edit 1 -p 91234567 -p 90001234`<br>
+    Expected: The contact at index `1` is unmodified as the `-p` prefix is supplied twice. An error message is displayed, warning about the violation.
+
 ### Pinning and Unpinning contacts
 
 1. Pinning and then unpinning the same contact
