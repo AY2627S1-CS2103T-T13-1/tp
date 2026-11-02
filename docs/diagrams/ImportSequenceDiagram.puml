@@ -6,9 +6,10 @@ box Logic LOGIC_COLOR_T1
 participant ":LogicManager" as LogicManager LOGIC_COLOR
 participant ":AddressBookParser" as AddressBookParser LOGIC_COLOR
 participant ":ImportCommandParser" as ImportCommandParser LOGIC_COLOR
-participant "d:ImportCommand" as ImportCommand LOGIC_COLOR
+participant "i:ImportCommand" as ImportCommand LOGIC_COLOR
+participant "ir:ImportRequest" as ImportRequest LOGIC_COLOR
 participant "r:CommandResult" as CommandResult LOGIC_COLOR
-participant "r:ExportRequest" as ImportRequest LOGIC_COLOR
+participant "s:CommandResult" as SummaryResult LOGIC_COLOR
 end box
 
 box Storage STORAGE_COLOR_T1
@@ -16,7 +17,7 @@ participant ":Storage" as Storage STORAGE_COLOR
 end box
 
 box Model MODEL_COLOR_T1
-participant ":Model" as Model MODEL_COLOR_T1
+participant "m:Model" as Model MODEL_COLOR
 end box
 
 [-> LogicManager : execute("import -f contacts.json")
@@ -36,40 +37,43 @@ AddressBookParser -> ImportCommandParser : parse(" -f contacts.json")
 activate ImportCommandParser
 
 create ImportCommand
-ImportCommandParser -> ImportCommand
+ImportCommandParser -> ImportCommand : ImportCommand(filePath)
 activate ImportCommand
 
 ImportCommand --> ImportCommandParser
 deactivate ImportCommand
 
-ImportCommandParser --> AddressBookParser
+ImportCommandParser --> AddressBookParser : i
 deactivate ImportCommandParser
 'Hidden arrow to position the destroy marker below the end of the activation bar.'
 ImportCommandParser -[hidden]-> AddressBookParser
 destroy ImportCommandParser
 
-AddressBookParser --> LogicManager
+AddressBookParser --> LogicManager : i
 deactivate AddressBookParser
 
-LogicManager -> ImportCommand : execute(model)
+LogicManager -> ImportCommand : execute(m)
 activate ImportCommand
 
 create ImportRequest
-ImportCommand -> ImportRequest
+ImportCommand -> ImportRequest : ImportRequest(filePath)
 activate ImportRequest
 
 ImportRequest --> ImportCommand
 deactivate ImportRequest
 
 create CommandResult
-ImportCommand -> CommandResult
+ImportCommand -> CommandResult : CommandResult(message, ir)
 activate CommandResult
 
 CommandResult --> ImportCommand
 deactivate CommandResult
 
-ImportCommand --> LogicManager : commandResult
+ImportCommand --> LogicManager : r
 deactivate ImportCommand
+
+LogicManager -> LogicManager : executeImport(ir)
+activate LogicManager
 
 LogicManager -> Storage : readAddressBook(filePath)
 activate Storage
@@ -78,6 +82,29 @@ deactivate Storage
 
 LogicManager -> Model : mergeAddressBook(importedAddressBook)
 activate Model
+Model --> LogicManager : summary
+deactivate Model
+
+create SummaryResult
+LogicManager -> SummaryResult : CommandResult(summaryMessage)
+activate SummaryResult
+
+SummaryResult --> LogicManager
+deactivate SummaryResult
+
+LogicManager --> LogicManager : s
+deactivate LogicManager
+
+LogicManager -> Model : commit()
+activate Model
 Model --> LogicManager
 deactivate Model
+
+LogicManager -> Storage : saveAddressBook(addressBook)
+activate Storage
+Storage --> LogicManager
+deactivate Storage
+
+[<-- LogicManager : s
+deactivate LogicManager
 @enduml
