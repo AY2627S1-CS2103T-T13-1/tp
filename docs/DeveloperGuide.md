@@ -1157,17 +1157,18 @@ testers are expected to do more *exploratory* testing.
 1. Finding a contact when the contact list is populated
 
    1. Prerequisites: Add the following three contacts, running each command separately. The expected results assume no other contacts match the supplied criteria.
+
       ```text
       add -n Alice Tan -p 81234561 -e alicetan@example.com -t others Friend
       add -n Alice Lim -p 81234562 -e alexlim@example.com -t others Colleague
       add -n Alex Lee -p 81234563 -e alexlee@example.com -t others Friend
       ```
-      
+
    1. Test case: `find -n alice`<br>
       Expected: Alice Tan and Alice Lim are displayed. The status message shows that 2 contacts were found.
 
    1. Test case: `find -t others friend -e alex`<br>
-      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included. The status message shows that one contact was found. 
+      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included. The status message shows that one contact was found.
 
    1. Test case: `find -p 9200`<br>
       Expected: A status message shows that no contacts were found, and an empty list is displayed. _(Assuming the above contact list of 3 contacts)_
@@ -1175,10 +1176,10 @@ testers are expected to do more *exploratory* testing.
 1. Invalid inputs
 
     1. Test case: `find alice`<br>
-       Expected: An error message stating that there was unexpected text `alice` before the first parameter is shown. This means that a parameter such as `-a,-e,-t` must be supplied before `alice`. 
+       Expected: An error message stating that `alice` appears before the first parameter is shown. To search by name, use `find -n alice`.
 
-    1. Test case: `find -a -t faculty Science`<br> 
-       Expected: An error message stating that the field for `-a` cannot be empty is shown. 
+    1. Test case: `find -a -t faculty Science`<br>
+       Expected: An error message stating that the field for `-a` cannot be empty is shown.
 
 ### Undoing and redoing changes
 
