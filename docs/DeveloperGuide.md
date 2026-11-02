@@ -891,6 +891,34 @@ testers are expected to do more *exploratory* testing.
    1. Test case: `delete -n others Friend`<br>
       Expected: An error message stating that `-n` is an unknown delete parameter is shown.
 
+### Finding a contact
+
+1. Finding a contact when the contact list is populated
+
+   1. Prerequisites: Add the following three contacts, running each command separately. If address book has other contacts, the find output could be different but the behavior for the 3 contacts added will be the same. 
+      ```text
+      add -n Alice Tan -p 81234561 -e alicetan@example.com -t others Friend
+      add -n Alice Lim -p 81234562 -e alexlim@example.com -t others Colleague
+      add -n Alex Lee -p 81234563 -e alexlee@example.com -t others Friend
+      ```
+      
+   1. Test case: `find -n alice`<br>
+      Expected: Alice Tan and Alice Lim are displayed. The status message shows that 2 contacts were found.
+
+   1. Test case: `find -t others friend -e alex`<br>
+      Expected: Only Alex Lee is displayed, as this contact matches both criteria. Alice Tan matches only the tag criterion, while Alice Lim matches only the email criterion, so they are not included. The status message shows that one contact was found. 
+
+   1. Test case: `find -p 9200`<br>
+      Expected: A status message shows that no contacts were found, and an empty list is displayed. _(Assuming the above contact list of 3 contacts)_
+
+1. Invalid inputs
+
+    1. Test case: `find alice`<br>
+       Expected: An error message stating that there was unexpected text `alice` before the first parameter is shown. This means that a parameter such as `-a,-e,-t` must be supplied before `alice`. 
+
+    1. Test case: `find -a -t faculty Science`<br> 
+       Expected: An error message stating that the field for `-a` cannot be empty is shown. 
+
 ### Undoing and redoing changes
 
 1. Undoing and redoing a change
